@@ -1,0 +1,8 @@
+# virtual environment
+venv/
+
+# the compilation files
+*.pyc
+
+# database file
+db.sqlite3
