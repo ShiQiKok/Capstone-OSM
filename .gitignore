@@ -6,6 +6,7 @@ venv/
 
 # the compilation files
 *.pyc
+.DS_Store
 
 # database file
 db.sqlite3
