@@ -3,6 +3,7 @@ venv/
 
 # VS code configaration file
 *.code-workspace
+.vscode/
 
 # the compilation files
 *.pyc
