@@ -1,6 +1,6 @@
 # Create your views here.
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 def index(request):
     # redirect the index page to login
@@ -8,7 +8,10 @@ def index(request):
     return response
 
 def login(request):
-    return HttpResponse("This is a login page! Welcome")
+    context = {
+        "heading": "This is a login page!"
+    }
+    return render(request, 'login.html', context)
 
 def register(request):
     return HttpResponse("This is a registration page! Welcome")
