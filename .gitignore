@@ -11,3 +11,5 @@ venv/
 
 # database file
 db.sqlite3
+
+data.txt
