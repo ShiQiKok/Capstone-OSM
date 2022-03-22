@@ -8,7 +8,7 @@ export class UserService {
   }
 
     list(){
-        return this.http.get('/api/users/');
+        return this.http.get('http://127.0.0.1:8000/api/users/');
     }
 
 }
