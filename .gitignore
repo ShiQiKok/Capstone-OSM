@@ -1,8 +1,13 @@
 # virtual environment
 venv/
 
+# VS code configaration file
+*.code-workspace
+.vscode/
+
 # the compilation files
 *.pyc
+.DS_Store
 
 # database file
 db.sqlite3
