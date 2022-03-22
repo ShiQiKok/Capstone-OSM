@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'osm',
-    'authentication',
     'user',
+    'api',
 ]
 
 MIDDLEWARE = [
