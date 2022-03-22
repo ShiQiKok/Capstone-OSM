@@ -1,21 +1,16 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
-import { UserService } from '../services/user-service';
+import { UserService } from '../services/user.service';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { SignupComponent } from './signup/signup.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule
-  ],
-  providers: [
-    UserService,
-  ],
-  bootstrap: [AppComponent]
+    declarations: [AppComponent, SignupComponent],
+    imports: [BrowserModule, HttpClientModule, NgbModule, AppRoutingModule],
+    providers: [UserService],
+    bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../services/user-service';
+import { UserService } from '../services/user.service';
 import { throwError } from 'rxjs';
 
 @Component({
@@ -7,17 +7,10 @@ import { throwError } from 'rxjs';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit {
-    constructor(private _userService: UserService) {}
+export class AppComponent {
+    title = 'OSM';
 
-    ngOnInit() {
-        this._userService.list().subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (error) => {
-                throwError(error);
-            }
-        );
-    }
+    constructor() {}
+
+    ngOnInit() {}
 }
