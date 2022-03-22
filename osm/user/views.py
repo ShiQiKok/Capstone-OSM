@@ -9,11 +9,11 @@ from .models import User
 @api_view(['GET'])
 def apiOverview(request):
     api_urls = {
-        'List':'/users/',
-        'Detail View':'/user-detail/<uuid>/',
-        'Create':'/user-create/',
-        'Update':'/user-update/<uuid>/',
-        'Delete':'/user-delete/<uuid>/',
+        'getAll':'/users/',
+        'get':'/user-detail/<uuid>/',
+        'create':'/user-create/',
+        'update':'/user-update/<uuid>/',
+        'delete':'/user-delete/<uuid>/',
     }
 
     return Response(api_urls)
