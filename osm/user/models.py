@@ -6,7 +6,7 @@ from .manager import UserManager
 # Create your models here.
 class User(AbstractUser):
     # using default=uuid.uuid4 has made UUID field auto-generated
-    user_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     email = models.EmailField(unique=True, blank=False)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)

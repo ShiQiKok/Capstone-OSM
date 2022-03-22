@@ -1,40 +1,60 @@
-# from django.shortcuts import render
-# from django.views.decorators.csrf import csrf_exempt
-# from .models import User
 
-# # Create your views here.
-# def user_detail():
-#     return HttpResponse("Hello, world. You're at the user detail.")
-
-# @csrf_exempt
-# def user_list(request):
-#     data = User.objects.all()
-
-#     if request.method == "GET":
-#         serializer = UserSerializer(data, many=True)
-#         return JsonResponse(serializer.data, safe=False)
-
-
-# from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from rest_framework import permissions
+from django.shortcuts import render
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .serializers import UserSerializer
 from .models import User
 
+@api_view(['GET'])
+def apiOverview(request):
+    api_urls = {
+        'List':'/users/',
+        'Detail View':'/user-detail/<uuid>/',
+        'Create':'/user-create/',
+        'Update':'/user-update/<uuid>/',
+        'Delete':'/user-delete/<uuid>/',
+    }
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    return Response(api_urls)
 
+@api_view(['GET'])
+def users(request):
+    users = User.objects.all().order_by('-id')
+    serializer = UserSerializer(users, many=True)
 
-# class GroupViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows groups to be viewed or edited.
-#     """
-#     queryset = Group.objects.all()
-#     serializer_class = GroupSerializer
-#     permission_classes = [permissions.IsAuthenticated]
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def userDetails(request, uuid):
+    user = User.objects.get(uuid=uuid)
+    serializer = UserSerializer(user, many=False)
+
+    return Response(serializer.data)
+
+@api_view(['GET','POST'])
+def createUser(request):
+    serializer = UserSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    else:
+        return Response(serializer.errors)
+
+@api_view(['POST'])
+def updateUser(request, uuid):
+    user = User.objects.get(uuid=uuid)
+    serializer = UserSerializer(instance=user, data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+def deleteUser(request, uuid):
+    user = User.objects.get(uuid=uuid)
+    user.delete()
+
+    return Response("User successfully deleted")
