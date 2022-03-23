@@ -1,7 +1,7 @@
-<div class="container center">
+<div class="">
     <div class="w-50 mx-auto card">
         <div class="card-body">
-            <h2>Welcome to {{ title }}! {{ username }}</h2>
+            <h2>Welcome to OSM!</h2>
             <p>Sign in to continue</p>
         </div>
         <hr />
@@ -40,12 +40,26 @@
                         >Remember me</label
                     >
                 </div>
-                <input type="submit" class="btn btn-primary d-block w-100" />
+                <input
+                    type="submit"
+                    class="btn btn-primary d-block w-100"
+                    value="Log In"
+                />
             </form>
             <!-- add forget password link -->
-            <div class="text-center mt-2">
+            <div class="text-center mt-4">
+                <i
+                    class="bi bi-lock-fill"
+                    style="color: #007bff; padding-right: 10px"
+                ></i>
                 <a href="#">Forget Password?</a>
             </div>
         </div>
+    </div>
+    <div class="text-center mt-4">
+        <p>
+            Don’t have an account ?
+            <a routerLink="/signup" href="#">Sign up</a> now
+        </p>
     </div>
 </div>

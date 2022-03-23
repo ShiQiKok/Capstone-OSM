@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../services/user.service';
-import { throwError } from 'rxjs';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { User } from 'src/models/user';
+import { AuthenticationService } from 'src/services/authentication.service';
 
 @Component({
     selector: 'app-root',
@@ -8,9 +9,18 @@ import { throwError } from 'rxjs';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-    title = 'OSM';
+    app_title = 'OSM';
+    currentUser!: User;
 
-    constructor() {}
+    constructor(
+        private router: Router,
+        private authenticationService: AuthenticationService
+    ) {
+        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+    }
 
-    ngOnInit() {}
+    logout() {
+        this.authenticationService.logout();
+        this.router.navigate(['/login']);
+    }
 }

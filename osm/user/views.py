@@ -15,10 +15,10 @@ from .models import User
 def apiOverview(request):
     api_urls = {
         'getAll':'/users/',
-        'get':'/user-detail/<uuid>/',
+        'get':'/user-detail/<id>/',
         'create':'/user-create/',
-        'update':'/user-update/<uuid>/',
-        'delete':'/user-delete/<uuid>/',
+        'update':'/user-update/<id>/',
+        'delete':'/user-delete/<id>/',
     }
 
     return Response(api_urls)

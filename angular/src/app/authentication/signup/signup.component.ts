@@ -7,9 +7,8 @@ import { AppComponent } from '../../app.component';
     templateUrl: './signup.component.html',
     styleUrls: ['./signup.component.css'],
 })
-export class SignupComponent extends AppComponent implements OnInit {
+export class SignupComponent implements OnInit {
     constructor() {
-        super();
     }
 
     ngOnInit(): void {}
