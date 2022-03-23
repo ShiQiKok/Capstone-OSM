@@ -24,6 +24,8 @@ def apiOverview(request):
     return Response(api_urls)
 
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def users(request):
     users = User.objects.all().order_by('-id')
     serializer = UserSerializer(users, many=True)
@@ -31,6 +33,8 @@ def users(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def userDetails(request, id):
     user = User.objects.get(id=id)
     serializer = UserSerializer(user, many=False)
@@ -38,6 +42,8 @@ def userDetails(request, id):
     return Response(serializer.data)
 
 @api_view(['GET','POST'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def createUser(request):
     serializer = UserSerializer(data=request.data)
 
@@ -48,6 +54,8 @@ def createUser(request):
         return Response(serializer.errors)
 
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def updateUser(request, id):
     user = User.objects.get(id=id)
     serializer = UserSerializer(instance=user, data=request.data)
@@ -58,6 +66,8 @@ def updateUser(request, id):
     return Response(serializer.data)
 
 @api_view(['DELETE'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def deleteUser(request, id):
     user = User.objects.get(id=id)
     user.delete()
