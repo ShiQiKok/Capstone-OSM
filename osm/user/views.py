@@ -32,9 +32,9 @@ def users(request):
 
     return Response(serializer.data)
 
+# @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+# @permission_classes([IsAuthenticated])
 @api_view(['GET'])
-@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
 def userDetails(request, id):
     user = User.objects.get(id=id)
     serializer = UserSerializer(user, many=False)
@@ -47,9 +47,11 @@ def userDetails(request, id):
 def createUser(request):
     serializer = UserSerializer(data=request.data)
 
+
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
+        user = serializer.createUser(serializer.data)
+        user_serializer = UserSerializer(user, many=False)
+        return Response(user_serializer.data)
     else:
         return Response(serializer.errors)
 
