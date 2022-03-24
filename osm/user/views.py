@@ -47,9 +47,8 @@ def userDetails(request, id):
 def createUser(request):
     serializer = UserSerializer(data=request.data)
 
-
     if serializer.is_valid():
-        user = serializer.createUser(serializer.data)
+        user = serializer.create_user(serializer.data)
         user_serializer = UserSerializer(user, many=False)
         return Response(user_serializer.data)
     else:

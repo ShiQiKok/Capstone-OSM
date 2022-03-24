@@ -13,7 +13,5 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
-      console.log("CURRENT USER >>> ")
-      console.log(this.currentUser)
     }
 }

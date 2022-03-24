@@ -1,6 +1,9 @@
-<div class="">
-    <div class="w-50 mx-auto card">
-        <div class="card-body">
+<div class="mx-auto mt-5 align-middle w-50">
+    <div *ngIf="!isFormValid" class="alert alert-warning" role="alert">
+        {{ errorMessage }}
+    </div>
+    <div class="card shadow rounded">
+        <div class="card-body mt-3">
             <h2>Welcome to OSM!</h2>
             <p>Sign in to continue</p>
         </div>

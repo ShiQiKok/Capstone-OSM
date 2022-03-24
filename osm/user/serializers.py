@@ -1,19 +1,26 @@
 from rest_framework import serializers
 from .models import User
-from .manager import UserManager
-from django.contrib.auth import authenticate
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ['groups', 'user_permissions']
 
-    def createUser(self, validated_data):
+    def extract_data(self, validated_data):
         email = validated_data['email']
         password = validated_data['password']
 
         validated_data.pop('password')
         validated_data.pop('email')
 
+        return email, password, validated_data
+
+    def create_user(self, validated_data):
+        email, password, validated_data = self.extract_data(validated_data)
         user = User.objects.create_user(email, password, **validated_data)
+        return user
+
+    def create_superuser(self, validated_data):
+        email, password, validated_data = self.extract_data(validated_data)
+        user = User.objects.create_superuser(email, password, **validated_data)
         return user
