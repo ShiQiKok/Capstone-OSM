@@ -1,6 +1,4 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.hashers import make_password, check_password
-
 
 class UserManager(BaseUserManager):
     """
@@ -11,19 +9,31 @@ class UserManager(BaseUserManager):
         """
         Create and save a User with the given email and password.
         """
-        # print(data)
+        groups = []
+        user_permissions = []
+
+        KEYS = data.keys()
 
         if not email:
             raise ValueError('The Email must be set')
         email = self.normalize_email(email)
 
-        # TODO: include the Many-to-Many fields (user_permissions & groups)
-        data.pop('user_permissions')
-        data.pop('groups')
+        if 'user_permissions' in KEYS:
+            user_permissions = data['user_permissions']
+            del data['user_permissions']
+
+        if 'groups' in KEYS:
+            groups = data['groups']
+            del data['groups']
 
         user = self.model(email=email, **data)
         user.set_password(password)
         user.save()
+
+        # save many-to-many fields
+        user.groups.set(groups)
+        user.user_permissions.set(user_permissions)
+
         return user
 
     def create_superuser(self, email, password, **extra_fields):
