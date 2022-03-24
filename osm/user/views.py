@@ -32,9 +32,9 @@ def users(request):
 
     return Response(serializer.data)
 
-# @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
-# @permission_classes([IsAuthenticated])
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def userDetails(request, id):
     user = User.objects.get(id=id)
     serializer = UserSerializer(user, many=False)

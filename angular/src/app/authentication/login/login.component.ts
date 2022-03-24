@@ -12,8 +12,8 @@ import { first } from 'rxjs/operators';
 })
 export class LoginComponent implements OnInit {
     loginForm!: FormGroup;
-    username: string = 'admin';
-    password: string = '123qwe';
+    username!: string;
+    password!: string;
 
     constructor(
         private authenticationService: AuthenticationService,
@@ -22,14 +22,13 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.onSubmit();
     }
 
     onSubmit() {
         this.authenticationService
             .login(this.username, this.password)
             .then((data) => {
-                // this.router.navigate(['user-details']);
+                this.router.navigate(['user-details']);
             },
             (err) => {
                 alert(err);
