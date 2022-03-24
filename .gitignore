@@ -4,6 +4,7 @@ venv/
 # VS code configaration file
 *.code-workspace
 .vscode/
+.prettierrc.json
 
 # the compilation files
 *.pyc

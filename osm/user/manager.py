@@ -1,18 +1,27 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.hashers import make_password, check_password
+
 
 class UserManager(BaseUserManager):
     """
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
     """
-    def create_user(self, email, password, **extra_fields):
+    def create_user(self, email, password, **data):
         """
         Create and save a User with the given email and password.
         """
+        # print(data)
+
         if not email:
             raise ValueError('The Email must be set')
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+
+        # TODO: include the Many-to-Many fields (user_permissions & groups)
+        data.pop('user_permissions')
+        data.pop('groups')
+
+        user = self.model(email=email, **data)
         user.set_password(password)
         user.save()
         return user
