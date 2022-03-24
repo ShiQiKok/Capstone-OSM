@@ -13,11 +13,11 @@ from .models import Assessment
 @permission_classes([IsAuthenticated])
 def overview(request):
     api_urls = {
-        'getAll':'/assessments/',
-        'get':'/assessment-detail/<id>/',
-        'create':'/assessment-create/',
-        'update':'/assessment-update/<id>/',
-        'delete':'/assessment-delete/<id>/',
+        'getAll':'assessments/',
+        'get':'assessment-details/',
+        'create':'assessment-create/',
+        'update':'assessment-update/',
+        'delete':'assessment-delete/',
     }
 
     return Response(api_urls)
