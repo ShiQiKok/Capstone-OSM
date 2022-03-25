@@ -12,8 +12,8 @@ export class AppComponent {
     app_title = 'OSM';
     currentUser!: User;
 
-    router!: Router;
-    authenticationService!: AuthenticationService;
+    router: Router;
+    authenticationService: AuthenticationService;
 
     constructor(router: Router, authenticationService: AuthenticationService) {
         this.router = router;
