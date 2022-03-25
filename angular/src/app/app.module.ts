@@ -10,6 +10,10 @@ import { LoginComponent } from './authentication/login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserDetailsComponent } from './user/user-details/user-details.component';
 import { JwtInterceptor } from 'src/helper/jwt.interceptor';
+import { AssessmentDetailsComponent } from './assessment/assessment-details/assessment-details.component';
+import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
+import { AuthenticationService } from 'src/services/authentication.service';
+import { AssessmentService } from 'src/services/assessment.service';
 
 @NgModule({
     declarations: [
@@ -17,6 +21,8 @@ import { JwtInterceptor } from 'src/helper/jwt.interceptor';
         SignupComponent,
         LoginComponent,
         UserDetailsComponent,
+        AssessmentDetailsComponent,
+        AssessmentListComponent,
     ],
     imports: [
         BrowserModule,
@@ -28,7 +34,9 @@ import { JwtInterceptor } from 'src/helper/jwt.interceptor';
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+        AuthenticationService,
         UserService,
+        AssessmentService,
     ],
     bootstrap: [AppComponent],
 })

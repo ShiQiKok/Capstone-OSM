@@ -3,60 +3,59 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .serializers import UserSerializer
-from .models import User
+from .serializers import AssessmentSerializer
+from .models import Assessment
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def apiOverview(request):
+def overview(request):
     api_urls = {
-        'getAll':'/users/',
-        'get':'/user-detail/<id>/',
-        'create':'/user-create/',
-        'update':'/user-update/<id>/',
-        'delete':'/user-delete/<id>/',
+        'getAll':'assessments/',
+        'get':'assessment-details/',
+        'create':'assessment-create/',
+        'update':'assessment-update/',
+        'delete':'assessment-delete/',
     }
 
     return Response(api_urls)
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAdminUser])
-def users(request):
-    users = User.objects.all().order_by('-id')
-    serializer = UserSerializer(users, many=True)
+@permission_classes([IsAuthenticated])
+def assessments(request, user_id):
+    assessments = Assessment.objects.filter(markers=user_id)
+    serializer = AssessmentSerializer(assessments, many=True)
 
     return Response(serializer.data)
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def userDetails(request, id):
-    user = User.objects.get(id=id)
-    serializer = UserSerializer(user, many=False)
+def assessment_details(request, id):
+    assessment = Assessment.objects.get(id=id)
+    serializer = AssessmentSerializer(assessment, many=False)
 
     return Response(serializer.data)
 
 @api_view(['GET','POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def createUser(request):
-    serializer = UserSerializer(data=request.data)
+def create_assessment(request):
+    serializer = AssessmentSerializer(data=request.data)
 
     if serializer.is_valid():
-        user = serializer.create_user(serializer.data)
-        user_serializer = UserSerializer(user, many=False)
-        return Response(user_serializer.data)
+        serializer.save()
+        return Response(serializer.data)
     else:
         return Response(serializer.errors)
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def updateUser(request, id):
-    user = User.objects.get(id=id)
-    serializer = UserSerializer(instance=user, data=request.data)
+def update_assessment(request, id):
+    assessment = Assessment.objects.get(id=id)
+    serializer = AssessmentSerializer(instance=assessment, data=request.data)
 
     if serializer.is_valid():
         serializer.save()
@@ -66,8 +65,8 @@ def updateUser(request, id):
 @api_view(['DELETE'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def deleteUser(request, id):
-    user = User.objects.get(id=id)
-    user.delete()
+def delete_assessment(request, id):
+    assessment = Assessment.objects.get(id=id)
+    assessment.delete()
 
-    return Response("User successfully deleted")
+    return Response("Assessment successfully deleted")

@@ -45,8 +45,8 @@ export class AuthenticationService {
                         let data = await this.updateData(token);
                         let user: User = JSON.parse(JSON.stringify(data));
                         user['token'] = token;
-                        console.log('user_object');
-                        console.log(user);
+                        // console.log('user_object');
+                        // console.log(user);
                         localStorage.setItem(
                             'currentUser',
                             JSON.stringify(user)

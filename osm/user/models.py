@@ -11,7 +11,6 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     updated_at = models.DateTimeField(auto_now=True)
-    # TODO: Add a field for the Assessment list
 
     objects = UserManager()
 
