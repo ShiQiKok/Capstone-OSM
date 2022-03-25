@@ -22,9 +22,9 @@ def overview(request):
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAdminUser])
-def assessments(request):
-    assessments = Assessment.objects.all().order_by('-id')
+@permission_classes([IsAuthenticated])
+def assessments(request, user_id):
+    assessments = Assessment.objects.filter(markers=user_id)
     serializer = AssessmentSerializer(assessments, many=True)
 
     return Response(serializer.data)

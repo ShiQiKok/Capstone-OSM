@@ -16,10 +16,10 @@ export class BaseService {
         });
     }
 
-    getAll() {
+    getAll(userId: number) {
         return new Promise<Object>((resolve, reject) => {
             this.http
-                .get(this.ROOT + this.ALL_API.getAll)
+                .get(this.ROOT + this.ALL_API.getAll + userId)
                 .subscribe((list) => resolve(list));
         });
     }
