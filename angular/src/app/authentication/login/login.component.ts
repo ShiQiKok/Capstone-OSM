@@ -21,7 +21,11 @@ export class LoginComponent implements OnInit {
         private router: Router
     ) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        if (this.authenticationService.currentUserValue()) {
+            this.router.navigate(['user-details/']);
+        }
+    }
 
     onSubmit() {
         this.isFormValid = true;

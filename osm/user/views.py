@@ -11,11 +11,11 @@ from .models import User
 @permission_classes([IsAuthenticated])
 def apiOverview(request):
     api_urls = {
-        'getAll':'/users/',
-        'get':'/user-detail/<id>/',
-        'create':'/user-create/',
-        'update':'/user-update/<id>/',
-        'delete':'/user-delete/<id>/',
+        'getAll':'users/',
+        'get':'user-detail/',
+        'create':'user-create/',
+        'update':'user-update/',
+        'delete':'user-delete/',
     }
 
     return Response(api_urls)

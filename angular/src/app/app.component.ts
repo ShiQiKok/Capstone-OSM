@@ -12,11 +12,15 @@ export class AppComponent {
     app_title = 'OSM';
     currentUser!: User;
 
-    constructor(
-        private router: Router,
-        private authenticationService: AuthenticationService
-    ) {
-        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+    router!: Router;
+    authenticationService!: AuthenticationService;
+
+    constructor(router: Router, authenticationService: AuthenticationService) {
+        this.router = router;
+        this.authenticationService = authenticationService;
+        this.authenticationService.currentUser.subscribe(
+            (x) => (this.currentUser = x)
+        );
     }
 
     logout() {

@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
 import { User } from '../models/user';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthenticationService {
-    private currentUserSubject: BehaviorSubject<User>;
+    private currentUserSubject: BehaviorSubject<any>;
     public currentUser: Observable<User>;
 
     private httpOptions: any;
@@ -19,8 +17,10 @@ export class AuthenticationService {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
         };
 
-        this.currentUserSubject = new BehaviorSubject<User>(
-            JSON.parse(localStorage.getItem('currentUser') || '{}')
+        this.currentUserSubject = new BehaviorSubject<any>(
+            localStorage.getItem('currentUser')
+                ? JSON.parse(localStorage.getItem('currentUser') as string)
+                : null
         );
         this.currentUser = this.currentUserSubject.asObservable();
     }
@@ -42,15 +42,24 @@ export class AuthenticationService {
                 )
                 .subscribe(
                     async (token) => {
-                        let data = await this.updateData(token);
-                        let user: User = JSON.parse(JSON.stringify(data));
+                        // set a dummy user to inject the JWT authentication header
+                        this.currentUserSubject.next({
+                            token: token,
+                        });
+
+                        // update the currentUser observable
+                        let user = JSON.parse(
+                            JSON.stringify(await this.updateData(token))
+                        );
                         user['token'] = token;
-                        // console.log('user_object');
-                        // console.log(user);
+
+                        // set current user in local storage
                         localStorage.setItem(
                             'currentUser',
                             JSON.stringify(user)
                         );
+
+                        // assign the real user object to the currentUserSubject
                         this.currentUserSubject.next(user);
                         resolve(user);
                     },
@@ -62,9 +71,12 @@ export class AuthenticationService {
     }
 
     logout() {
-        // remove user from local storage and set current user to null
-        localStorage.removeItem('currentUser');
-        this.currentUserSubject.next({} as User);
+        return new Promise((resolve, reject) => {
+            // remove user from local storage and set current user to null
+            localStorage.removeItem('currentUser');
+            this.currentUserSubject.next(null);
+            resolve('Successfully logged out!');
+        });
     }
 
     // this function returns a JSON-like User object
@@ -77,7 +89,7 @@ export class AuthenticationService {
 
             let user_id = token_decoded.user_id;
             this.http
-                .get('api/users/user-details/' + user_id)
+                .get('api/users/user-details/' + user_id + '/')
                 .subscribe((data) => {
                     resolve(data);
                 });

@@ -14,6 +14,7 @@ import { AssessmentDetailsComponent } from './assessment/assessment-details/asse
 import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { AssessmentService } from 'src/services/assessment.service';
+import { NavBarComponent } from './nav/nav-bar/nav-bar.component';
 
 @NgModule({
     declarations: [
@@ -23,6 +24,7 @@ import { AssessmentService } from 'src/services/assessment.service';
         UserDetailsComponent,
         AssessmentDetailsComponent,
         AssessmentListComponent,
+        NavBarComponent,
     ],
     imports: [
         BrowserModule,
@@ -34,9 +36,7 @@ import { AssessmentService } from 'src/services/assessment.service';
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-        AuthenticationService,
         UserService,
-        AssessmentService,
     ],
     bootstrap: [AppComponent],
 })
