@@ -1,10 +1,8 @@
-from django.shortcuts import render
-from django.http import JsonResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import AssessmentSerializer
 from .models import Assessment
 
@@ -24,7 +22,7 @@ def overview(request):
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
 def assessments(request):
     assessments = Assessment.objects.all().order_by('-id')
     serializer = AssessmentSerializer(assessments, many=True)
