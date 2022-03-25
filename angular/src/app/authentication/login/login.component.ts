@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { AppComponent } from 'src/app/app.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from 'src/services/authentication.service';
 
 @Component({
@@ -18,7 +18,8 @@ export class LoginComponent implements OnInit {
 
     constructor(
         private authenticationService: AuthenticationService,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -32,7 +33,8 @@ export class LoginComponent implements OnInit {
 
         this.authenticationService.login(this.username, this.password).then(
             (data) => {
-                this.router.navigate(['user-details']);
+                let returnUrl = this.route.snapshot.queryParams.returnUrl;
+                this.router.navigate([returnUrl || '/user-details']);
             },
             (err) => {
                 this.isFormValid = false;
