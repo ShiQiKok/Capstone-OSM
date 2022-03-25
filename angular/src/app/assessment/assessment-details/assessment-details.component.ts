@@ -30,9 +30,8 @@ export class AssessmentDetailsComponent implements OnInit {
         });
     }
 
-    // TODO: test
     updateAssessment(id: number) {
-        this._assessmentService.update(id).then((assessment: any) => {
+        this._assessmentService.update(id, this.assessment).then((assessment: any) => {
             this.assessment = assessment;
         });
     }

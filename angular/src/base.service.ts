@@ -40,10 +40,10 @@ export class BaseService {
         });
     }
 
-    update(id: number) {
+    update(id: number, data: any) {
         return new Promise<Object>((resolve, reject) => {
             this.http
-                .post(this.ROOT + this.ALL_API.update + id, {})
+                .post(`${this.ROOT}${this.ALL_API.update}${id}/`, data, {})
                 .subscribe((list) => resolve(list));
         });
     }
