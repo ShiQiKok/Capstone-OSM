@@ -18,7 +18,7 @@ class Assessment(models.Model):
     data_created = models.DateTimeField(auto_now_add=True)
     rubrics = models.JSONField(max_length=255, blank=True)
     questions = models.JSONField(max_length=255, blank=True)
-    collaborators = models.ManyToManyField('user.User', related_name='assessments')
+    markers = models.ManyToManyField('user.User', related_name='assessments')
 
     def __str__(self):
         return self.name

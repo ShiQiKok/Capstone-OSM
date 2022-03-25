@@ -4,5 +4,7 @@ from .models import Assessment
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assessment
-        exclude = ['collaborators']
+        fields = '__all__'
+
+
 
