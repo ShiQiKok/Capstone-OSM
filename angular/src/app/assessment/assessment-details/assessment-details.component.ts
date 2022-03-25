@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
 import { Assessment } from 'src/models/assessment';
 
 @Component({
@@ -15,7 +14,7 @@ export class AssessmentDetailsComponent implements OnInit {
     constructor(
         private _assessmentService: AssessmentService,
         private router: Router,
-        private route: ActivatedRoute,
+        private route: ActivatedRoute
     ) {}
 
     async ngOnInit() {
@@ -31,13 +30,15 @@ export class AssessmentDetailsComponent implements OnInit {
     }
 
     updateAssessment(id: number) {
-        this._assessmentService.update(id, this.assessment).then((assessment: any) => {
-            this.assessment = assessment;
-        });
+        this._assessmentService
+            .update(id, this.assessment)
+            .then((assessment: any) => {
+                this.assessment = assessment;
+            });
     }
 
     deleteAssessment(id: number) {
-        this._assessmentService.delete(id).then((data) => {
+        this._assessmentService.delete(id).then(() => {
             this.router.navigate(['/assessment-list']);
         });
     }
