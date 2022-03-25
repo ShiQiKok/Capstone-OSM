@@ -31,4 +31,28 @@ export class BaseService {
                 .subscribe((list) => resolve(list));
         });
     }
+
+    create() {
+        return new Promise<Object>((resolve, reject) => {
+            this.http
+                .post(this.ROOT + this.ALL_API.create, {})
+                .subscribe((list) => resolve(list));
+        });
+    }
+
+    update(id: number) {
+        return new Promise<Object>((resolve, reject) => {
+            this.http
+                .post(this.ROOT + this.ALL_API.update + id, {})
+                .subscribe((list) => resolve(list));
+        });
+    }
+
+    delete(id: number) {
+        return new Promise<Object>((resolve, reject) => {
+            this.http
+                .delete(`${this.ROOT}${this.ALL_API.delete}${id}/`, {})
+                .subscribe(() => resolve('successfully deleted!'));
+        });
+    }
 }

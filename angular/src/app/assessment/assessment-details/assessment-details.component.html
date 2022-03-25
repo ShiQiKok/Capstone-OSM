@@ -1,3 +1,5 @@
 <div>
     {{ assessment | json }}
+    <button class="btn btn-danger" (click)="deleteAssessment(assessment.id)">Delete</button>
+    <button class="btn btn-info" (click)="updateAssessment(assessment.id)">Update</button>
 </div>
