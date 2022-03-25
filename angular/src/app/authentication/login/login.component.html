@@ -9,7 +9,7 @@
         </div>
         <hr />
         <div class="card-body">
-            <form [formControl]="loginForm" (ngSubmit)="onSubmit()">
+            <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input
