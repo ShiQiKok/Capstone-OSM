@@ -12,7 +12,7 @@ enum MarkingSettings{
 export class Assessment {
     id!: number;
     name!: string;
-    subject!: string;
+    subject!: number;
     type!: AssessmentType;
     marking_settings!: MarkingSettings;
     rubrics!: Rubrics;

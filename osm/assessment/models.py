@@ -1,6 +1,7 @@
 from django.db import models
+from subject.models import Subject
 
-# Create your models here.
+
 class Assessment(models.Model):
 
     class AssessmentType(models.TextChoices):
@@ -12,9 +13,11 @@ class Assessment(models.Model):
         MARK_BY_QUESTION = 'mark_by_question', 'Mark By Question'
 
     name = models.CharField(max_length=255)
-    subject = models.CharField(max_length=255)
-    type = models.CharField(max_length=20, choices=AssessmentType.choices, default=AssessmentType.QUESTION_BASED)
-    marking_setting = models.CharField(max_length=20, choices=MarkingSetting.choices, default=MarkingSetting.MARK_BY_SCRIPT)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    type = models.CharField(
+        max_length=20, choices=AssessmentType.choices, default=AssessmentType.QUESTION_BASED)
+    marking_setting = models.CharField(
+        max_length=20, choices=MarkingSetting.choices, default=MarkingSetting.MARK_BY_SCRIPT)
     data_created = models.DateTimeField(auto_now_add=True)
     rubrics = models.JSONField(max_length=255, blank=True)
     questions = models.JSONField(max_length=255, blank=True)
@@ -22,6 +25,7 @@ class Assessment(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Rubrics:
     class RubricCriteria:
@@ -38,11 +42,10 @@ class Rubrics:
                 'levels': self.levels
             }
 
-
     class RubricCriteriaLevel:
         def __init__(self, name, description, mark_range):
             self.name = name
-            self.description= description
+            self.description = description
             self.mark_range = mark_range
 
         def __str__(self):
@@ -62,6 +65,7 @@ class Rubrics:
             "levels": self.levels,
             "criteria": self.criteria
         }
+
 
 class Question:
     # constructor with variables question, answer, mark_allocation
