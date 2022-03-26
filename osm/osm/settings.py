@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'user',
     'api',
     'assessment',
+    'subject',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,9 +86,9 @@ WSGI_APPLICATION = 'osm.wsgi.application'
 
 DATABASES = {
     'default': {
-           'ENGINE': 'djongo',
-           'NAME': 'OSM_DB',
-       }
+        'ENGINE': 'djongo',
+        'NAME': 'OSM_DB',
+    }
 }
 
 
@@ -124,9 +125,9 @@ REST_FRAMEWORK = {
     # ],
     # 'DEFAULT_AUTHENTICATION_CLASSES': [],
     # ,
-#      'DEFAULT_AUTHENTICATION_CLASSES': (
-#        'rest_framework.authentication.TokenAuthentication',
-#    ),
+    #      'DEFAULT_AUTHENTICATION_CLASSES': (
+    #        'rest_framework.authentication.TokenAuthentication',
+    #    ),
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'PAGE_SIZE': 10
     'DEFAULT_PERMISSION_CLASSES': [
@@ -143,7 +144,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=5),
 }
-
 
 
 # Internationalization
