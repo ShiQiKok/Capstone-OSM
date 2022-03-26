@@ -6,11 +6,8 @@ import { BaseService } from 'src/base.service';
     providedIn: 'root',
 })
 export class AssessmentService extends BaseService {
-
     constructor(http: HttpClient) {
-      super(http);
-      this.ROOT = this.ROOT +  'assessments/';
+        super(http);
+        this.ROOT = this.ROOT + 'assessments/';
     }
-
-
 }
