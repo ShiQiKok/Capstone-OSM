@@ -1,6 +1,39 @@
-<div *ngFor="let assessment of assessmentList">
+<button class="btn btn-primary d-block ml-auto" (click)="open(modal)">
+    Create Assessment
+</button>
+<div #modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Create Assessment</h4>
+        <button
+            type="button"
+            class="btn btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss()"
+        >
+            x
+        </button>
+    </div>
+    <div class="modal-body">
+        <app-assessment-creation-form>
+        </app-assessment-creation-form>
+    </div>
+    <!-- <div class="modal-footer">
+        <button
+            type="button"
+            class="btn btn-outline-dark"
+            (click)="modal.close('Save click')"
+        >
+            Save
+        </button>
+    </div> -->
+</div>
+
+<!-- <div *ngFor="let assessment of assessmentList">
     {{ assessment | json }}
-    <button class="btn btn-primary" routerLink="/assessment-details/{{assessment.id}}">
+    <button
+        class="btn btn-primary"
+        routerLink="/assessment-details/{{ assessment.id }}"
+    >
         View
     </button>
-</div>
+</div> -->

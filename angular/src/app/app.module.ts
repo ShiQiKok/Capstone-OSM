@@ -12,9 +12,15 @@ import { UserDetailsComponent } from './user/user-details/user-details.component
 import { JwtInterceptor } from 'src/helper/jwt.interceptor';
 import { AssessmentDetailsComponent } from './assessment/assessment-details/assessment-details.component';
 import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
-import { AuthenticationService } from 'src/services/authentication.service';
-import { AssessmentService } from 'src/services/assessment.service';
 import { NavBarComponent } from './nav/nav-bar/nav-bar.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { ErrorMessageComponent } from './shared-component/error-message/error-message.component';
+import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form/assessment-creation-form.component';
+import { MatTreeModule } from '@angular/material/tree';
 
 @NgModule({
     declarations: [
@@ -25,6 +31,8 @@ import { NavBarComponent } from './nav/nav-bar/nav-bar.component';
         AssessmentDetailsComponent,
         AssessmentListComponent,
         NavBarComponent,
+        ErrorMessageComponent,
+        AssessmentCreationFormComponent,
     ],
     imports: [
         BrowserModule,
@@ -33,6 +41,12 @@ import { NavBarComponent } from './nav/nav-bar/nav-bar.component';
         AppRoutingModule,
         FormsModule,
         ReactiveFormsModule,
+        BrowserAnimationsModule,
+        MatFormFieldModule,
+        MatStepperModule,
+        MatInputModule,
+        MatButtonModule,
+        MatTreeModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
