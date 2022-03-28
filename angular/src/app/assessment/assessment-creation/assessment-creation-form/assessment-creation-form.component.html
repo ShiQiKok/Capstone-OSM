@@ -1,90 +1,99 @@
-<mat-stepper [linear]="true" #stepper >
-    <!-- Step 1: Assessment Details  -->
-    <mat-step [stepControl]="assessmentDetailFormGroup" label="Details">
-        <form [formGroup]="assessmentDetailFormGroup">
-            <div class="form-group">
-                <label for="assessmentName">Assessment Name</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    formControlName="assessmentName"
-                    id="assessmentName"
-                    placeholder="Enter assessment name"
-                    name="assessmentName"
-                />
-                <error-message [formControl]="assessmentName"></error-message>
-            </div>
-            <div class="form-group">
-                <label for="assessmentType">Assessment Type</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    formControlName="assessmentType"
-                    id="assessmentType"
-                    placeholder="Enter assessment type"
-                    name="assessmentType"
-                />
-                <error-message [formControl]="assessmentType"></error-message>
-            </div>
-            <div class="form-group">
-                <label for="subject">Subject</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    formControlName="subject"
-                    id="subject"
-                    placeholder="Enter subject"
-                    name="subject"
-                />
-                <error-message [formControl]="subject"></error-message>
-            </div>
-            <div class="form-group">
-                <label for="noOfQuestions">Number of Questions</label>
-                <input
-                    type="number"
-                    class="form-control"
-                    formControlName="noOfQuestions"
-                    id="noOfQuestions"
-                    placeholder="Enter number of questions"
-                    name="noOfQuestions"
-                />
-                <error-message [formControl]="noOfQuestions"></error-message>
-            </div>
+<div>
+    <mat-stepper [linear]="true" #stepper class="bg-light">
+        <!-- Step 1: Assessment Details  -->
+        <mat-step [stepControl]="assessmentDetailFormGroup" label="Details">
+            <form [formGroup]="assessmentDetailFormGroup">
+                <div class="form-group">
+                    <label for="assessmentName">Assessment Name</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="assessmentName"
+                        id="assessmentName"
+                        placeholder="Enter assessment name"
+                        name="assessmentName"
+                    />
+                    <error-message ngDefaultControl
+                        [formControl]="assessmentName"
+                    ></error-message>
+                </div>
+                <div class="form-group">
+                    <label for="assessmentType">Assessment Type</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="assessmentType"
+                        id="assessmentType"
+                        placeholder="Enter assessment type"
+                        name="assessmentType"
+                    />
+                    <error-message ngDefaultControl
+                        [formControl]="assessmentType"
+                    ></error-message>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="subject"
+                        id="subject"
+                        placeholder="Enter subject"
+                        name="subject"
+                    />
+                    <error-message ngDefaultControl [formControl]="subject"></error-message>
+                </div>
+                <div class="form-group">
+                    <label for="noOfQuestions">Number of Questions</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        formControlName="noOfQuestions"
+                        id="noOfQuestions"
+                        placeholder="Enter number of questions"
+                        name="noOfQuestions"
+                    />
+                    <error-message ngDefaultControl
+                        [formControl]="noOfQuestions"
+                    ></error-message>
+                </div>
+                <div>
+                    <button
+                        class="btn btn-primary"
+                        matStepperNext
+                        (click)="validateForm(assessmentDetailFormGroup)"
+                    >
+                        Next
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+        <!-- Step 2 -->
+        <mat-step
+            [stepControl]="questionFormGroup"
+            label="Questions"
+        >
+            <form [formGroup]="questionFormGroup" id="questionForm">
+                <div class="form-group d-flex align-items-center mt-2">
+                    <label for="totalMark" class="mr-4">Total Mark</label>
+                    <input
+                        type="text"
+                        class="form-control w-25 d-block ml-auto"
+                        formControlName="totalMark"
+                        id="totalMark"
+                        name="totalMark"
+                    />
+                </div>
+            </form>
+            <button matStepperPrevious class="btn btn-primary">Back</button>
+            <button matStepperNext class="btn btn-primary">Next</button>
+        </mat-step>
+        <mat-step label="Done">
+            <p>You are now done.</p>
             <div>
-                <button
-                    class="btn btn-primary"
-                    matStepperNext
-                    (click)="validateForm(assessmentDetailFormGroup)"
-                >
-                    Next
-                </button>
+                <button matStepperPrevious>Back</button>
+                <button (click)="stepper.reset()">Reset</button>
             </div>
-        </form>
-    </mat-step>
-
-    <!-- Step 2 -->
-    <mat-step [stepControl]="markAllocationFormGroup" label="Mark Allocation">
-        <form [formGroup]="markAllocationFormGroup" id="markAllocationForm">
-            <div class="form-group d-flex align-items-center mt-2">
-                <label for="totalMark" class="mr-4">Total Mark</label>
-                <input
-                    type="text"
-                    class="form-control w-25 d-block ml-auto"
-                    formControlName="totalMark"
-                    id="totalMark"
-                    name="totalMark"
-                />
-            </div>
-        </form>
-        <button matStepperPrevious>Back</button>
-        <button matStepperNext>Next</button>
-    </mat-step>
-    <mat-step>
-        <ng-template matStepLabel>Done</ng-template>
-        <p>You are now done.</p>
-        <div>
-            <button matStepperPrevious>Back</button>
-            <button (click)="stepper.reset()">Reset</button>
-        </div>
-    </mat-step>
-</mat-stepper>
+        </mat-step>
+    </mat-stepper>
+</div>

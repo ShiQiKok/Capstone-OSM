@@ -1,7 +1,7 @@
-<button class="btn btn-primary d-block ml-auto" (click)="open(modal)">
+<button class="btn btn-primary d-block ml-auto" routerLink="/assessment-create">
     Create Assessment
 </button>
-<ng-template #modal let-modal>
+<!-- <ng-template #modal let-modal>
     <div class="modal-header">
         <h4 class="modal-title" id="modal-basic-title">Create Assessment</h4>
         <button
@@ -16,7 +16,7 @@
     <div class="modal-body">
         <app-assessment-creation-form> </app-assessment-creation-form>
     </div>
-    <!-- <div class="modal-footer">
+    <div class="modal-footer">
         <button
             type="button"
             class="btn btn-outline-dark"
@@ -24,8 +24,8 @@
         >
             Save
         </button>
-    </div> -->
-</ng-template>
+    </div>
+</ng-template> -->
 
 <!-- TODO: hide the subject that does not have assessment -->
 <div *ngFor="let obj of assessments | keyvalue" class="my-4">
