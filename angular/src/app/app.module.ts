@@ -21,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ErrorMessageComponent } from './shared-component/error-message/error-message.component';
 import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form/assessment-creation-form.component';
 import { MatTreeModule } from '@angular/material/tree';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
     declarations: [
@@ -47,6 +48,7 @@ import { MatTreeModule } from '@angular/material/tree';
         MatInputModule,
         MatButtonModule,
         MatTreeModule,
+        MatTableModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

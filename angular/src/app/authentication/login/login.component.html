@@ -1,68 +1,70 @@
-<div class="mx-auto mt-5 align-middle w-50">
-    <div *ngIf="!isFormValid" class="alert alert-warning" role="alert">
-        {{ errorMessage }}
-    </div>
-    <div class="card shadow rounded">
-        <div class="card-body mt-3">
-            <h2>Welcome to OSM!</h2>
-            <p>Sign in to continue</p>
+<div class="container my-4">
+    <div class="mx-auto mt-5 align-middle w-50">
+        <div *ngIf="!isFormValid" class="alert alert-warning" role="alert">
+            {{ errorMessage }}
         </div>
-        <hr />
-        <div class="card-body">
-            <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input
-                        [(ngModel)]="username"
-                        type="text"
-                        class="form-control"
-                        id="username"
-                        placeholder="Enter username"
-                        name="username"
-                    />
-                </div>
-                <div class="form-group">
-                    <label for="password1">Password</label>
-                    <input
-                        [(ngModel)]="password"
-                        type="password"
-                        class="form-control"
-                        id="password1"
-                        placeholder="Password"
-                        name="password"
-                    />
-                </div>
+        <div class="card shadow rounded">
+            <div class="card-body mt-3">
+                <h2>Welcome to OSM!</h2>
+                <p>Sign in to continue</p>
+            </div>
+            <hr />
+            <div class="card-body">
+                <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input
+                            [(ngModel)]="username"
+                            type="text"
+                            class="form-control"
+                            id="username"
+                            placeholder="Enter username"
+                            name="username"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="password1">Password</label>
+                        <input
+                            [(ngModel)]="password"
+                            type="password"
+                            class="form-control"
+                            id="password1"
+                            placeholder="Password"
+                            name="password"
+                        />
+                    </div>
 
-                <div class="form-group form-check">
+                    <div class="form-group form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="remember-me-check"
+                        />
+                        <label class="form-check-label" for="remember-me-check"
+                            >Remember me</label
+                        >
+                    </div>
                     <input
-                        type="checkbox"
-                        class="form-check-input"
-                        id="remember-me-check"
+                        type="submit"
+                        class="btn btn-primary d-block w-100"
+                        value="Log In"
                     />
-                    <label class="form-check-label" for="remember-me-check"
-                        >Remember me</label
-                    >
+                </form>
+                <!-- add forget password link -->
+                <div class="text-center mt-4">
+                    <i
+                        class="bi bi-lock-fill"
+                        style="color: #007bff; padding-right: 10px"
+                    ></i>
+                    <a href="#">Forget Password?</a>
                 </div>
-                <input
-                    type="submit"
-                    class="btn btn-primary d-block w-100"
-                    value="Log In"
-                />
-            </form>
-            <!-- add forget password link -->
-            <div class="text-center mt-4">
-                <i
-                    class="bi bi-lock-fill"
-                    style="color: #007bff; padding-right: 10px"
-                ></i>
-                <a href="#">Forget Password?</a>
             </div>
         </div>
-    </div>
-    <div class="text-center mt-4">
-        <p>
-            Don’t have an account ?
-            <a routerLink="/signup" href="#">Sign up</a> now
-        </p>
+        <div class="text-center mt-4">
+            <p>
+                Don’t have an account ?
+                <a routerLink="/signup" href="#">Sign up</a> now
+            </p>
+        </div>
     </div>
 </div>

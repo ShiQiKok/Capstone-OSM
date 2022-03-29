@@ -1,10 +1,10 @@
 // crete a class Assessment with the fields in Django AssessmentModel
-enum AssessmentType{
+export enum AssessmentType{
     QUESTION_BASED = 'question_based',
     ESSAY_BASED = 'essay_based'
 }
 
-enum MarkingSettings{
+export enum MarkingSettings{
     MARK_BY_SCRIPT = 'mark_by_script',
     MARK_BY_QUESTION = 'mark_by_question'
 }
