@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'api',
     'assessment',
     'subject',
+    'answer_script',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
