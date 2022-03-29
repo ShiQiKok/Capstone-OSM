@@ -1,22 +1,24 @@
+import { Subject } from './subject';
+
 // crete a class Assessment with the fields in Django AssessmentModel
-enum AssessmentType{
+export enum AssessmentType {
     QUESTION_BASED = 'question_based',
-    ESSAY_BASED = 'essay_based'
+    ESSAY_BASED = 'essay_based',
 }
 
-enum MarkingSettings{
+export enum MarkingSettings {
     MARK_BY_SCRIPT = 'mark_by_script',
-    MARK_BY_QUESTION = 'mark_by_question'
+    MARK_BY_QUESTION = 'mark_by_question',
 }
 
 export class Assessment {
-    id!: number;
-    name!: string;
-    subject!: number;
-    type!: AssessmentType;
-    marking_settings!: MarkingSettings;
-    rubrics!: Rubrics;
-    questions!: Question[];
+    id?: number | undefined;
+    name?: string | undefined;
+    subject?: number | undefined;
+    type?: AssessmentType | undefined;
+    marking_settings?: MarkingSettings | undefined;
+    rubrics?: any | undefined;
+    questions?: any | undefined;
 }
 
 export class Rubrics {
@@ -24,13 +26,13 @@ export class Rubrics {
     criteria!: RubricCriteria[];
 }
 
-export class RubricCriteria{
+export class RubricCriteria {
     title!: string;
     total_marks!: number;
     levels!: RubricCriteriaLevels[];
 }
 
-export class RubricCriteriaLevels{
+export class RubricCriteriaLevels {
     name!: string;
     description!: string;
     mark_range!: any;
@@ -38,7 +40,7 @@ export class RubricCriteriaLevels{
 
 // create a class Question with the fields question, answer, mark
 export class Question {
-    question!: string;
-    answer!: string;
-    mark!: number;
+    question?: string | null;
+    answer?: string | null;
+    mark?: number | null;
 }

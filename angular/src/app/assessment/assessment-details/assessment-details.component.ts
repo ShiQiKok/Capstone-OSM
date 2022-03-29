@@ -29,7 +29,7 @@ export class AssessmentDetailsComponent implements OnInit {
         });
     }
 
-    updateAssessment(id: number) {
+    updateAssessment(id: any) {
         this._assessmentService
             .update(id, this.assessment)
             .then((assessment: any) => {
@@ -37,7 +37,7 @@ export class AssessmentDetailsComponent implements OnInit {
             });
     }
 
-    deleteAssessment(id: number) {
+    deleteAssessment(id: any) {
         this._assessmentService.delete(id).then(() => {
             this.router.navigate(['/assessment-list']);
         });
