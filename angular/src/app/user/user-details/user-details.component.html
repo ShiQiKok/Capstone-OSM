@@ -1,46 +1,52 @@
-<h2 class="heading"><span>User Profile</span></h2>
+<div class="container my-4">
+    <h2 class="heading"><span>User Profile</span></h2>
 
-<div>
-    <div class="card w-75 mx-auto my-5 shadow rounded">
-        <div class="card-body">
-            <div>
-                <h5 class="card-title">
-                    {{ currentUser.username }}
-                    <span
-                        *ngIf="currentUser.is_superuser"
-                        class="badge rounded-pill bg-secondary text-white px-2 ml-2"
-                        >Admin</span
-                    >
-                </h5>
-                <p>{{ currentUser.first_name }} {{ currentUser.last_name }}</p>
-                <button class="btn btn-primary d-block ml-auto">Edit</button>
+    <div>
+        <div class="card w-75 mx-auto my-5 shadow rounded">
+            <div class="card-body">
+                <div>
+                    <h5 class="card-title">
+                        {{ currentUser.username }}
+                        <span
+                            *ngIf="currentUser.is_superuser"
+                            class="badge rounded-pill bg-secondary text-white px-2 ml-2"
+                            >Admin</span
+                        >
+                    </h5>
+                    <p>
+                        {{ currentUser.first_name }} {{ currentUser.last_name }}
+                    </p>
+                    <button class="btn btn-primary d-block ml-auto">
+                        Edit
+                    </button>
+                </div>
             </div>
-        </div>
-        <hr />
-        <div class="card-body">
-            <table class="table">
-                <h5 class="mb-4 text-primary">Information</h5>
-                <tr>
-                    <td>Username</td>
-                    <td>{{ currentUser.username }}</td>
-                </tr>
-                <tr>
-                    <td>First Name</td>
-                    <td>{{ currentUser.first_name }}</td>
-                </tr>
-                <tr>
-                    <td>Last Name</td>
-                    <td>{{ currentUser.last_name }}</td>
-                </tr>
-                <tr>
-                    <td>Email</td>
-                    <td>{{ currentUser.email }}</td>
-                </tr>
-                <tr>
-                    <td>Date Joined</td>
-                    <td>{{ currentUser.date_joined | date: "dd/MM/y" }}</td>
-                </tr>
-            </table>
+            <hr />
+            <div class="card-body">
+                <table class="table">
+                    <h5 class="mb-4 text-primary">Information</h5>
+                    <tr>
+                        <td>Username</td>
+                        <td>{{ currentUser.username }}</td>
+                    </tr>
+                    <tr>
+                        <td>First Name</td>
+                        <td>{{ currentUser.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Last Name</td>
+                        <td>{{ currentUser.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>{{ currentUser.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Date Joined</td>
+                        <td>{{ currentUser.date_joined | date: "dd/MM/y" }}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>
