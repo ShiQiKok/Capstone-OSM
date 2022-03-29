@@ -1,3 +1,4 @@
+<div class="container my-4">
 <button class="btn btn-primary d-block ml-auto" routerLink="/assessment-create">
     Create Assessment
 </button>
@@ -63,6 +64,7 @@
                             </div>
                         </div>
                         <button
+                            routerLink="/assessment-details/{{ a.id }}"
                             class="btn btn-outline-primary d-block my-4 mr-3"
                             style="width: 17%"
                         >
@@ -73,4 +75,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>
