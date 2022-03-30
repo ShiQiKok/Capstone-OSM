@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { AppComponent } from 'src/app/app.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from 'src/services/authentication.service';
 

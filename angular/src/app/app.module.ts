@@ -22,6 +22,8 @@ import { ErrorMessageComponent } from './shared-component/error-message/error-me
 import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form/assessment-creation-form.component';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
     declarations: [
@@ -49,6 +51,8 @@ import { MatTableModule } from '@angular/material/table';
         MatButtonModule,
         MatTreeModule,
         MatTableModule,
+        MatProgressSpinnerModule,
+        FontAwesomeModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

@@ -32,10 +32,10 @@ export class BaseService {
         });
     }
 
-    create() {
+    create(object: any) {
         return new Promise<Object>((resolve, reject) => {
             this.http
-                .post(this.ROOT + this.ALL_API.create, {})
+                .post(this.ROOT + this.ALL_API.create, object)
                 .subscribe((list) => resolve(list));
         });
     }

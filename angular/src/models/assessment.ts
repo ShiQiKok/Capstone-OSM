@@ -19,6 +19,7 @@ export class Assessment {
     marking_settings?: MarkingSettings | undefined;
     rubrics?: any | undefined;
     questions?: any | undefined;
+    markers?: number[] | undefined;
 }
 
 export class Rubrics {
