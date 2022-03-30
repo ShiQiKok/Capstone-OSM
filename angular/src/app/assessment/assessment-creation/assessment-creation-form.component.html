@@ -191,7 +191,7 @@
                                 (click)="updateQuestion(element)"
                                 class="btn btn-outline-primary"
                             >
-                                edit
+                                Edit
                             </button>
                         </div>
                         <div *ngIf="element.isEdit" class="text-end">
@@ -211,7 +211,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                 ></tr>
             </table>
-            <button matStepperPrevious class="btn btn-primary">Back</button>
+            <button matStepperPrevious class="btn btn-outline-primary mr-2">Back</button>
             <button matStepperNext class="btn btn-primary">Next</button>
         </mat-step>
         <mat-step label="Done">
