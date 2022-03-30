@@ -31,7 +31,7 @@ export class AssessmentDetailsComponent implements OnInit {
         await this._assessmentService.getApi();
         await this._answerScriptService.getApi();
         await this.getAssessmentDetails();
-        this.answerScripts = await this._answerScriptService.getAll(this.assessment.id);
+        this.answerScripts = await this._answerScriptService.getAll(this.assessment.id!);
         console.log(this.answerScripts)
         this.isLoading = false;
     }
