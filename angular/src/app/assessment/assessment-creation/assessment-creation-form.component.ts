@@ -38,7 +38,6 @@ class QuestionValueInput {
 @Component({
     selector: 'app-assessment-creation-form',
     templateUrl: './assessment-creation-form.component.html',
-    styleUrls: ['./assessment-creation-form.component.scss'],
 })
 export class AssessmentCreationFormComponent
     extends AppComponent

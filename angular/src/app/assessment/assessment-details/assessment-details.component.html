@@ -1,8 +1,5 @@
-
 <div class="d-flex align-items-stretch h-100" *ngIf="!isLoading">
     <div style="width: 80%" class="container">
-        <!-- {{ assessment | json }} -->
-
         <div>
             <div>
                 <h1 class="d-inline">{{ assessment.name }}</h1>
@@ -93,4 +90,4 @@
         </div>
     </div>
 </div>
-<mat-spinner *ngIf="isLoading" [strokeWidth]="2" [diameter]="150" class="mx-auto mt-5"></mat-spinner>
+<app-spinner [isLoading]="isLoading"></app-spinner>

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/helper/auth.gurd';
-import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form/assessment-creation-form.component';
+import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form.component';
 import { AssessmentDetailsComponent } from './assessment/assessment-details/assessment-details.component';
 import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
 import { LoginComponent } from './authentication/login/login.component';

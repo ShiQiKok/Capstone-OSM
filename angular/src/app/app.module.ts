@@ -19,11 +19,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ErrorMessageComponent } from './shared-component/error-message/error-message.component';
-import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form/assessment-creation-form.component';
+import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form.component';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SpinnerComponent } from './shared-component/spinner/spinner.component';
 
 @NgModule({
     declarations: [
@@ -36,6 +37,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         NavBarComponent,
         ErrorMessageComponent,
         AssessmentCreationFormComponent,
+        SpinnerComponent,
     ],
     imports: [
         BrowserModule,

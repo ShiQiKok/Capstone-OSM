@@ -15,6 +15,7 @@ import { SubjectService } from 'src/services/subject.service';
     styleUrls: ['./assessment-list.component.scss'],
 })
 export class AssessmentListComponent extends AppComponent implements OnInit {
+    isLoading: boolean = true;
     isCreatingAssessment: boolean = false;
     subjects: Subject[] = [];
     assessmentList: Assessment[] = [];
@@ -32,9 +33,11 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     }
 
     async ngOnInit() {
+        this.isLoading = true;
         await this.getApi();
         await this.getAll();
         this.mapAssessment();
+        this.isLoading = false;
     }
 
     private async getApi() {
