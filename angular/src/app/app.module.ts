@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SpinnerComponent } from './shared-component/spinner/spinner.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
     declarations: [
@@ -55,6 +56,7 @@ import { SpinnerComponent } from './shared-component/spinner/spinner.component';
         MatTableModule,
         MatProgressSpinnerModule,
         FontAwesomeModule,
+        DragDropModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

@@ -116,6 +116,14 @@
                 [dataSource]="questions"
                 class="mat-elevation-z8 w-100 my-4"
             >
+                <ng-container matColumnDef="drag">
+                    <th mat-header-cell *matHeaderCellDef style="width: 5%">
+                        Drag
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <fa-icon [icon]="faEllipsisV"></fa-icon>
+                    </td>
+                </ng-container>
                 <ng-container matColumnDef="no">
                     <th mat-header-cell *matHeaderCellDef style="width: 10%">
                         No.
@@ -211,7 +219,9 @@
                     *matRowDef="let row; columns: displayedColumns"
                 ></tr>
             </table>
-            <button matStepperPrevious class="btn btn-outline-primary mr-2">Back</button>
+            <button matStepperPrevious class="btn btn-outline-primary mr-2">
+                Back
+            </button>
             <button matStepperNext class="btn btn-primary">Next</button>
         </mat-step>
         <mat-step label="Done">

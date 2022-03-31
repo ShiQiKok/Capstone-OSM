@@ -15,8 +15,9 @@ import {
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 class QuestionInput {
     no?: string | undefined;
@@ -45,6 +46,7 @@ export class AssessmentCreationFormComponent
 {
     // icons
     faTrashAlt = faTrashAlt;
+    faEllipsisV = faEllipsisV;
 
     isLoading: boolean = true;
 
@@ -57,7 +59,7 @@ export class AssessmentCreationFormComponent
     markingSettings = Object.values(MarkingSettings);
     subjects: any = [];
 
-    displayedColumns: string[] = ['no', 'question', 'marks', 'actions'];
+    displayedColumns: string[] = ['drag', 'no', 'question', 'marks', 'actions'];
     questions: QuestionInput[] = [
         {
             no: '1',
@@ -138,12 +140,7 @@ export class AssessmentCreationFormComponent
         this._assessmentService.create(this.assessment).then(() => {
             this.router.navigate(['/assessment-list']);
         })
-        // console.log(this.assessmentDetailFormGroup.controls);
 
-        // Object.keys(this.questionFormGroup.controls).forEach((key) => {
-        //     let field = this.questionFormGroup.get(key)!.value;
-        //     console.log(key, field);
-        // });
     }
 
     // To mark the invalid fields dirty for triggering error messages
@@ -173,6 +170,10 @@ export class AssessmentCreationFormComponent
             .map((q) => q.value?.marks)
             .reduce((a, b) => a! + b!);
     }
+
+    drop(event: CdkDragDrop<QuestionInput[]>) {
+        moveItemInArray(this.questions, event.previousIndex, event.currentIndex);
+      }
 
     // REGION FormControls Getters
     get assessmentName() {
