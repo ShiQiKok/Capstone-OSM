@@ -20,6 +20,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     assessmentList: Assessment[] = [];
 
     assessments: any = {};
+    isLoading = true;
 
     constructor(
         router: Router,
@@ -32,9 +33,11 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     }
 
     async ngOnInit() {
+        this.isLoading = true;
         await this.getApi();
         await this.getAll();
         this.mapAssessment();
+        this.isLoading = false;
     }
 
     private async getApi() {
