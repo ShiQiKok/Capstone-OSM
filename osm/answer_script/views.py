@@ -1,14 +1,31 @@
-from django.shortcuts import render
-
-# Create your views here.
+from rest_framework.viewsets import ViewSet
+from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import AnswerScriptSerializer
 from .models import AnswerScript
 
+# ViewSets define the view behavior.
+# To easily create a answer script in back end
+class AnswerScriptViewSet(ViewSet):
+    serializer_class = AnswerScriptSerializer
+
+    def list(self, request):
+        return Response("GET API")
+
+    def create(self, request):
+        serializer = AnswerScriptSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+
+# CRUD actions for front end
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
