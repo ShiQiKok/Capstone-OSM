@@ -29,6 +29,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+## Storage settings
+DEFAULT_FILE_STORAGE = 'backend.custom_azure.AzureMediaStorage'
+
+MEDIA_LOCATION = "media"
+
+AZURE_ACCOUNT_NAME = "osmdev"
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
 
 # Application definition
 
@@ -39,6 +47,7 @@ INSTALLED_APPS = [
     'assessment',
     'subject',
     'answer_script',
+    'storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
