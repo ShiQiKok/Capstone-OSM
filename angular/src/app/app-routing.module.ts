@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/helper/auth.gurd';
-import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form/assessment-creation-form.component';
+import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form.component';
 import { AssessmentDetailsComponent } from './assessment/assessment-details/assessment-details.component';
 import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
 import { LoginComponent } from './authentication/login/login.component';
 import { SignupComponent } from './authentication/signup/signup.component';
+import { MarkingComponent } from './marking/marking.component';
 import { UserDetailsComponent } from './user/user-details/user-details.component';
 
 const routes: Routes = [
@@ -31,6 +32,12 @@ const routes: Routes = [
         component: AssessmentCreationFormComponent,
         canActivate: [AuthGuard],
     },
+    {
+        path: 'marking/:id',
+        component: MarkingComponent,
+        canActivate: [AuthGuard],
+    }
+
 ];
 
 @NgModule({

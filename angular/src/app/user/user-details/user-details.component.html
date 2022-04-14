@@ -21,30 +21,34 @@
                     </button>
                 </div>
             </div>
-            <hr />
+            <hr class="dropdown-divider"/>
             <div class="card-body">
                 <table class="table">
                     <h5 class="mb-4 text-primary">Information</h5>
-                    <tr>
-                        <td>Username</td>
-                        <td>{{ currentUser.username }}</td>
-                    </tr>
-                    <tr>
-                        <td>First Name</td>
-                        <td>{{ currentUser.first_name }}</td>
-                    </tr>
-                    <tr>
-                        <td>Last Name</td>
-                        <td>{{ currentUser.last_name }}</td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td>{{ currentUser.email }}</td>
-                    </tr>
-                    <tr>
-                        <td>Date Joined</td>
-                        <td>{{ currentUser.date_joined | date: "dd/MM/y" }}</td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td>Username</td>
+                            <td>{{ currentUser.username }}</td>
+                        </tr>
+                        <tr>
+                            <td>First Name</td>
+                            <td>{{ currentUser.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Last Name</td>
+                            <td>{{ currentUser.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>{{ currentUser.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date Joined</td>
+                            <td>
+                                {{ currentUser.date_joined | date: "dd/MM/y" }}
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>

@@ -15,12 +15,12 @@ import { SubjectService } from 'src/services/subject.service';
     styleUrls: ['./assessment-list.component.scss'],
 })
 export class AssessmentListComponent extends AppComponent implements OnInit {
+    isLoading: boolean = true;
     isCreatingAssessment: boolean = false;
     subjects: Subject[] = [];
     assessmentList: Assessment[] = [];
 
     assessments: any = {};
-    isLoading = true;
 
     constructor(
         router: Router,
