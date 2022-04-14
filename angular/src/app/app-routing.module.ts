@@ -6,6 +6,7 @@ import { AssessmentDetailsComponent } from './assessment/assessment-details/asse
 import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
 import { LoginComponent } from './authentication/login/login.component';
 import { SignupComponent } from './authentication/signup/signup.component';
+import { MarkingComponent } from './marking/marking.component';
 import { UserDetailsComponent } from './user/user-details/user-details.component';
 
 const routes: Routes = [
@@ -31,6 +32,12 @@ const routes: Routes = [
         component: AssessmentCreationFormComponent,
         canActivate: [AuthGuard],
     },
+    {
+        path: 'marking/:id',
+        component: MarkingComponent,
+        canActivate: [AuthGuard],
+    }
+
 ];
 
 @NgModule({

@@ -26,6 +26,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SpinnerComponent } from './shared-component/spinner/spinner.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MarkingComponent } from './marking/marking.component';
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         ErrorMessageComponent,
         AssessmentCreationFormComponent,
         SpinnerComponent,
+        MarkingComponent,
     ],
     imports: [
         BrowserModule,
