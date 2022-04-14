@@ -1,5 +1,6 @@
 from django.db import models
 from assessment.models import Assessment
+from storage.custom_azure import AzureMediaStorage as AMS
 
 # Create your models here.
 
@@ -18,8 +19,9 @@ class AnswerScript(models.Model):
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    marks = models.JSONField()
-    answers = models.JSONField()
+    marks = models.JSONField(null=True, blank=True)
+    answers = models.JSONField(null=True, blank=True)
+    script = models.FileField(storage=AMS, upload_to='answer_scripts/', null=True, blank=True)
 
     def __str__(self):
         return self.student_name

@@ -56,4 +56,5 @@
         </div>
     </div>
 </div>
-<app-spinner [isLoading]="isLoading"></app-spinner>
+</div>
+<mat-spinner *ngIf="isLoading" [strokeWidth]="2" [diameter]="150" class="mx-auto mt-5"></mat-spinner>

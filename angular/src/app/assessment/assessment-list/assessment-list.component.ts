@@ -21,6 +21,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     assessmentList: Assessment[] = [];
 
     assessments: any = {};
+    isLoading = true;
 
     constructor(
         router: Router,

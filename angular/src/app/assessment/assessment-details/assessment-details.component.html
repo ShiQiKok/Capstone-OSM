@@ -3,7 +3,10 @@
         <div>
             <div>
                 <h1 class="d-inline">{{ assessment.name }}</h1>
-                <button class="btn btn-primary float-right">
+                <button
+                    (click)="openUploadDialog(content)"
+                    class="btn btn-primary float-right"
+                >
                     Upload Script
                 </button>
             </div>
@@ -90,4 +93,59 @@
         </div>
     </div>
 </div>
-<app-spinner [isLoading]="isLoading"></app-spinner>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Upload Script</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <small>File types accepted: CSV, ZIP, DOC, DOCX, and PDF.</small>
+        <div
+            style="height: 250px; border: 2px dashed #4277FF;"
+            class="d-flex flex-column align-items-center justify-content-center my-4"
+        >
+            <fa-icon
+                [icon]="faUpload"
+                class="text-primary"
+                style="font-size: xxx-large"
+            ></fa-icon>
+            <input
+                type="file"
+                id="fileInput"
+                class="d-none"
+                accept=".pdf, .csv, .doc, .docx, .zip"
+                (change)="onFileChange($event.target.files)"
+            />
+            <button
+                class="btn btn-outline-primary my-2"
+                onclick="document.getElementById('fileInput').click()"
+            >
+                Choose file
+            </button>
+            <p *ngIf="!isSubmitDisabled">{{ uploadedFile.name }}</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            [disabled]="isSubmitDisabled"
+            type="submit"
+            class="btn btn-primary"
+            (click)="bulkUpload()"
+        >
+            Submit
+        </button>
+    </div>
+</ng-template>
+
+<mat-spinner
+    *ngIf="isLoading"
+    [strokeWidth]="2"
+    [diameter]="150"
+    class="mx-auto mt-5"
+></mat-spinner>
