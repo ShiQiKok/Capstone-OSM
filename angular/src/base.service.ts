@@ -5,7 +5,7 @@ export class BaseService {
 
     ALL_API!: any;
 
-    constructor(private http: HttpClient) {}
+    constructor(public http: HttpClient) {}
 
     getApi() {
         return new Promise<Object>((resolve, reject) => {

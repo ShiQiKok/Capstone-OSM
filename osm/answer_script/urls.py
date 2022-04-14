@@ -14,4 +14,5 @@ urlpatterns = [
    path('answer-create/', views.create_answer, name='answer-create'),
    path('answer-update/<int:id>/', views.update_answer, name='answer-update'),
    path('answer-delete/<int:id>/', views.delete_answer, name='answer-delete'),
+   path('answer-bulk-create/', views.bulk_create, name='answer-bulk-create'),
 ]
