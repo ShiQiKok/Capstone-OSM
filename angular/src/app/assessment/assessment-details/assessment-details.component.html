@@ -79,10 +79,12 @@
                     </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-primary"></tr>
                 <tr
                     mat-row
                     *matRowDef="let row; columns: displayedColumns"
+                    [ngClass]="{ selected: selection.selected[0] === row }"
+                    (click)="onRowSelect(row)"
                 ></tr>
             </table>
         </div>
@@ -91,9 +93,13 @@
         <div id="assessmentBriefInfo">
             <h4>Your Progress</h4>
         </div>
+        <div>
+            <a *ngIf="selection.selected.length > 0" routerLink="/marking/{{selection.selected[0].id}}" class="btn btn-primary d-block">Start Marking</a>
+        </div>
     </div>
 </div>
 
+<!-- Model for upload script -->
 <ng-template #content let-modal>
     <div class="modal-header">
         <h4 class="modal-title">Upload Script</h4>

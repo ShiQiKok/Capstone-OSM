@@ -1,0 +1,13 @@
+
+.mat-row:hover{
+    cursor: pointer;
+    background-color: rgba(66, 119, 255, 0.15);
+}
+
+.mat-row.selected .mat-cell{
+    background-color: rgba(66, 119, 255, 0.15);
+}
+
+tr.bg-primary > th {
+    color: white;
+}

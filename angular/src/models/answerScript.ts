@@ -13,4 +13,5 @@ export class AnswerScript{
     dateUpdated?: Date | undefined;
     marks?: any | undefined;
     questions?: any | undefined;
+    script?: any | undefined;
 }

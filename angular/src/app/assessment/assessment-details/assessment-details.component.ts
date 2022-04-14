@@ -6,6 +6,8 @@ import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import { SelectionModel } from '@angular/cdk/collections';
+import { AnswerScript } from 'src/models/answerScript';
 
 @Component({
     selector: 'app-assessment-details',
@@ -14,14 +16,22 @@ import { faUpload } from '@fortawesome/free-solid-svg-icons';
 })
 export class AssessmentDetailsComponent implements OnInit {
     @ViewChild('content') modelContent!: ElementRef;
-    faUpload = faUpload;
-    assessment!: Assessment;
 
-    isLoading: boolean = true;
-    isSubmitDisabled: boolean = true;
+    // objects
+    assessment!: Assessment;
     answerScripts: any = undefined;
     uploadedFile!: File | null;
+    markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
+    selection = new SelectionModel<AnswerScript>(false, []);
 
+    // icon
+    faUpload = faUpload;
+
+    // controls
+    isLoading: boolean = true;
+    isSubmitDisabled: boolean = true;
+
+    // table headers
     displayedColumns: string[] = [
         'studentName',
         'studentId',
@@ -29,7 +39,6 @@ export class AssessmentDetailsComponent implements OnInit {
         'status',
         'marks',
     ];
-    markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
 
     constructor(
         private _assessmentService: AssessmentService,
@@ -51,9 +60,9 @@ export class AssessmentDetailsComponent implements OnInit {
         this.isLoading = false;
     }
 
-    ngAfterViewInit() {
-        this.openUploadDialog(this.modelContent);
-    }
+    // ngAfterViewInit() {
+    //     this.openUploadDialog(this.modelContent);
+    // }
 
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -89,5 +98,11 @@ export class AssessmentDetailsComponent implements OnInit {
             .then(() => {
                 console.log('uploaded');
             });
+    }
+
+    onRowSelect(answerScript: AnswerScript) {
+        this.selection.toggle(answerScript);
+        console.log(this.selection)
+        // console.log(this.selection.selected[0])
     }
 }
