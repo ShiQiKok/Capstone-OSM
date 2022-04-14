@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Assessment } from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-assessment-details',
@@ -11,19 +13,30 @@ import { AnswerScriptService } from 'src/services/answer-script.service';
     styleUrls: ['./assessment-details.component.scss'],
 })
 export class AssessmentDetailsComponent implements OnInit {
+    @ViewChild('content') modelContent!: ElementRef;
+    faUpload = faUpload;
     assessment!: Assessment;
 
     isLoading: boolean = true;
+    isSubmitDisabled: boolean = true;
     answerScripts: any = undefined;
+    uploadedFile!: File | null;
 
-    displayedColumns: string[] = ['studentName', 'studentId', 'lastUpdate', 'status', 'marks'];
+    displayedColumns: string[] = [
+        'studentName',
+        'studentId',
+        'lastUpdate',
+        'status',
+        'marks',
+    ];
     markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
 
     constructor(
         private _assessmentService: AssessmentService,
         private _answerScriptService: AnswerScriptService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private modalService: NgbModal
     ) {}
 
     async ngOnInit() {
@@ -31,14 +44,20 @@ export class AssessmentDetailsComponent implements OnInit {
         await this._assessmentService.getApi();
         await this._answerScriptService.getApi();
         await this.getAssessmentDetails();
-        this.answerScripts = await this._answerScriptService.getAll(this.assessment.id!);
-        console.log(this.answerScripts)
+        this.answerScripts = await this._answerScriptService.getAll(
+            this.assessment.id!
+        );
+        console.log(this.answerScripts);
         this.isLoading = false;
+    }
+
+    ngAfterViewInit() {
+        this.openUploadDialog(this.modelContent);
     }
 
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
-        this.assessment = await this._assessmentService.get(id) as Assessment;
+        this.assessment = (await this._assessmentService.get(id)) as Assessment;
     }
 
     updateAssessment(id: any) {
@@ -53,5 +72,22 @@ export class AssessmentDetailsComponent implements OnInit {
         this._assessmentService.delete(id).then(() => {
             this.router.navigate(['/assessment-list']);
         });
+    }
+
+    openUploadDialog(content: any) {
+        this.modalService.open(content, { size: 'lg' });
+    }
+
+    onFileChange(file: FileList) {
+        this.uploadedFile = file.item(0);
+        this.isSubmitDisabled = false;
+    }
+
+    bulkUpload() {
+        this._answerScriptService
+            .buildUpload(this.assessment.id!, this.uploadedFile!)
+            .then(() => {
+                console.log('uploaded');
+            });
     }
 }
