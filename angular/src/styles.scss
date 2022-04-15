@@ -1,4 +1,7 @@
 
+$body-bg: #F8F8FB;
+$primary: #4277FF;
+
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '~@angular/material' as mat;
@@ -34,9 +37,21 @@ $angular-theme: mat.define-light-theme((
 @include mat.all-component-themes($angular-theme);
 
 /* You can add global styles to this file, and also import other style files */
-$body-bg: #F8F8FB;
-$primary: #4277FF;
+/*
+white: #FFFFFB
+black: #000F14
+alert: #E85E5E
+secondary: #A5E3FF
+*/
+
 
 @import "../node_modules/bootstrap/scss/bootstrap";
+
+$dark-blue: (
+  "dark-blue": #00248F
+);
+
+$theme-colors: map-merge($theme-colors, $dark-blue);
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
