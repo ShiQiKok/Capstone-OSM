@@ -20,7 +20,7 @@ export class ViewSDKClient {
         return this.readyPromise;
     }
 
-    previewFile(divId: string, viewerConfig: any) {
+    previewFile(divId: string, url: any, viewerConfig: any) {
         const config: any = {
             /* Pass your registered client id */
             clientId: '4dfd11a208224ebab91da699567e8c35',
@@ -40,7 +40,7 @@ export class ViewSDKClient {
                 content: {
                     /* Location of file where it is hosted */
                     location: {
-                        url: 'https://osmdev.blob.core.windows.net/media/answer_scripts/ShiQI_Kok_123455_examanswer_ClKLFnW.pdf',
+                        url: url,
 
                         // If the file URL requires some additional headers, then it can be passed as follows:-
                         // headers: [

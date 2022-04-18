@@ -21,22 +21,21 @@ export class MarkingComponent implements OnInit {
     async ngOnInit() {
         await this._answerScriptService.getApi();
         this.getDetail();
+
     }
 
     getDetail() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
+            this.loadScript();
         });
     }
 
-    ngAfterViewInit() {
+    loadScript() {
         this.viewSDKClient.ready().then(() => {
             /* Invoke file preview */
-            this.viewSDKClient.previewFile('pdf-div', {
-                /* Pass the embed mode option here */
-                embedMode: 'IN_LINE'
-            });
+            this.viewSDKClient.previewFile('pdf-div', this.answerScript.script, {});
         });
     }
 }
