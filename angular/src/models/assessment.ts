@@ -23,14 +23,24 @@ export class Assessment {
 }
 
 export class Rubrics {
-    levels!: string[];
-    criteria!: RubricCriteria[];
+    marksRange!: RubricMarkRange[];
+    criteria!: RubricCriterion[];
 }
 
-export class RubricCriteria {
-    title!: string;
-    total_marks!: number;
-    levels!: RubricCriteriaLevels[];
+export class RubricMarkRange {
+    min?: number | undefined;
+    max?: number | undefined;
+}
+
+export class RubricCriterion {
+    title?: string | undefined;
+    description?: string | undefined;
+    totalMarks?: number | undefined;
+    columns?: RubricColumn[] | undefined;
+}
+
+export class RubricColumn {
+    description?: string | undefined;
 }
 
 export class RubricCriteriaLevels {

@@ -1,17 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import {
-    AbstractControl,
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppComponent } from 'src/app/app.component';
 import {
     Assessment,
     AssessmentType,
     MarkingSettings,
+    Rubrics,
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
@@ -34,6 +29,29 @@ class QuestionInput {
 class QuestionValueInput {
     question?: string | undefined;
     marks?: number | undefined;
+}
+
+class RubricsInput {
+    marksRange?: RubricMarkRangeInput[] | undefined;
+    isEdit?: boolean | undefined; // control to edit marks range
+    criterion?: RubricCriterionInput[] | undefined;
+}
+
+class RubricCriterionInput {
+    title?: string | undefined;
+    description?: string | undefined;
+    totalMarks?: number | undefined;
+    columns?: RubricColumnInput[] | undefined;
+    isEdit?: boolean | undefined;
+}
+
+class RubricColumnInput {
+    description?: string | undefined;
+}
+
+class RubricMarkRangeInput {
+    min?: number | undefined;
+    max?: number | undefined;
 }
 
 @Component({
@@ -59,7 +77,13 @@ export class AssessmentCreationFormComponent
     markingSettings = Object.values(MarkingSettings);
     subjects: any = [];
 
-    displayedColumns: string[] = ['drag', 'no', 'question', 'marks', 'actions'];
+    questionDisplayedColumns: string[] = [
+        'drag',
+        'no',
+        'question',
+        'marks',
+        'actions',
+    ];
     questions: QuestionInput[] = [
         {
             no: '1',
@@ -87,6 +111,110 @@ export class AssessmentCreationFormComponent
             isEdit: false,
         },
     ];
+    rubrics: RubricsInput = {
+        marksRange: [
+            { min: 0, max: 39 },
+            { min: 40, max: 49 },
+            { min: 50, max: 59 },
+            { min: 60, max: 69 },
+            { min: 70, max: 100 },
+        ],
+        isEdit: false,
+        criterion: [
+            {
+                title: 'criteria 1',
+                description: 'desc for criteria 1',
+                totalMarks: 25,
+                isEdit: false,
+                columns: [
+                    {
+                        description: 'desc for col 1 in criteria 1',
+                    },
+                    {
+                        description: 'desc for col 2 in criteria 1',
+                    },
+                    {
+                        description: 'desc for col 3 in criteria 1',
+                    },
+                    {
+                        description: 'desc for col 4 in criteria 1',
+                    },
+                    {
+                        description: 'desc for col 5 in criteria 1',
+                    },
+                ],
+            },
+            {
+                title: 'criteria 2',
+                description: 'desc for criteria 2',
+                totalMarks: 25,
+                isEdit: false,
+                columns: [
+                    {
+                        description: 'desc for col 1 in criteria 2',
+                    },
+                    {
+                        description: 'desc for col 2 in criteria 2',
+                    },
+                    {
+                        description: 'desc for col 3 in criteria 2',
+                    },
+                    {
+                        description: 'desc for col 4 in criteria 2',
+                    },
+                    {
+                        description: 'desc for col 5 in criteria 2',
+                    },
+                ],
+            },
+            {
+                title: 'criteria 3',
+                description: 'desc for criteria 3',
+                totalMarks: 25,
+                isEdit: false,
+                columns: [
+                    {
+                        description: 'desc for col 1 in criteria 3',
+                    },
+                    {
+                        description: 'desc for col 2 in criteria 3',
+                    },
+                    {
+                        description: 'desc for col 3 in criteria 3',
+                    },
+                    {
+                        description: 'desc for col 4 in criteria 3',
+                    },
+                    {
+                        description: 'desc for col 5 in criteria 3',
+                    },
+                ],
+            },
+            {
+                title: 'criteria 4',
+                description: 'desc for criteria 4',
+                totalMarks: 25,
+                isEdit: false,
+                columns: [
+                    {
+                        description: 'desc for col 1 in criteria 4',
+                    },
+                    {
+                        description: 'desc for col 2 in criteria 4',
+                    },
+                    {
+                        description: 'desc for col 3 in criteria 4',
+                    },
+                    {
+                        description: 'desc for col 4 in criteria 4',
+                    },
+                    {
+                        description: 'desc for col 5 in criteria 5',
+                    },
+                ],
+            },
+        ],
+    };
 
     constructor(
         router: Router,
@@ -127,6 +255,12 @@ export class AssessmentCreationFormComponent
         this.questions.forEach((q) => {
             questionJson[q.no!] = q.value;
         });
+        delete this.rubrics.isEdit
+        this.rubrics.criterion!.forEach((c) => {
+            delete c.isEdit
+        });
+
+        // TODO: rubrics need to remove isEdit property
         this.assessment = {
             name: this.assessmentDetailFormGroup.get('assessmentName')!.value,
             type: this.assessmentDetailFormGroup.get('assessmentType')!.value,
@@ -134,13 +268,44 @@ export class AssessmentCreationFormComponent
             marking_settings:
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
             questions: JSON.stringify(questionJson),
-            markers: [this.currentUser.id]
+            rubrics: this.rubrics,
+            markers: [this.currentUser.id],
         };
 
         this._assessmentService.create(this.assessment).then(() => {
             this.router.navigate(['/assessment-list']);
-        })
+        });
+    }
 
+    setUneditable() {
+        this.rubrics.isEdit = false;
+        this.rubrics.criterion!.forEach((criteria) => {
+            criteria.isEdit = false;
+        });
+    }
+
+    getRubricsMarksRange(): any {
+        if (this.rubrics && this.rubrics.criterion) {
+            return [
+                'criteria',
+                ...this.rubrics.marksRange!.map((c) => {
+                    return c;
+                }),
+            ];
+        }
+        return [];
+    }
+
+    getRubricsMarksRangeString(): any {
+        if (this.rubrics && this.rubrics.criterion) {
+            return [
+                'criteria',
+                ...this.rubrics.marksRange!.map((c) => {
+                    return `${c.min} - ${c.max}`;
+                }),
+            ];
+        }
+        return [];
     }
 
     // To mark the invalid fields dirty for triggering error messages
@@ -172,8 +337,46 @@ export class AssessmentCreationFormComponent
     }
 
     drop(event: CdkDragDrop<QuestionInput[]>) {
-        moveItemInArray(this.questions, event.previousIndex, event.currentIndex);
-      }
+        moveItemInArray(
+            this.questions,
+            event.previousIndex,
+            event.currentIndex
+        );
+    }
+
+    addRubricsRow(event: any) {
+        event.stopPropagation();
+        this.setUneditable();
+        let len = this.rubrics.marksRange!.length;
+        let row: RubricCriterionInput = {
+            title: 'criteria ' + (this.rubrics.criterion!.length + 1),
+            description: '',
+            totalMarks: 0,
+            isEdit: true,
+            columns: [],
+        };
+        for (let i = 0; i < len; i++) {
+            row.columns!.push({
+                description: '',
+            });
+        }
+        this.rubrics.criterion = [...this.rubrics.criterion!, row];
+        console.log(this.rubrics.criterion);
+    }
+
+    addRubricsColumn(event: any) {
+        event.stopPropagation();
+        this.rubrics.marksRange = [
+            ...this.rubrics.marksRange!,
+            { min: 0, max: 0 },
+        ];
+
+        this.rubrics.criterion!.forEach((c) => {
+            c.columns!.push({
+                description: 'yea',
+            });
+        });
+    }
 
     // REGION FormControls Getters
     get assessmentName() {
