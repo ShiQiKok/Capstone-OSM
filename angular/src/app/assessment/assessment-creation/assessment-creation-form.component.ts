@@ -6,6 +6,7 @@ import {
     Assessment,
     AssessmentType,
     MarkingSettings,
+    Rubrics,
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
@@ -30,13 +31,13 @@ class QuestionValueInput {
     marks?: number | undefined;
 }
 
-class Rubrics {
-    marksRange?: RubricMarkRange[] | undefined;
+class RubricsInput {
+    marksRange?: RubricMarkRangeInput[] | undefined;
     isEdit?: boolean | undefined; // control to edit marks range
-    criterion?: RubricValueInput[] | undefined;
+    criterion?: RubricCriterionInput[] | undefined;
 }
 
-class RubricValueInput {
+class RubricCriterionInput {
     title?: string | undefined;
     description?: string | undefined;
     totalMarks?: number | undefined;
@@ -48,7 +49,7 @@ class RubricColumnInput {
     description?: string | undefined;
 }
 
-class RubricMarkRange {
+class RubricMarkRangeInput {
     min?: number | undefined;
     max?: number | undefined;
 }
@@ -110,7 +111,7 @@ export class AssessmentCreationFormComponent
             isEdit: false,
         },
     ];
-    rubrics: Rubrics = {
+    rubrics: RubricsInput = {
         marksRange: [
             { min: 0, max: 39 },
             { min: 40, max: 49 },
@@ -254,6 +255,12 @@ export class AssessmentCreationFormComponent
         this.questions.forEach((q) => {
             questionJson[q.no!] = q.value;
         });
+        delete this.rubrics.isEdit
+        this.rubrics.criterion!.forEach((c) => {
+            delete c.isEdit
+        });
+
+        // TODO: rubrics need to remove isEdit property
         this.assessment = {
             name: this.assessmentDetailFormGroup.get('assessmentName')!.value,
             type: this.assessmentDetailFormGroup.get('assessmentType')!.value,
@@ -261,6 +268,7 @@ export class AssessmentCreationFormComponent
             marking_settings:
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
             questions: JSON.stringify(questionJson),
+            rubrics: this.rubrics,
             markers: [this.currentUser.id],
         };
 
@@ -270,6 +278,7 @@ export class AssessmentCreationFormComponent
     }
 
     setUneditable() {
+        this.rubrics.isEdit = false;
         this.rubrics.criterion!.forEach((criteria) => {
             criteria.isEdit = false;
         });
@@ -339,7 +348,7 @@ export class AssessmentCreationFormComponent
         event.stopPropagation();
         this.setUneditable();
         let len = this.rubrics.marksRange!.length;
-        let row: RubricValueInput = {
+        let row: RubricCriterionInput = {
             title: 'criteria ' + (this.rubrics.criterion!.length + 1),
             description: '',
             totalMarks: 0,
