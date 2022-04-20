@@ -9,7 +9,11 @@ import {
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
-import { faTrashAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import {
+    faTrashAlt,
+    faEllipsisV,
+    faColumns,
+} from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -31,7 +35,7 @@ class QuestionValueInput {
 }
 
 class Rubrics {
-    marksRange?:RubricMarkRange[] | undefined;
+    marksRange?: RubricMarkRange[] | undefined;
     criterion?: RubricValueInput[] | undefined;
 }
 
@@ -47,7 +51,7 @@ class RubricColumnInput {
     description?: string | undefined;
 }
 
-class RubricMarkRange{
+class RubricMarkRange {
     min?: number | undefined;
     max?: number | undefined;
 }
@@ -75,7 +79,13 @@ export class AssessmentCreationFormComponent
     markingSettings = Object.values(MarkingSettings);
     subjects: any = [];
 
-    questionDisplayedColumns: string[] = ['drag', 'no', 'question', 'marks', 'actions'];
+    questionDisplayedColumns: string[] = [
+        'drag',
+        'no',
+        'question',
+        'marks',
+        'actions',
+    ];
     questions: QuestionInput[] = [
         {
             no: '1',
@@ -105,96 +115,107 @@ export class AssessmentCreationFormComponent
     ];
     rubrics: Rubrics = {
         marksRange: [
-            { min: 0, max: 39},
-            { min: 40, max: 49},
-            { min: 50, max: 59},
-            { min: 60, max: 69},
-            { min: 70, max: 100}
+            { min: 0, max: 39 },
+            { min: 40, max: 49 },
+            { min: 50, max: 59 },
+            { min: 60, max: 69 },
+            { min: 70, max: 100 },
         ],
         criterion: [
             {
-                title: "criteria 1",
-                description: "desc for criteria 1",
+                title: 'criteria 1',
+                description: 'desc for criteria 1',
                 totalMarks: 25,
                 isEdit: false,
                 columns: [
                     {
-                        description: "desc for col 1 in criteria 1"
+                        description: 'desc for col 1 in criteria 1',
                     },
                     {
-                        description: "desc for col 2 in criteria 1"
+                        description: 'desc for col 2 in criteria 1',
                     },
                     {
-                        description: "desc for col 3 in criteria 1"
+                        description: 'desc for col 3 in criteria 1',
                     },
                     {
-                        description: "desc for col 4 in criteria 1"
+                        description: 'desc for col 4 in criteria 1',
+                    },
+                    {
+                        description: "desc for col 5 in criteria 1"
                     }
-                ]
+                ],
             },
             {
-                title: "criteria 2",
-                description: "desc for criteria 2",
+                title: 'criteria 2',
+                description: 'desc for criteria 2',
                 totalMarks: 25,
                 isEdit: false,
                 columns: [
                     {
-                        description: "desc for col 1 in criteria 2"
+                        description: 'desc for col 1 in criteria 2',
                     },
                     {
-                        description: "desc for col 2 in criteria 2"
+                        description: 'desc for col 2 in criteria 2',
                     },
                     {
-                        description: "desc for col 3 in criteria 2"
+                        description: 'desc for col 3 in criteria 2',
                     },
                     {
-                        description: "desc for col 4 in criteria 2"
+                        description: 'desc for col 4 in criteria 2',
+                    },
+                    {
+                        description: "desc for col 5 in criteria 2"
                     }
-                ]
+                ],
             },
             {
-                title: "criteria 3",
-                description: "desc for criteria 3",
+                title: 'criteria 3',
+                description: 'desc for criteria 3',
                 totalMarks: 25,
                 isEdit: false,
                 columns: [
                     {
-                        description: "desc for col 1 in criteria 3"
+                        description: 'desc for col 1 in criteria 3',
                     },
                     {
-                        description: "desc for col 2 in criteria 3"
+                        description: 'desc for col 2 in criteria 3',
                     },
                     {
-                        description: "desc for col 3 in criteria 3"
+                        description: 'desc for col 3 in criteria 3',
                     },
                     {
-                        description: "desc for col 4 in criteria 3"
+                        description: 'desc for col 4 in criteria 3',
+                    },
+                    {
+                        description: "desc for col 5 in criteria 3"
                     }
-                ]
+                ],
             },
             {
-                title: "criteria 4",
-                description: "desc for criteria 4",
+                title: 'criteria 4',
+                description: 'desc for criteria 4',
                 totalMarks: 25,
                 isEdit: true,
                 columns: [
                     {
-                        description: "desc for col 1 in criteria 4"
+                        description: 'desc for col 1 in criteria 4',
                     },
                     {
-                        description: "desc for col 2 in criteria 4"
+                        description: 'desc for col 2 in criteria 4',
                     },
                     {
-                        description: "desc for col 3 in criteria 4"
+                        description: 'desc for col 3 in criteria 4',
                     },
                     {
-                        description: "desc for col 4 in criteria 4"
+                        description: 'desc for col 4 in criteria 4',
+                    },
+                    {
+                        description: "desc for col 5 in criteria 5"
                     }
-                ]
-            }
-        ]
-    }
-
+                ],
+            },
+        ],
+    };
 
     constructor(
         router: Router,
@@ -251,12 +272,14 @@ export class AssessmentCreationFormComponent
     }
 
     getRubricsMarksRangeString(): string[] {
-        if(this.rubrics && this.rubrics.criterion) {
-            return ['criteria'].concat(this.rubrics.criterion.map((c) => {
-                return c.title!
-            }));
+        if (this.rubrics && this.rubrics.criterion) {
+            return ['criteria'].concat(
+                this.rubrics.marksRange!.map((c) => {
+                    return `${c.min} - ${c.max}`;
+                })
+            );
         }
-        return []
+        return [];
     }
 
     // To mark the invalid fields dirty for triggering error messages
@@ -296,17 +319,24 @@ export class AssessmentCreationFormComponent
     }
 
     addRubricsRow() {
+        let len = this.rubrics.marksRange!.length;
         let row: RubricValueInput = {
-            title: "",
-            description: "",
+            title: 'criteria ' + (this.rubrics.criterion!.length + 1),
+            description: '',
             totalMarks: 0,
-            isEdit: true
+            isEdit: true,
+            columns: [],
         };
+        for (let i = 0; i < len; i++) {
+            row.columns!.push({
+                description: '',
+            });
+        }
+        this.rubrics.criterion = [...this.rubrics.criterion!, row]
+        console.log(this.rubrics.criterion);
     }
 
-    addRubricsColumn(){
-        
-    }
+    addRubricsColumn() {}
 
     // REGION FormControls Getters
     get assessmentName() {

@@ -254,6 +254,7 @@
                     "
                     matColumnDef="{{ col }}"
                 >
+                    <!-- the header-->
                     <th mat-header-cell *matHeaderCellDef>{{ col }}</th>
                     <td mat-cell *matCellDef="let element">
                         <div *ngIf="colIndex == 0">
@@ -282,9 +283,9 @@
                                 {{ element.columns[colIndex - 1].description}}
                             </span>
                             <span *ngIf="element.isEdit">
-                                <input type="text"
+                                <textarea
                                 class="form-control"
-                                [(ngModel)]="element.columns[colIndex - 1].description">
+                                [(ngModel)]="element.columns[colIndex - 1].description"></textarea>
                             </span>
 
                         </div>
