@@ -9,11 +9,7 @@ import {
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
-import {
-    faTrashAlt,
-    faEllipsisV,
-    faColumns,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -36,6 +32,7 @@ class QuestionValueInput {
 
 class Rubrics {
     marksRange?: RubricMarkRange[] | undefined;
+    isEdit?: boolean | undefined; // control to edit marks range
     criterion?: RubricValueInput[] | undefined;
 }
 
@@ -121,6 +118,7 @@ export class AssessmentCreationFormComponent
             { min: 60, max: 69 },
             { min: 70, max: 100 },
         ],
+        isEdit: false,
         criterion: [
             {
                 title: 'criteria 1',
@@ -141,8 +139,8 @@ export class AssessmentCreationFormComponent
                         description: 'desc for col 4 in criteria 1',
                     },
                     {
-                        description: "desc for col 5 in criteria 1"
-                    }
+                        description: 'desc for col 5 in criteria 1',
+                    },
                 ],
             },
             {
@@ -164,8 +162,8 @@ export class AssessmentCreationFormComponent
                         description: 'desc for col 4 in criteria 2',
                     },
                     {
-                        description: "desc for col 5 in criteria 2"
-                    }
+                        description: 'desc for col 5 in criteria 2',
+                    },
                 ],
             },
             {
@@ -187,15 +185,15 @@ export class AssessmentCreationFormComponent
                         description: 'desc for col 4 in criteria 3',
                     },
                     {
-                        description: "desc for col 5 in criteria 3"
-                    }
+                        description: 'desc for col 5 in criteria 3',
+                    },
                 ],
             },
             {
                 title: 'criteria 4',
                 description: 'desc for criteria 4',
                 totalMarks: 25,
-                isEdit: true,
+                isEdit: false,
                 columns: [
                     {
                         description: 'desc for col 1 in criteria 4',
@@ -210,8 +208,8 @@ export class AssessmentCreationFormComponent
                         description: 'desc for col 4 in criteria 4',
                     },
                     {
-                        description: "desc for col 5 in criteria 5"
-                    }
+                        description: 'desc for col 5 in criteria 5',
+                    },
                 ],
             },
         ],
@@ -271,13 +269,32 @@ export class AssessmentCreationFormComponent
         });
     }
 
-    getRubricsMarksRangeString(): string[] {
+    setUneditable() {
+        this.rubrics.criterion!.forEach((criteria) => {
+            criteria.isEdit = false;
+        });
+    }
+
+    getRubricsMarksRange(): any {
         if (this.rubrics && this.rubrics.criterion) {
-            return ['criteria'].concat(
-                this.rubrics.marksRange!.map((c) => {
+            return [
+                'criteria',
+                ...this.rubrics.marksRange!.map((c) => {
+                    return c;
+                }),
+            ];
+        }
+        return [];
+    }
+
+    getRubricsMarksRangeString(): any {
+        if (this.rubrics && this.rubrics.criterion) {
+            return [
+                'criteria',
+                ...this.rubrics.marksRange!.map((c) => {
                     return `${c.min} - ${c.max}`;
-                })
-            );
+                }),
+            ];
         }
         return [];
     }
@@ -318,7 +335,9 @@ export class AssessmentCreationFormComponent
         );
     }
 
-    addRubricsRow() {
+    addRubricsRow(event: any) {
+        event.stopPropagation();
+        this.setUneditable();
         let len = this.rubrics.marksRange!.length;
         let row: RubricValueInput = {
             title: 'criteria ' + (this.rubrics.criterion!.length + 1),
@@ -332,11 +351,23 @@ export class AssessmentCreationFormComponent
                 description: '',
             });
         }
-        this.rubrics.criterion = [...this.rubrics.criterion!, row]
+        this.rubrics.criterion = [...this.rubrics.criterion!, row];
         console.log(this.rubrics.criterion);
     }
 
-    addRubricsColumn() {}
+    addRubricsColumn(event: any) {
+        event.stopPropagation();
+        this.rubrics.marksRange = [
+            ...this.rubrics.marksRange!,
+            { min: 0, max: 0 },
+        ];
+
+        this.rubrics.criterion!.forEach((c) => {
+            c.columns!.push({
+                description: 'yea',
+            });
+        });
+    }
 
     // REGION FormControls Getters
     get assessmentName() {
