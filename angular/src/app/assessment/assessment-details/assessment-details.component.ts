@@ -56,7 +56,6 @@ export class AssessmentDetailsComponent implements OnInit {
         this.answerScripts = await this._answerScriptService.getAll(
             this.assessment.id!
         );
-        console.log(this.answerScripts);
         this.isLoading = false;
     }
 
@@ -102,7 +101,5 @@ export class AssessmentDetailsComponent implements OnInit {
 
     onRowSelect(answerScript: AnswerScript) {
         this.selection.toggle(answerScript);
-        console.log(this.selection)
-        // console.log(this.selection.selected[0])
     }
 }

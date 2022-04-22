@@ -30,7 +30,6 @@ export class ErrorMessageComponent implements OnInit {
             Object.keys(keys).forEach((key) => {
                 switch (key) {
                     case 'required': {
-                        console.log('asd');
                         this.errorMessage = 'This field is required.';
                         break;
                     }
