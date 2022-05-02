@@ -1,5 +1,94 @@
 <div style="width: 80%" class="px-4">
-    <!-- {{ answerScript | json }} -->
+    <div *ngIf="assessment && answerScript">
+        <!-- {{ answerScript | json }} -->
+        <!-- {{ assessment | json }} -->
+    </div>
     <div id="pdf-div" class="pdf-view" style="height: 90vh"></div>
-    <div id="sideNav" class="bg-white p-3" style="width: 20%">yea</div>
+    <div id="sideNav" class="bg-white p-3" style="width: 20%">
+        <div *ngIf="assessment">
+            <div *ngIf="isEssayBased">
+                <div *ngIf="!isRubricsDetailsShowed">
+                    <mat-selection-list
+                        #generalCriteriaList
+                        id="generalCriteriaList"
+                        [multiple]="false"
+                        (selectionChange)="onGeneralCriteriaChanged()"
+                    >
+                        <mat-list-option
+                            *ngFor="let c of assessment.rubrics.criterion"
+                            [value]="c"
+                            class="border"
+                        >
+                            {{ c.title }}
+                            <input
+                                #input_1
+                                disabled
+                                class="form-control w-25 text-center"
+                                [ngModel]="
+                                    (c.markAwarded * c.totalMarks) / 100
+                                        ? (c.markAwarded * c.totalMarks) / 100
+                                        : 0
+                                "
+                            />
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+                <div *ngIf="isRubricsDetailsShowed">
+                    <a
+                        (click)="
+                            isRubricsDetailsShowed = !isRubricsDetailsShowed
+                        "
+                        class="btn btn-primary"
+                    >
+                        back
+                    </a>
+                    <mat-selection-list
+                        #detailCriteriaList
+                        [multiple]="false"
+                        (selectionChange)="onDetailedCriteriaChanged()"
+                    >
+                        <h3>{{ selectedCriterion.title }}</h3>
+                        <mat-list-option
+                            *ngFor="
+                                let detail of selectedCriterion.columns;
+                                let i = index
+                            "
+                            [value]="detail"
+                            class="border"
+                            [ngClass]="{
+                                expandedList:
+                                    detail == selectedDetailedCriterion
+                            }"
+                        >
+                            {{ detail.description }}
+                            <div>
+                                {{ assessment.rubrics.marksRange[i].min }}
+                                -
+                                {{ assessment.rubrics.marksRange[i].max }}
+                            </div>
+                            <div *ngIf="detail == selectedDetailedCriterion">
+                                <input
+                                    class="form-control w-50 d-inline"
+                                    type="number"
+                                    min="{{
+                                        assessment.rubrics.marksRange[i].min
+                                    }}"
+                                    max="{{
+                                        assessment.rubrics.marksRange[i].max
+                                    }}"
+                                    [(ngModel)]="selectedCriterion.markAwarded"
+                                    (change)="onMarkAwardedChanged($event)"
+                                />
+                            </div>
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+            <div *ngIf="!isEssayBased">this is question based</div>
+            <div>Marks: {{ totalMarks }}</div>
+            <button class="btn btn-primary w-100" (click)="onSubmit()">
+                Submit
+            </button>
+        </div>
+    </div>
 </div>

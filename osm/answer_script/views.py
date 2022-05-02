@@ -137,7 +137,8 @@ def bulk_create(request):
         # close the zip_file
         zip_file.close()
         # remove the locally extracted files
-        remove(file)
+        # ! ERROR: remove cannot use
+        # remove(file)
 
         return Response("Bulk upload successfully")
 

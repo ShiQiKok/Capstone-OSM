@@ -41,22 +41,6 @@ export class ViewSDKClient {
                     /* Location of file where it is hosted */
                     location: {
                         url: url,
-
-                        // If the file URL requires some additional headers, then it can be passed as follows:-
-                        // headers: [
-                        //     {
-                        //         key: 'Access-Control-Allow-Origin',
-                        //         value: '*',
-                        //     },
-                        //     {
-                        //         key: 'Access-Control-Allow-Methods',
-                        //         value: ' GET, POST, PATCH, PUT, DELETE, OPTIONS',
-                        //     },
-                        //     {
-                        //         key: 'Access-Control-Allow-Headers',
-                        //         value: 'Origin, Content-Type, X-Auth-Token',
-                        //     },
-                        // ],
                     },
                 },
                 /* Pass meta data of file */
