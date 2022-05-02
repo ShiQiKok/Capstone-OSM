@@ -37,6 +37,7 @@ MEDIA_LOCATION = "media"
 AZURE_ACCOUNT_NAME = "osmdev"
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
+AZURE_OVERWRITE_FILES = True
 
 # Application definition
 

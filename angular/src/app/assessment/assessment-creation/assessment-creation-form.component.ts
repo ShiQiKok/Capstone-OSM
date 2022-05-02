@@ -361,7 +361,6 @@ export class AssessmentCreationFormComponent
             });
         }
         this.rubrics.criterion = [...this.rubrics.criterion!, row];
-        console.log(this.rubrics.criterion);
     }
 
     addRubricsColumn(event: any) {

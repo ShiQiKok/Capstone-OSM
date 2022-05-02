@@ -28,7 +28,7 @@ export class BaseService {
         return new Promise<Object>((resolve, reject) => {
             this.http
                 .get(this.ROOT + this.ALL_API.get + id)
-                .subscribe((list) => resolve(list));
+                .subscribe((obj) => resolve(obj));
         });
     }
 
@@ -44,7 +44,7 @@ export class BaseService {
         return new Promise<Object>((resolve, reject) => {
             this.http
                 .post(`${this.ROOT}${this.ALL_API.update}${id}/`, data, {})
-                .subscribe((list) => resolve(list));
+                .subscribe((obj) => resolve(obj));
         });
     }
 

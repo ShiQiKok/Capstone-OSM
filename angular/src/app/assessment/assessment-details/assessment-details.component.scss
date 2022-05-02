@@ -1,13 +1,19 @@
-
-.mat-row:hover{
+.mat-row:hover {
     cursor: pointer;
     background-color: rgba(66, 119, 255, 0.15);
 }
 
-.mat-row.selected .mat-cell{
+.mat-row.selected .mat-cell {
     background-color: rgba(66, 119, 255, 0.15);
 }
 
 tr.bg-primary > th {
     color: white;
+}
+
+div#sideNav {
+    position: fixed;
+    top: 3.5rem;
+    bottom: 0;
+    right: 1rem;
 }

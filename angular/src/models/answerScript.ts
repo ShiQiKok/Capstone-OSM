@@ -14,4 +14,5 @@ export class AnswerScript{
     marks?: any | undefined;
     questions?: any | undefined;
     script?: any | undefined;
+    assessment?: number | undefined;
 }

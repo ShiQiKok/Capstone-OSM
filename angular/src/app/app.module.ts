@@ -27,6 +27,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SpinnerComponent } from './shared-component/spinner/spinner.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MarkingComponent } from './marking/marking.component';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
     declarations: [
@@ -56,6 +57,7 @@ import { MarkingComponent } from './marking/marking.component';
         MatButtonModule,
         MatTreeModule,
         MatTableModule,
+        MatListModule,
         MatProgressSpinnerModule,
         FontAwesomeModule,
         DragDropModule,

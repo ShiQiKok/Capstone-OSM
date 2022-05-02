@@ -64,7 +64,6 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     }
 
     getSubjectName(id: number) {
-        console.log(id);
         return this.subjects.find((subject) => subject.id == id)?.name;
     }
 
@@ -80,7 +79,4 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         });
     }
 
-    // onSubmit() {
-    //     console.log(this.assessmentDetailFormGroup.value);
-    // }
 }
