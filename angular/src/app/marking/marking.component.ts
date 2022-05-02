@@ -91,12 +91,18 @@ export class MarkingComponent implements OnInit {
 
     loadScript() {
         this.viewSDKClient.ready().then(() => {
+
             /* Invoke file preview */
             this.viewSDKClient.previewFile(
                 'pdf-div',
                 this.answerScript.script,
-                {enableAnnotationAPIs: true, includePDFAnnotations: false}
-            );
+                // {enableAnnotationAPIs: true, includePDFAnnotations: false}
+                // * set the Adobe Acrobat configuration
+                // * check the API at https://developer.adobe.com/document-services/docs/overview/pdf-embed-api/howtos_ui/
+                {},
+                this.answerScript.id!,
+                );
+
         });
     }
 

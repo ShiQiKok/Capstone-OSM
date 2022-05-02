@@ -1,9 +1,20 @@
 import { Injectable } from '@angular/core';
+import { AnswerScriptService } from './answer-script.service';
+
+const saveConfig = {
+    autoSaveFrequency: 1, // must greater than 0 to trigger
+    enableFocusPolling: true,
+    showSaveButton: false,
+};
 
 @Injectable({
     providedIn: 'root',
 })
 export class ViewSDKClient {
+    constructor(public _answerScriptService: AnswerScriptService) {
+        this._answerScriptService.getApi();
+    }
+
     readyPromise: Promise<any> = new Promise((resolve) => {
         if (window.AdobeDC) {
             resolve('success');
@@ -14,17 +25,22 @@ export class ViewSDKClient {
             });
         }
     });
+
     adobeDCView: any;
+    azureURL?: string;
 
     ready() {
         return this.readyPromise;
     }
 
-    previewFile(divId: string, url: any, viewerConfig: any) {
+    previewFile(divId: string, url: any, viewerConfig: any, answerScriptId: number) {
         const config: any = {
             /* Pass your registered client id */
             clientId: '4dfd11a208224ebab91da699567e8c35',
         };
+
+        this.azureURL = url;
+
         if (divId) {
             /* Optional only for Light Box embed mode */
             /* Pass the div id in which PDF should be rendered */
@@ -32,6 +48,8 @@ export class ViewSDKClient {
         }
         /* Initialize the AdobeDC View object */
         this.adobeDCView = new window.AdobeDC.View(config);
+
+        this.registerSaveApiHandler(answerScriptId);
 
         /* Invoke the file preview API on Adobe DC View object */
         const previewFilePromise = this.adobeDCView.previewFile(
@@ -46,7 +64,7 @@ export class ViewSDKClient {
                 /* Pass meta data of file */
                 metaData: {
                     /* file name */
-                    fileName: 'Bodea Brochure.pdf',
+                    fileName: this.azureURL!.split('/').slice(-1)[0],
                     /* file ID */
                     id: '6d07d124-ac85-43b3-a867-36930f502ac6',
                 },
@@ -88,13 +106,22 @@ export class ViewSDKClient {
         );
     }
 
-    registerSaveApiHandler() {
+    registerSaveApiHandler(id: number) {
         /* Define Save API Handler */
         const saveApiHandler = (metaData: any, content: any, options: any) => {
-            console.log(metaData, content, options);
             return new Promise((resolve) => {
                 /* Dummy implementation of Save API, replace with your business logic */
-                setTimeout(() => {
+                // this._answerScriptService.create()
+                let uint8Array = new Uint8Array(content);
+                let blob = new Blob([uint8Array], { type: 'application/pdf' });
+                let formData = new FormData();
+                let pdfFileName = metaData.fileName;
+                let updatedName =
+                    pdfFileName.split('.')[0] + '-' + 'updated' + '.pdf';
+                formData.append('file', blob, updatedName);
+
+                this._answerScriptService.update(id, formData)
+                .then((obj) => {
                     const response = {
                         code: window.AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
                         data: {
@@ -104,14 +131,14 @@ export class ViewSDKClient {
                         },
                     };
                     resolve(response);
-                }, 2000);
+                });
             });
         };
 
         this.adobeDCView.registerCallback(
             window.AdobeDC.View.Enum.CallbackType.SAVE_API,
             saveApiHandler,
-            {}
+            saveConfig
         );
     }
 

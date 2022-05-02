@@ -84,6 +84,8 @@ def create_answer(request):
 @permission_classes([IsAuthenticated])
 def update_answer(request, id):
     answer = AnswerScript.objects.get(id=id)
+    answer.script.save(request.FILES['file'].name, request.FILES['file'])
+
     serializer = AnswerScriptSerializer(instance=answer, data=request.data)
 
     if serializer.is_valid():
@@ -142,6 +144,7 @@ def bulk_create(request):
 
         return Response("Bulk upload successfully")
 
+# TODO: change student ID
 def process_data(filename, assessment_id, file):
     student_fname, student_lname, student_id, _ = filename.split('_')
     student_id = str(uuid.uuid4())
