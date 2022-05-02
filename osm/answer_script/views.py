@@ -1,14 +1,16 @@
-from rest_framework.viewsets import ViewSet
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .serializers import AnswerScriptSerializer
-from .models import AnswerScript
+import shutil
 import uuid
 import zipfile
+from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from rest_framework.authentication import (BasicAuthentication, SessionAuthentication)
+from rest_framework.decorators import (api_view, authentication_classes, permission_classes)
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import ViewSet
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .models import AnswerScript
+from .serializers import AnswerScriptSerializer
 
 # ViewSets define the view behavior.
 # To easily create a answer script in back end
@@ -103,6 +105,7 @@ def delete_answer(request, id):
 
     return Response("AnswerScript successfully deleted")
 
+
 # TODO: error handling for unsupported file name
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
@@ -113,22 +116,24 @@ def bulk_create(request):
     file_name = file.name
     content_type = file.content_type
 
-    ## when this is not bulk create
+    # when this is not bulk create
     if content_type != 'application/zip':
         data = process_data(file_name, assessment_id, file)
         create_request = request._request
         create_request.POST = data
         return create_answer(create_request)
 
-    ## when it's bulk upload file (zip)
+    # when it's bulk upload file (zip)
     else:
         zip_file = zipfile.ZipFile(file)
+
         zip_file.extractall()
 
         # get all files except the self directory
         for filename in zip_file.namelist()[1:]:
             zip_ext_file = zip_file.open(filename)
-            in_memory_file = InMemoryUploadedFile(zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(filename)), None)
+            in_memory_file = InMemoryUploadedFile(
+                zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(filename)), None)
             filename = filename.split('/')[-1]
             data = process_data(filename, assessment_id, in_memory_file)
 
@@ -140,9 +145,12 @@ def bulk_create(request):
         zip_file.close()
         # remove the locally extracted files
         # ! ERROR: remove cannot use
-        # remove(file)
+        file_path = settings.BASE_DIR / zip_file.namelist()[0]
+        shutil.rmtree(file_path)
+        # print(file.name.split('.')[0])
 
         return Response("Bulk upload successfully")
+
 
 # TODO: change student ID
 def process_data(filename, assessment_id, file):
