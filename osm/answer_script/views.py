@@ -1,6 +1,8 @@
+import csv
 import shutil
 import uuid
 import zipfile
+from itertools import islice
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.authentication import (BasicAuthentication, SessionAuthentication)
@@ -111,20 +113,101 @@ def delete_answer(request, id):
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def bulk_create(request):
+
+    def process_csv_file(file):
+        unformatted_content = file.read().decode("utf-8")
+        col_num = len(unformatted_content.split("\n")[0].split(","))
+        cell = unformatted_content.split(',')
+        num = col_num - ( len(cell) % col_num ) + 1 ## include header
+        content = []
+        index = 0
+
+        while index < num:
+            if index == 0:
+                content.extend(cell[index * col_num : (index + 1) * (col_num - 1)])
+            else:
+                content.extend(cell[index * (col_num - 1) + 1: (index + 1) * (col_num - 1)])
+
+            if index != num - 1:
+                temp = cell[(index + 1) * (col_num - 1)]
+
+                if temp.count('\n') > 1:
+                    last_occurrence = temp.rfind('\n')
+                    d1, d2 = temp[:last_occurrence], temp[last_occurrence + 1:]
+                else:
+                    d1, d2 = cell[(index + 1) * (col_num - 1) ].split('\n')
+
+                content.extend([d1, d2])
+
+            else:
+                content.extend(cell[(index + 1) * (col_num - 1):])
+
+            index += 1
+
+        split_list = lambda data, num: [data[i : i + num] for i in range(0, len(data), num)]
+        content = split_list(content, col_num)
+
+        return content
+
+    def process_csv_content(content, assessment_id):
+        record = []
+        header = [h.replace('"', '') for h in content[0]]
+        content = content[1:]
+
+        # format
+        for row in content:
+            data = {}
+            for col in range(len(header)):
+                data[header[col]] = row[col].replace('"', '')
+            record.append(data)
+
+        answers = []
+
+        for row in record:
+            question_keys = list(filter(lambda k: 'Response' in k, row.keys()))
+
+            answer_list = {}
+            for k in question_keys:
+                answer_list[k] = row[k]
+            d = {
+                    "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
+                    "student_id": row['Email address'],
+                    "marks": None,
+                    "answers": None,
+                    "assessment": assessment_id,
+                    "script": None
+            }
+            # print(d)
+            answers.append(d)
+
+        return answers
+
     file = request.FILES['file']
     assessment_id = request.data['assessmentId']
     file_name = file.name
     content_type = file.content_type
 
-    # when this is not bulk create
-    if content_type != 'application/zip':
+    # when the uploaded file is PDF
+    if content_type == 'application/pdf':
         data = process_data(file_name, assessment_id, file)
         create_request = request._request
         create_request.POST = data
         return create_answer(create_request)
 
+    elif content_type == 'text/csv':
+        lines = process_csv_file(file)
+        data = process_csv_content(lines, assessment_id)
+
+        for d in data:
+            create_request = request._request
+            create_request.POST = d
+            response = create_answer(create_request)
+            print(response.data)
+
+        return Response("CSV file uploaded")
+
     # when it's bulk upload file (zip)
-    else:
+    elif content_type == 'application/zip':
         zip_file = zipfile.ZipFile(file)
 
         zip_file.extractall()
@@ -144,12 +227,12 @@ def bulk_create(request):
         # close the zip_file
         zip_file.close()
         # remove the locally extracted files
-        # ! ERROR: remove cannot use
         file_path = settings.BASE_DIR / zip_file.namelist()[0]
         shutil.rmtree(file_path)
-        # print(file.name.split('.')[0])
 
         return Response("Bulk upload successfully")
+    return Response("Upload?")
+
 
 
 # TODO: change student ID
