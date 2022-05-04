@@ -166,19 +166,17 @@ def bulk_create(request):
         for row in record:
             question_keys = list(filter(lambda k: 'Response' in k, row.keys()))
 
-            answer_list = {}
+            answer_list = []
             for k in question_keys:
-                answer_list[k] = row[k]
-            d = {
+                answer_list.append(row[k])
+            answers.append({
                     "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
                     "student_id": row['Email address'],
                     "marks": None,
-                    "answers": None,
+                    "answers": answer_list,
                     "assessment": assessment_id,
                     "script": None
-            }
-            # print(d)
-            answers.append(d)
+            })
 
         return answers
 
