@@ -1,18 +1,26 @@
 <div style="width: 80%" class="pl-4 pr-5">
-    <div *ngIf="assessment && answerScript">
-        <!-- {{ answerScript | json }} -->
-        <!-- <br> -->
-        <!-- {{ assessment.questions | json }} -->
-
-
-    </div>
-    <div *ngIf="isFloatingBarShowed">SHOW BAR</div>
-    <div *ngIf="isEssayBased" id="pdf-div" class="pdf-view" style="height: 90vh"></div>
-    <div *ngIf="!isEssayBased">
-        <div *ngFor="let question of assessment.questions; let i = index" class="my-4">
-            <h5>Q{{question.no}}) {{question.value.question}}</h5>
-            <div class="border p-4 bg-white answer-box">
-                {{answerScript.answers[i]}}
+    <!-- <div *ngIf="assessment && answerScript">
+        {{ answerScript | json }}
+        <br />
+        {{ assessment | json }}
+    </div> -->
+    <!-- <div *ngIf="isFloatingBarShowed">SHOW BAR</div> -->
+    <div id="answerscript-content">
+        <div
+            *ngIf="isEssayBased"
+            id="pdf-div"
+            class="pdf-view"
+            style="height: 90vh"
+        ></div>
+        <div *ngIf="!isEssayBased">
+            <div
+                *ngFor="let question of assessment.questions; let i = index"
+                class="my-4"
+            >
+                <h5>Q{{ question.no }}) {{ question.value.question }}</h5>
+                <div class="border p-4 bg-white answer-box">
+                    {{ answerScript.answers[i].answer }}
+                </div>
             </div>
         </div>
     </div>
@@ -96,7 +104,25 @@
                     </mat-selection-list>
                 </div>
             </div>
-            <div *ngIf="!isEssayBased">this is question based</div>
+            <div *ngIf="!isEssayBased">
+                <mat-list role="list">
+                    <mat-list-item
+                        *ngFor="let question of assessment.questions; let i = index"
+                        class="border"
+                        role="listitem"
+                    >
+                        Question {{ question.no }}
+                        <input
+                            type="number"
+                            class="form-control w-25 text-center"
+                            min="0"
+                            max="{{ question.value.marks }}"
+                            [(ngModel)]="answerScript.answers[i].marksAwarded"
+                            (change)="onMarkAwardedChanged($event)"
+                        />
+                    </mat-list-item>
+                </mat-list>
+            </div>
             <div>Marks: {{ totalMarks }}</div>
             <button class="btn btn-primary w-100" (click)="onSubmit()">
                 Submit

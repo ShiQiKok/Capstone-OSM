@@ -168,7 +168,11 @@ def bulk_create(request):
 
             answer_list = []
             for k in question_keys:
-                answer_list.append(row[k])
+                answer_list.append({
+                    "answer": row[k],
+                    "marksAwarded": 0
+                })
+                
             answers.append({
                     "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
                     "student_id": row['Email address'],

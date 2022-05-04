@@ -176,10 +176,17 @@ export class MarkingComponent implements OnInit {
         }
 
         this.totalMarks = 0;
-        this.assessment.rubrics.criterion.forEach((c: any) => {
-            if (c.markAwarded)
-                this.totalMarks += (c.markAwarded * c.totalMarks) / 100;
-        });
+        if (this.isEssayBased){
+            this.assessment.rubrics.criterion.forEach((c: any) => {
+                if (c.markAwarded)
+                    this.totalMarks += (c.markAwarded * c.totalMarks) / 100;
+            });
+        } else {
+            this.answerScript.answers.forEach((a: any) => {
+                this.totalMarks += a.marksAwarded;
+            })
+        }
+
     }
 
     onSubmit() {

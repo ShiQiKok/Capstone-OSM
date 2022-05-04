@@ -13,6 +13,7 @@ export class AnswerScript{
     dateUpdated?: Date | undefined;
     marks?: any | undefined;
     questions?: any | undefined;
+    answers?: any | undefined;
     script?: any | undefined;
     assessment?: number | undefined;
 }
