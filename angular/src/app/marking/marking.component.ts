@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AnswerScript } from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
@@ -19,13 +25,14 @@ export class MarkingComponent implements OnInit {
     answerScript!: AnswerScript;
     assessment!: Assessment;
     selectedCriterion!: any;
-    selectedDetailedCriterion! : any;
+    selectedDetailedCriterion!: any;
 
     totalMarks: number = 0;
 
     // controls
     isEssayBased?: boolean = true;
     isRubricsDetailsShowed: boolean = false;
+    isFloatingBarShowed: boolean = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -39,34 +46,85 @@ export class MarkingComponent implements OnInit {
         this.getDetail();
     }
 
+    ngAfterViewChecked() {
+        // get element with class 'answer-box'
+        let answerDivs = document.getElementsByClassName('answer-box');
+        if (answerDivs.length > 0) {
+            for (let element of answerDivs) {
+                element.addEventListener('mouseup', (event: any) => {
+                    event.stopImmediatePropagation();
+                    let selection = window.getSelection();
+                    let text = selection!.toString();
+
+                    if (text.length > 1) {
+                        this.isFloatingBarShowed = true;
+                        console.log(text);
+
+                    } else {
+                        if (
+                            !selection?.isCollapsed &&
+                            !this.isFloatingBarShowed
+                        ) {
+                            console.log(text);
+                        }
+                        this.isFloatingBarShowed = !this.isFloatingBarShowed;
+                    }
+                });
+
+                // if (selection?.toString().length! > 1) {
+                //     console.log('1')
+                //     this.isFloatingBarShowed = true;
+                //     console.log(selection?.toString())
+                // } else if (selection?.toString().length == 1 && !selection?.isCollapsed) {
+                //     console.log('2')
+                //     this.isFloatingBarShowed = true;
+                //     console.log(selection?.toString())
+                // } else {
+                //     console.log('3')
+                //     this.isFloatingBarShowed = false;
+                // }
+            }
+        }
+    }
+
     async loadApi() {
         await this._assessmentService.getApi();
         await this._answerScriptService.getApi();
     }
 
     checkControls() {
-        if (this.assessment.type === AssessmentType.ESSAY_BASED) {
+        if (this.assessment.type === AssessmentType.ESSAY_BASED)
             this.isEssayBased = true;
-        }
+        else this.isEssayBased = false;
     }
 
     onGeneralCriteriaChanged() {
         this.isRubricsDetailsShowed = true;
-        this.selectedCriterion = this.generalCriteriaList.selectedOptions.selected[0]?.value;
+        this.selectedCriterion =
+            this.generalCriteriaList.selectedOptions.selected[0]?.value;
 
         // Expand the selected criterion
-        if (this.selectedCriterion.markAwarded){
-            let m = this.selectedCriterion.markAwarded
-            for (let i = 0; i < this.assessment.rubrics.marksRange.length; i++){
-                if (m >= this.assessment.rubrics.marksRange[i].min && m<= this.assessment.rubrics.marksRange[i].max){
-                    this.selectedDetailedCriterion = this.selectedCriterion.columns[i]
+        if (this.selectedCriterion.markAwarded) {
+            let m = this.selectedCriterion.markAwarded;
+            for (
+                let i = 0;
+                i < this.assessment.rubrics.marksRange.length;
+                i++
+            ) {
+                if (
+                    m >= this.assessment.rubrics.marksRange[i].min &&
+                    m <= this.assessment.rubrics.marksRange[i].max
+                ) {
+                    this.selectedDetailedCriterion =
+                        this.selectedCriterion.columns[i];
                 }
             }
         }
     }
 
     onDetailedCriteriaChanged() {
-        this.selectedDetailedCriterion = this.detailCriteriaList.selectedOptions.selected[0].value
+        this.selectedDetailedCriterion =
+            this.detailCriteriaList.selectedOptions.selected[0].value;
     }
 
     getDetail() {
@@ -78,20 +136,19 @@ export class MarkingComponent implements OnInit {
                 .then((obj) => {
                     this.assessment = obj;
 
-
                     this.assessment.rubrics.criterion.forEach((c: any) => {
                         if (c.markAwarded)
-                            this.totalMarks += c.markAwarded * c.totalMarks / 100
-                    })
+                            this.totalMarks +=
+                                (c.markAwarded * c.totalMarks) / 100;
+                    });
                     this.checkControls();
                 });
-            this.loadScript();
+            if (this.answerScript.script) this.loadScript();
         });
     }
 
     loadScript() {
         this.viewSDKClient.ready().then(() => {
-
             /* Invoke file preview */
             this.viewSDKClient.previewFile(
                 'pdf-div',
@@ -100,9 +157,8 @@ export class MarkingComponent implements OnInit {
                 // * set the Adobe Acrobat configuration
                 // * check the API at https://developer.adobe.com/document-services/docs/overview/pdf-embed-api/howtos_ui/
                 {},
-                this.answerScript.id!,
-                );
-
+                this.answerScript.id!
+            );
         });
     }
 
@@ -119,17 +175,18 @@ export class MarkingComponent implements OnInit {
             inputElement.value = max;
         }
 
-        this.totalMarks = 0
+        this.totalMarks = 0;
         this.assessment.rubrics.criterion.forEach((c: any) => {
             if (c.markAwarded)
-                this.totalMarks += c.markAwarded * c.totalMarks / 100
-        })
+                this.totalMarks += (c.markAwarded * c.totalMarks) / 100;
+        });
     }
 
-    onSubmit(){
-        this._assessmentService.update(this.assessment.id!, this.assessment).then(() => {
-            console.log('updated');
-        })
+    onSubmit() {
+        this._assessmentService
+            .update(this.assessment.id!, this.assessment)
+            .then(() => {
+                console.log('updated');
+            });
     }
-
 }
