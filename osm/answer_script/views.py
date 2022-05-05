@@ -88,7 +88,11 @@ def create_answer(request):
 @permission_classes([IsAuthenticated])
 def update_answer(request, id):
     answer = AnswerScript.objects.get(id=id)
-    answer.script.save(request.FILES['file'].name, request.FILES['file'])
+
+    try:
+        answer.script.save(request.FILES['file'].name, request.FILES['file'])
+    except:
+        pass
 
     serializer = AnswerScriptSerializer(instance=answer, data=request.data)
 
@@ -172,7 +176,7 @@ def bulk_create(request):
                     "answer": row[k],
                     "marksAwarded": 0
                 })
-                
+
             answers.append({
                     "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
                     "student_id": row['Email address'],

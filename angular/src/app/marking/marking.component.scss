@@ -1,3 +1,7 @@
+.notransition {
+    background-color: red !important;
+}
+
 div#sideNav {
     position: fixed;
     top: 3.5rem;
@@ -9,13 +13,15 @@ div#sideNav {
     height: 100px !important;
 }
 
-.mat-list-base .mat-list-item .mat-list-text, .mat-list-base .mat-list-option .mat-list-text,
+.mat-list-base .mat-list-item .mat-list-text,
+.mat-list-base .mat-list-option .mat-list-text,
 #generalCriteriaList mat-list-option div.mat-list-text {
     flex-direction: row;
     align-items: center;
     background-color: red;
 }
 
-#generalCriteriaList mat-list-option {
+#generalCriteriaList mat-list-option,
+#questionMarksPanel .mat-list-item {
     height: 5rem;
 }

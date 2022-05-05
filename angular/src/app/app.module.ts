@@ -28,6 +28,7 @@ import { SpinnerComponent } from './shared-component/spinner/spinner.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MarkingComponent } from './marking/marking.component';
 import { MatListModule } from '@angular/material/list';
+import { TextSelectDirective } from './directives/text-select-directive.directive';
 
 @NgModule({
     declarations: [
@@ -42,6 +43,7 @@ import { MatListModule } from '@angular/material/list';
         AssessmentCreationFormComponent,
         SpinnerComponent,
         MarkingComponent,
+        TextSelectDirective,
     ],
     imports: [
         BrowserModule,

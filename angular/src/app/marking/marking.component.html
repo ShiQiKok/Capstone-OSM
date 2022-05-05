@@ -5,6 +5,16 @@
         {{ assessment | json }}
     </div> -->
     <!-- <div *ngIf="isFloatingBarShowed">SHOW BAR</div> -->
+    <h1>
+        5/5 TODO: <del>onSubmit -> update answerScript </del>,
+        <del>add styling</del>, add floating tool bar, fix essay-based marks
+        giving bug :(
+    </h1>
+    <ng-template #floatToolbar>
+        <button>Correct</button>
+        <button>Wrong</button>
+    </ng-template>
+
     <div id="answerscript-content">
         <div
             *ngIf="isEssayBased"
@@ -18,7 +28,14 @@
                 class="my-4"
             >
                 <h5>Q{{ question.no }}) {{ question.value.question }}</h5>
-                <div class="border p-4 bg-white answer-box">
+                <!-- target for popover -->
+                <div
+                    [ngbPopover]="floatToolbar"
+                    #p="ngbPopover"
+                    (mousedown)="p.open({ autoClose: false })"
+                    (mousedown)="p.close()"
+                    class="border p-4 bg-white answer-box"
+                >
                     {{ answerScript.answers[i].answer }}
                 </div>
             </div>
@@ -105,16 +122,20 @@
                 </div>
             </div>
             <div *ngIf="!isEssayBased">
-                <mat-list role="list">
+                <mat-list role="list" id="questionMarksPanel">
                     <mat-list-item
-                        *ngFor="let question of assessment.questions; let i = index"
+                        *ngFor="
+                            let question of assessment.questions;
+                            let i = index
+                        "
                         class="border"
                         role="listitem"
                     >
                         Question {{ question.no }}
                         <input
                             type="number"
-                            class="form-control w-25 text-center"
+                            class="form-control text-center ml-auto"
+                            style="width: 30%"
                             min="0"
                             max="{{ question.value.marks }}"
                             [(ngModel)]="answerScript.answers[i].marksAwarded"
@@ -123,10 +144,16 @@
                     </mat-list-item>
                 </mat-list>
             </div>
-            <div>Marks: {{ totalMarks }}</div>
-            <button class="btn btn-primary w-100" (click)="onSubmit()">
-                Submit
-            </button>
+            <div class="position-absolute bottom-0 end-0 w-100 bg-white">
+                <div class="pl-4">Marks: {{ answerScript.marks }}</div>
+                <button
+                    class="btn btn-primary w-100"
+                    style="height: 3rem"
+                    (click)="onSubmit()"
+                >
+                    Submit
+                </button>
+            </div>
         </div>
     </div>
 </div>

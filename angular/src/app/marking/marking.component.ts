@@ -1,7 +1,5 @@
 import {
-    AfterViewInit,
     Component,
-    ElementRef,
     OnInit,
     ViewChild,
 } from '@angular/core';
@@ -11,6 +9,21 @@ import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ViewSDKClient } from 'src/services/view-sdk.service';
+import { TextSelectEvent } from '../directives/text-select-directive.directive';
+
+class FloatingBarPosition{
+    top!: number;
+    left!: number;
+    width!: number;
+    height!: number;
+}
+
+interface SelectionRectangle {
+	left: number;
+	top: number;
+	width: number;
+	height: number;
+}
 
 @Component({
     selector: 'app-marking',
@@ -20,12 +33,14 @@ import { ViewSDKClient } from 'src/services/view-sdk.service';
 export class MarkingComponent implements OnInit {
     @ViewChild('generalCriteriaList') generalCriteriaList!: any;
     @ViewChild('detailCriteriaList') detailCriteriaList!: any;
+    @ViewChild('floatingBar') floatToolbar!: any;
 
     // objects
     answerScript!: AnswerScript;
     assessment!: Assessment;
     selectedCriterion!: any;
     selectedDetailedCriterion!: any;
+    floatingBarPosition!: FloatingBarPosition;
 
     totalMarks: number = 0;
 
@@ -34,58 +49,101 @@ export class MarkingComponent implements OnInit {
     isRubricsDetailsShowed: boolean = false;
     isFloatingBarShowed: boolean = false;
 
+    // TEXT SELECTION
+    // public hostRectangle: SelectionRectangle | null;
+	// private selectedText: string;
+
     constructor(
         private route: ActivatedRoute,
         private _answerScriptService: AnswerScriptService,
         private _assessmentService: AssessmentService,
         private viewSDKClient: ViewSDKClient
-    ) {}
+    ) {
+        // this.hostRectangle = null;
+		// this.selectedText = "";
+    }
 
     async ngOnInit() {
         await this.loadApi();
         this.getDetail();
     }
 
-    ngAfterViewChecked() {
-        // get element with class 'answer-box'
-        let answerDivs = document.getElementsByClassName('answer-box');
-        if (answerDivs.length > 0) {
-            for (let element of answerDivs) {
-                element.addEventListener('mouseup', (event: any) => {
-                    event.stopImmediatePropagation();
-                    let selection = window.getSelection();
-                    let text = selection!.toString();
+    // ngAfterViewChecked() {
+    //     // get element with class 'answer-box'
+    //     let answerDivs = document.getElementsByClassName('answer-box');
+    //     if (answerDivs.length > 0) {
+    //         for (let element of answerDivs) {
+    //             element.addEventListener('mouseup', (event: any) => {
+    //                 event.stopImmediatePropagation();
 
-                    if (text.length > 1) {
-                        this.isFloatingBarShowed = true;
-                        console.log(text);
+    //                 let selection = window.getSelection();
+    //                 let localRectPosition = selection?.getRangeAt(0).getBoundingClientRect()
+    //                 this.floatingBarPosition = {
+    //                     top: localRectPosition!.top,
+    //                     left: localRectPosition!.left,
+    //                     width: localRectPosition!.width,
+    //                     height: localRectPosition!.height
+    //                 }
+    //                 console.log(this.floatingBarPosition);
+    //                 // setTimeout((() => {
+    //                 //     let toolbar = document.querySelector('ngb-popover-window')!;
+    //                 //     toolbar.removeAttribute('style');
 
-                    } else {
-                        if (
-                            !selection?.isCollapsed &&
-                            !this.isFloatingBarShowed
-                        ) {
-                            console.log(text);
-                        }
-                        this.isFloatingBarShowed = !this.isFloatingBarShowed;
-                    }
-                });
+    //                 //     // // toolbar.setAttribute('style', 'background-color: red; transform: translate(100px, 100px)')
 
-                // if (selection?.toString().length! > 1) {
-                //     console.log('1')
-                //     this.isFloatingBarShowed = true;
-                //     console.log(selection?.toString())
-                // } else if (selection?.toString().length == 1 && !selection?.isCollapsed) {
-                //     console.log('2')
-                //     this.isFloatingBarShowed = true;
-                //     console.log(selection?.toString())
-                // } else {
-                //     console.log('3')
-                //     this.isFloatingBarShowed = false;
-                // }
-            }
-        }
-    }
+
+    //                 //     console.log(toolbar)
+    //                 // }), 1000)
+
+    //             });
+
+    //             element.addEventListener('mousedown', (event: any) => {
+    //                 event.stopImmediatePropagation();
+    //                 this.isFloatingBarShowed = false;
+
+    //                 // toolbar!.setAttribute('style', `background-color: red; position: absolute; top: ${this.floatingBarPosition.top}; left: ${this.floatingBarPosition.left};`);
+    //             });
+    //         }
+    //     }
+    // }
+    // public renderRectangles( event: TextSelectEvent ) : void {
+
+	// 	console.group( "Text Select Event" );
+	// 	console.log( "Text:", event.text );
+	// 	console.log( "Viewport Rectangle:", event.viewportRectangle );
+	// 	console.log( "Host Rectangle:", event.hostRectangle );
+	// 	console.groupEnd();
+
+	// 	// If a new selection has been created, the viewport and host rectangles will
+	// 	// exist. Or, if a selection is being removed, the rectangles will be null.
+	// 	if ( event.hostRectangle ) {
+
+	// 		this.hostRectangle = event.hostRectangle;
+	// 		this.selectedText = event.text;
+
+	// 	} else {
+
+	// 		this.hostRectangle = null;
+	// 		this.selectedText = "";
+
+	// 	}
+
+	// }
+
+    // onTextSelect(){
+    //     console.group( "Shared Text" );
+	// 	console.log( this.selectedText );
+	// 	console.groupEnd();
+
+	// 	// Now that we've shared the text, let's clear the current selection.
+	// 	document.getSelection()!.removeAllRanges();
+	// 	// CAUTION: In modern browsers, the above call triggers a "selectionchange"
+	// 	// event, which implicitly calls our renderRectangles() callback. However,
+	// 	// in IE, the above call doesn't appear to trigger the "selectionchange"
+	// 	// event. As such, we need to remove the host rectangle explicitly.
+	// 	this.hostRectangle = null;
+	// 	this.selectedText = "";
+    // }
 
     async loadApi() {
         await this._assessmentService.getApi();
@@ -175,25 +233,31 @@ export class MarkingComponent implements OnInit {
             inputElement.value = max;
         }
 
-        this.totalMarks = 0;
+        this.answerScript.marks = 0;
         if (this.isEssayBased){
             this.assessment.rubrics.criterion.forEach((c: any) => {
                 if (c.markAwarded)
-                    this.totalMarks += (c.markAwarded * c.totalMarks) / 100;
+                    this.answerScript.marks += (c.markAwarded * c.totalMarks) / 100;
             });
         } else {
             this.answerScript.answers.forEach((a: any) => {
-                this.totalMarks += a.marksAwarded;
+                this.answerScript.marks += a.marksAwarded;
             })
         }
 
     }
 
     onSubmit() {
-        this._assessmentService
-            .update(this.assessment.id!, this.assessment)
-            .then(() => {
-                console.log('updated');
-            });
+        // this._assessmentService
+        //     .update(this.assessment.id!, this.assessment)
+        //     .then(() => {
+        //         console.log('updated');
+        //     });
+
+        this._answerScriptService
+            .update(this.answerScript.id!, this.answerScript)
+            .then((obj) => {
+                console.log(obj);
+            })
     }
 }
