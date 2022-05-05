@@ -230,7 +230,9 @@ def bulk_create(request):
             in_memory_file = InMemoryUploadedFile(
                 zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(filename)), None)
             filename = filename.split('/')[-1]
-            data = process_data(filename, assessment_id, in_memory_file)
+            assessment = Assessment.objects.get(id=assessment_id)
+            criteria_num = len(assessment.rubrics['criterion'])
+            data = process_data(filename, assessment_id, in_memory_file, criteria_num)
 
             create_request = request._request
             create_request.POST = data
