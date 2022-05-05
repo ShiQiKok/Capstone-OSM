@@ -36,7 +36,6 @@ export class RubricCriterion {
     title?: string | undefined;
     description?: string | undefined;
     totalMarks?: number | undefined;
-    markAwarded?: number | undefined;
     columns?: RubricColumn[] | undefined;
 }
 

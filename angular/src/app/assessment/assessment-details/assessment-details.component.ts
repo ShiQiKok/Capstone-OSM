@@ -93,7 +93,7 @@ export class AssessmentDetailsComponent implements OnInit {
 
     bulkUpload() {
         this._answerScriptService
-            .buildUpload(this.assessment.id!, this.uploadedFile!)
+            .bulkUpload(this.assessment.id!, this.uploadedFile!)
             .then(() => {
                 console.log('uploaded');
             });

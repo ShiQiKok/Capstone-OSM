@@ -1,9 +1,9 @@
 <div style="width: 80%" class="pl-4 pr-5">
-    <!-- <div *ngIf="assessment && answerScript">
+    <div *ngIf="assessment && answerScript">
         {{ answerScript | json }}
         <br />
         {{ assessment | json }}
-    </div> -->
+    </div>
     <!-- <div *ngIf="isFloatingBarShowed">SHOW BAR</div> -->
     <h1>
         5/5 TODO: <del>onSubmit -> update answerScript </del>,
@@ -52,18 +52,24 @@
                         (selectionChange)="onGeneralCriteriaChanged()"
                     >
                         <mat-list-option
-                            *ngFor="let c of assessment.rubrics.criterion"
+                            *ngFor="
+                                let c of assessment.rubrics.criterion;
+                                let i = index
+                            "
                             [value]="c"
                             class="border"
                         >
                             {{ c.title }}
                             <input
-                                #input_1
+                                [id]="'input-' + i"
                                 disabled
                                 class="form-control w-25 text-center"
                                 [ngModel]="
-                                    (c.markAwarded * c.totalMarks) / 100
-                                        ? (c.markAwarded * c.totalMarks) / 100
+                                    answerScript.answers[i].marksAwarded != null
+                                        ? (answerScript.answers[i]
+                                              .marksAwarded *
+                                              c.totalMarks) /
+                                          100
                                         : 0
                                 "
                             />
@@ -113,7 +119,11 @@
                                     max="{{
                                         assessment.rubrics.marksRange[i].max
                                     }}"
-                                    [(ngModel)]="selectedCriterion.markAwarded"
+                                    [(ngModel)]="
+                                        answerScript.answers[
+                                            selectedCriterionIndex
+                                        ].marksAwarded
+                                    "
                                     (change)="onMarkAwardedChanged($event)"
                                 />
                             </div>
@@ -145,7 +155,7 @@
                 </mat-list>
             </div>
             <div class="position-absolute bottom-0 end-0 w-100 bg-white">
-                <div class="pl-4">Marks: {{ answerScript.marks }}</div>
+                <div class="pl-4">Marks: {{ answerScript.marks ? answerScript.marks : 0 }}</div>
                 <button
                     class="btn btn-primary w-100"
                     style="height: 3rem"

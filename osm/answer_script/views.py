@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import AnswerScript
+from assessment.models import Assessment
 from .serializers import AnswerScriptSerializer
 
 # ViewSets define the view behavior.
@@ -88,6 +89,7 @@ def create_answer(request):
 @permission_classes([IsAuthenticated])
 def update_answer(request, id):
     answer = AnswerScript.objects.get(id=id)
+    request.data['script'] = file = answer.script
 
     try:
         answer.script.save(request.FILES['file'].name, request.FILES['file'])
@@ -98,8 +100,9 @@ def update_answer(request, id):
 
     if serializer.is_valid():
         serializer.save()
-
-    return Response(serializer.data)
+        return Response(serializer.data)
+    else:
+        return Response(serializer.errors)
 
 
 @api_view(['DELETE'])
@@ -195,7 +198,10 @@ def bulk_create(request):
 
     # when the uploaded file is PDF
     if content_type == 'application/pdf':
-        data = process_data(file_name, assessment_id, file)
+        assessment = Assessment.objects.get(id=assessment_id)
+        criteria_num = len(assessment.rubrics['criterion'])
+        data = process_data(file_name, assessment_id, file, criteria_num)
+
         create_request = request._request
         create_request.POST = data
         return create_answer(create_request)
@@ -242,14 +248,19 @@ def bulk_create(request):
 
 
 # TODO: change student ID
-def process_data(filename, assessment_id, file):
+def process_data(filename, assessment_id, file, criteria_num):
     student_fname, student_lname, student_id, _ = filename.split('_')
     student_id = str(uuid.uuid4())
+    answers = []
+
+    for i in range(criteria_num):
+        answers.append({"marksAwarded": None})
+
     return {
         "student_name": student_fname + ' ' + student_lname,
         "student_id": student_id,
         "marks": None,
-        "answers": None,
+        "answers": answers,
         "assessment": assessment_id,
         "script": file
     }
