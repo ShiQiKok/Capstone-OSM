@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AnswerScript } from 'src/models/answerScript';
+import { AnswerScript, HighlightText } from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
@@ -76,7 +76,7 @@ export class MarkingComponent implements OnInit {
         })
 
         // Expand the selected criterion
-        let m = this.answerScript.answers[this.selectedCriterionIndex].marksAwarded
+        let m = this.answerScript.answers![this.selectedCriterionIndex].marksAwarded
         if (m != null) {
             for (
                 let i = 0;
@@ -143,13 +143,37 @@ export class MarkingComponent implements OnInit {
         }
 
         this.answerScript.marks = 0;
-        for (let i = 0; i < this.answerScript.answers.length; i++) {
+        for (let i = 0; i < this.answerScript.answers!.length; i++) {
             if (this.isEssayBased)
-                this.answerScript.marks += this.answerScript.answers[i].marksAwarded * this.assessment.rubrics.criterion[i].totalMarks / 100;
+                this.answerScript.marks += this.answerScript.answers![i].marksAwarded! * this.assessment.rubrics.criterion[i].totalMarks / 100;
             else
-                this.answerScript.marks += this.answerScript.answers[i].marksAwarded;
+                this.answerScript.marks += this.answerScript.answers![i].marksAwarded;
         }
 
+    }
+
+    private selection(): Selection {
+        return window.getSelection()!;
+    }
+
+    private selectedText(): string {
+        return window.getSelection()!.toString();
+    }
+
+    highlightText(classNames: string[]){
+        let selection: Selection = this.selection();
+
+        let highlightTextComponent = this.selection().anchorNode!.parentElement!.parentElement!;
+        let i = Array.from(document.querySelectorAll('app-highlight-text')).findIndex((element) => {
+            return element === highlightTextComponent;
+        })
+
+        let highlighter: HighlightText = new HighlightText(selection.anchorOffset, selection.focusOffset, classNames);
+
+        this.answerScript.answers![i].highlightTexts ? this.answerScript.answers![i].highlightTexts = [...this.answerScript.answers![i].highlightTexts!, highlighter] : this.answerScript.answers![i].highlightTexts = [highlighter];
+
+
+        this.answerScript.answers![i] = Object.assign({}, this.answerScript.answers![i]);
     }
 
     onSubmit() {

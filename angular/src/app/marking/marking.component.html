@@ -1,13 +1,13 @@
 <div style="width: 80%" class="pl-4 pr-5">
-    <!-- <div *ngIf="assessment && answerScript">
+    <div *ngIf="assessment && answerScript">
         {{ answerScript | json }}
-        <br />
-        {{ assessment | json }}
-    </div> -->
+        <!-- <br />
+        {{ assessment | json }} -->
+    </div>
     <!-- <div *ngIf="isFloatingBarShowed">SHOW BAR</div> -->
     <ng-template #floatToolbar>
-        <button>Correct</button>
-        <button>Wrong</button>
+        <button (click)="highlightText(['highlight-correct'])">Correct</button>
+        <button (click)="highlightText(['highlight-wrong'])">Wrong</button>
     </ng-template>
 
     <div id="answerscript-content">
@@ -24,7 +24,15 @@
             >
                 <h5>Q{{ question.no }}) {{ question.value.question }}</h5>
                 <!-- target for popover -->
-                <div
+                <app-highlight-text
+                    [answer]="answerScript.answers[i]"
+                    [ngbPopover]="floatToolbar"
+                    #p="ngbPopover"
+                    (mousedown)="p.open()"
+                    (mousedown)="p.close()"
+                >
+                </app-highlight-text>
+                <!-- <div
                     [ngbPopover]="floatToolbar"
                     #p="ngbPopover"
                     (mousedown)="p.open({ autoClose: false })"
@@ -32,7 +40,7 @@
                     class="border p-4 bg-white answer-box"
                 >
                     {{ answerScript.answers[i].answer }}
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -140,17 +148,21 @@
                         <input
                             type="number"
                             class="form-control text-center ml-auto"
-                            style="width: 30%"
+                            style="width: 25%"
                             min="0"
                             max="{{ question.value.marks }}"
                             [(ngModel)]="answerScript.answers[i].marksAwarded"
                             (change)="onMarkAwardedChanged($event)"
                         />
+                        /
+                        {{ question.value.marks }}
                     </mat-list-item>
                 </mat-list>
             </div>
             <div class="position-absolute bottom-0 end-0 w-100 bg-white">
-                <div class="pl-4">Marks: {{ answerScript.marks ? answerScript.marks : 0 }}</div>
+                <div class="pl-4">
+                    Marks: {{ answerScript.marks ? answerScript.marks : 0 }}
+                </div>
                 <button
                     class="btn btn-primary w-100"
                     style="height: 3rem"

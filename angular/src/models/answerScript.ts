@@ -13,7 +13,25 @@ export class AnswerScript{
     dateUpdated?: Date | undefined;
     marks?: any | undefined;
     questions?: any | undefined;
-    answers?: any | undefined;
+    answers?: Answer[] | undefined;
     script?: any | undefined;
     assessment?: number | undefined;
+}
+
+export class Answer {
+    marksAwarded?: number | undefined;
+    answer?: string | undefined;
+    highlightTexts?: HighlightText[] | undefined;
+}
+
+export class HighlightText {
+    start: number;
+    end: number;
+    highlighterClass: string[];
+
+    constructor(start: number, end: number, highlighterClass: string[]) {
+        this.start = start;
+        this.end = end;
+        this.highlighterClass = highlighterClass;
+    }
 }

@@ -89,9 +89,13 @@ def create_answer(request):
 @permission_classes([IsAuthenticated])
 def update_answer(request, id):
     answer = AnswerScript.objects.get(id=id)
-    request.data['script'] = file = answer.script
+    assessment = Assessment.objects.get(id=answer.assessment.id)
+
+    if (assessment.type == 'essay_based'):
+        request.data['script'] = answer.script
 
     try:
+        # update adobe pdf
         answer.script.save(request.FILES['file'].name, request.FILES['file'])
     except:
         pass
