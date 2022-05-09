@@ -162,18 +162,67 @@ export class MarkingComponent implements OnInit {
 
     highlightText(classNames: string[]){
         let selection: Selection = this.selection();
+        let startNode = this.selection().anchorNode!;
+        let children = startNode.parentElement!.childNodes;
+        let startOffset = 0;
+        let endOffset = 0;
 
+        // calculate the offsets
+        for (let i = 0; i < children.length; i++){
+            if (children[i] === startNode) {
+                startOffset += selection.anchorOffset;
+
+                if (startNode === selection.focusNode){
+                    endOffset = startOffset + selection.focusOffset;
+                    break;
+                }
+
+            } else if (children[i] === selection.focusNode) {
+                endOffset += startOffset + selection.focusOffset + (startNode.textContent!.length - selection.anchorOffset);
+                break;
+            }
+            else {
+                if (startNode != selection.focusNode)
+                    endOffset += children[i].textContent!.length;
+                else
+                    startOffset += children[i].textContent!.length;
+            }
+        }
+
+        // find the index of the highlighted component
         let highlightTextComponent = this.selection().anchorNode!.parentElement!.parentElement!;
         let i = Array.from(document.querySelectorAll('app-highlight-text')).findIndex((element) => {
             return element === highlightTextComponent;
         })
 
-        let highlighter: HighlightText = new HighlightText(selection.anchorOffset, selection.focusOffset, classNames);
+        // remove the in-between highlightText object
+        for (let obj of this.answerScript.answers![i].highlightTexts!) {
+            console.log(this.isInBetween([startOffset, endOffset], [obj.start, obj.end]));
+            if (this.isInBetween([startOffset, endOffset], [obj.start, obj.end]))
+            this.answerScript.answers![i].highlightTexts = this.answerScript.answers![i].highlightTexts!.filter((x) => x != obj);
+        }
 
-        this.answerScript.answers![i].highlightTexts ? this.answerScript.answers![i].highlightTexts = [...this.answerScript.answers![i].highlightTexts!, highlighter] : this.answerScript.answers![i].highlightTexts = [highlighter];
+        // add the new highlightText object
+        let highlighter: HighlightText = new HighlightText(startOffset, endOffset, classNames);
 
+        if (this.answerScript.answers![i].highlightTexts)
+            this.answerScript.answers![i].highlightTexts = [...this.answerScript.answers![i].highlightTexts!, highlighter]
+        else
+            this.answerScript.answers![i].highlightTexts = [highlighter];
 
+        // reassign the object to trigger ngOnChange in highlightTexts component
         this.answerScript.answers![i] = Object.assign({}, this.answerScript.answers![i]);
+    }
+
+    /*
+        Check if set2 is entirely contained within set1.
+        @param set1: [startIndex: number, endIndex: number]
+        @param set2: [startIndex: number, endIndex: number]
+    */
+    private isInBetween(set1: [number, number], set2: [number, number]){
+        if (set2[0] >= set1[0] && set2[0] <= set1[1] && set2[1] >= set1[0] && set2[1] <= set1[1])
+            return true;
+        return false
     }
 
     onSubmit() {
