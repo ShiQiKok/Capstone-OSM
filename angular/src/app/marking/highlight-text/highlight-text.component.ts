@@ -43,15 +43,23 @@ export class HighlightTextComponent {
         });
 
         sorted.forEach((obj: HighlightText) => {
-
-            this.content = `${this.content.substring(
-                0,
-                obj.start
-            )}<span class="${obj.highlighterClass}">${this.content.substring(
-                obj.start,
-                obj.end
-            )}</span>${this.content.substring(obj.end, this.content.length)}`;
-            console.log(this.content);
+            if (obj.highlighterClass.includes('highlight-correct')){
+                this.content = `${this.content.substring(
+                    0,
+                    obj.start
+                )}<span class="${obj.highlighterClass}">${this.content.substring(
+                    obj.start,
+                    obj.end
+                )}</span>${this.content.substring(obj.end, this.content.length)}`;
+            } else {
+                this.content = `${this.content.substring(
+                    0,
+                    obj.start
+                )}<mark class="${obj.highlighterClass}">${this.content.substring(
+                    obj.start,
+                    obj.end
+                )}</mark>${this.content.substring(obj.end, this.content.length)}`;
+            }
         });
     }
 }

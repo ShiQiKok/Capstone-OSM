@@ -14,6 +14,25 @@ class FloatingBarPosition {
     height!: number;
 }
 
+class CustomSelection {
+    anchorNode: Node;
+    anchorOffset: number;
+    focusNode: Node;
+    focusOffset: number;
+
+    constructor(
+        anchorNode: Node,
+        anchorOffset: number,
+        focusNode: Node,
+        focusOffset: number
+    ) {
+        this.anchorNode = anchorNode;
+        this.anchorOffset = anchorOffset;
+        this.focusNode = focusNode;
+        this.focusOffset = focusOffset;
+    }
+}
+
 @Component({
     selector: 'app-marking',
     templateUrl: './marking.component.html',
@@ -71,12 +90,17 @@ export class MarkingComponent implements OnInit {
             this.generalCriteriaList.selectedOptions.selected[0]?.value;
 
         // get the selected criterion index
-        this.selectedCriterionIndex = this.generalCriteriaList.options._results.findIndex((x: any) => {
-            return x === this.generalCriteriaList.selectedOptions.selected[0]
-        })
+        this.selectedCriterionIndex =
+            this.generalCriteriaList.options._results.findIndex((x: any) => {
+                return (
+                    x === this.generalCriteriaList.selectedOptions.selected[0]
+                );
+            });
 
         // Expand the selected criterion
-        let m = this.answerScript.answers![this.selectedCriterionIndex].marksAwarded
+        let m =
+            this.answerScript.answers![this.selectedCriterionIndex]
+                .marksAwarded;
         if (m != null) {
             for (
                 let i = 0;
@@ -145,11 +169,14 @@ export class MarkingComponent implements OnInit {
         this.answerScript.marks = 0;
         for (let i = 0; i < this.answerScript.answers!.length; i++) {
             if (this.isEssayBased)
-                this.answerScript.marks += this.answerScript.answers![i].marksAwarded! * this.assessment.rubrics.criterion[i].totalMarks / 100;
+                this.answerScript.marks +=
+                    (this.answerScript.answers![i].marksAwarded! *
+                        this.assessment.rubrics.criterion[i].totalMarks) /
+                    100;
             else
-                this.answerScript.marks += this.answerScript.answers![i].marksAwarded;
+                this.answerScript.marks +=
+                    this.answerScript.answers![i].marksAwarded;
         }
-
     }
 
     private selection(): Selection {
@@ -160,58 +187,202 @@ export class MarkingComponent implements OnInit {
         return window.getSelection()!.toString();
     }
 
-    highlightText(classNames: string[]){
-        let selection: Selection = this.selection();
-        let startNode = this.selection().anchorNode!;
-        let children = startNode.parentElement!.childNodes;
+    private checkSelection(selection: Selection) {
+        let swap = false;
+        if (selection.focusNode != selection.anchorNode) {
+            let parent = selection.anchorNode!.parentElement!.closest('div')!;
+
+            for (let child of parent.childNodes) {
+                if (
+                    child === selection.anchorNode ||
+                    child === selection.anchorNode!.parentElement
+                ) {
+                    swap = false;
+                    break;
+                } else if (
+                    child === selection.focusNode ||
+                    child === selection.focusNode!.parentElement
+                ) {
+                    swap = true;
+                    break;
+                }
+            }
+        } else if (selection.focusOffset < selection.anchorOffset) {
+            swap = true;
+        }
+
+        if (swap) {
+            return new CustomSelection(
+                selection.focusNode!,
+                selection.focusOffset,
+                selection.anchorNode!,
+                selection.anchorOffset
+            );
+        } else {
+            return new CustomSelection(
+                selection.anchorNode!,
+                selection.anchorOffset,
+                selection.focusNode!,
+                selection.focusOffset
+            );
+        }
+    }
+
+    highlightText(classNames: string[]) {
+        let selection: CustomSelection = this.checkSelection(this.selection());
+        let startNode = selection.anchorNode!;
+        let endNode = selection.focusNode!;
+
+        if (startNode.parentElement!.tagName.toLowerCase() === 'span')
+            startNode = startNode.parentElement!;
+        if (endNode.parentElement!.tagName.toLowerCase() === 'span')
+            endNode = endNode.parentElement!;
+
+        let children = startNode.parentElement!.closest('div')!.childNodes;
         let startOffset = 0;
         let endOffset = 0;
 
         // calculate the offsets
-        for (let i = 0; i < children.length; i++){
-            if (children[i] === startNode) {
+        // console.log(children);
+        // console.log(selection);
+        let hasStartNodeMatched = false;
+        // if the selection is within the same node
+        for (let child of children) {
+            if (child === startNode && child === endNode) {
+                // console.log(1);
                 startOffset += selection.anchorOffset;
-
-                if (startNode === selection.focusNode){
-                    endOffset = startOffset + selection.focusOffset;
-                    break;
-                }
-
-            } else if (children[i] === selection.focusNode) {
-                endOffset += startOffset + selection.focusOffset + (startNode.textContent!.length - selection.anchorOffset);
+                children.length === 1
+                    ? (endOffset = selection.focusOffset)
+                    : (endOffset =
+                          startOffset +
+                          selection.focusOffset -
+                          selection.anchorOffset);
                 break;
-            }
-            else {
-                if (startNode != selection.focusNode)
-                    endOffset += children[i].textContent!.length;
-                else
-                    startOffset += children[i].textContent!.length;
+            } else if (child === startNode) {
+                // console.log(2);
+                hasStartNodeMatched = true;
+                startOffset += selection.anchorOffset;
+            } else if (child === endNode) {
+                endOffset +=
+                    startOffset +
+                    selection.focusOffset +
+                    (startNode.textContent!.length - selection.anchorOffset);
+                // console.log(3);
+                break;
+            } else {
+                // console.log(4);
+                hasStartNodeMatched
+                    ? (endOffset += child.textContent!.length)
+                    : (startOffset += child.textContent!.length);
             }
         }
+        console.log(startOffset, endOffset);
 
         // find the index of the highlighted component
-        let highlightTextComponent = this.selection().anchorNode!.parentElement!.parentElement!;
-        let i = Array.from(document.querySelectorAll('app-highlight-text')).findIndex((element) => {
+        let highlightTextComponent =
+            this.selection().anchorNode!.parentElement!.closest(
+                '.highlight-text-container'
+            );
+        let i = Array.from(
+            document.querySelectorAll('app-highlight-text')
+        ).findIndex((element) => {
             return element === highlightTextComponent;
-        })
+        });
 
         // remove the in-between highlightText object
-        for (let obj of this.answerScript.answers![i].highlightTexts!) {
-            console.log(this.isInBetween([startOffset, endOffset], [obj.start, obj.end]));
-            if (this.isInBetween([startOffset, endOffset], [obj.start, obj.end]))
-            this.answerScript.answers![i].highlightTexts = this.answerScript.answers![i].highlightTexts!.filter((x) => x != obj);
+        let tempArray = this.answerScript.answers![i].highlightTexts;
+        if (tempArray) {
+            for (let obj of tempArray) {
+                // if the new selection is within a highlighted section
+                if (
+                    this.isInBetween([obj.start, obj.end], startOffset) &&
+                    this.isInBetween([obj.start, obj.end], endOffset)
+                ) {
+                    this.answerScript.answers![i].highlightTexts! =
+                        this.removeObj(
+                            this.answerScript.answers![i].highlightTexts!,
+                            obj
+                        );
+                    let splitObj1 = new HighlightText(
+                        obj.start,
+                        startOffset,
+                        obj.highlighterClass
+                    );
+                    let splitObj2 = new HighlightText(
+                        endOffset,
+                        obj.end,
+                        obj.highlighterClass
+                    );
+                    this.answerScript.answers![i].highlightTexts?.push(
+                        splitObj1,
+                        splitObj2
+                    );
+                }
+                // if the new selection contains a highlighted section
+                else if (
+                    this.isInBetween([startOffset, endOffset], obj.start) &&
+                    this.isInBetween([startOffset, endOffset], obj.end)
+                ) {
+                    this.answerScript.answers![i].highlightTexts! =
+                        this.removeObj(
+                            this.answerScript.answers![i].highlightTexts!,
+                            obj
+                        );
+                }
+                // if the new selection's start is within a highlighted section
+                else if (this.isInBetween([obj.start, obj.end], startOffset)) {
+                    this.answerScript.answers![i].highlightTexts! =
+                        this.removeObj(
+                            this.answerScript.answers![i].highlightTexts!,
+                            obj
+                        );
+                    let splitObj = new HighlightText(
+                        obj.start,
+                        startOffset,
+                        obj.highlighterClass
+                    );
+                    this.answerScript.answers![i].highlightTexts?.push(
+                        splitObj
+                    );
+                }
+                // if the new selection's end is within a highlighted section
+                else if (this.isInBetween([obj.start, obj.end], endOffset)) {
+                    this.answerScript.answers![i].highlightTexts! =
+                        this.removeObj(
+                            this.answerScript.answers![i].highlightTexts!,
+                            obj
+                        );
+                    let splitObj = new HighlightText(
+                        endOffset,
+                        obj.end,
+                        obj.highlighterClass
+                    );
+                    this.answerScript.answers![i].highlightTexts?.push(
+                        splitObj
+                    );
+                }
+            }
         }
 
         // add the new highlightText object
-        let highlighter: HighlightText = new HighlightText(startOffset, endOffset, classNames);
+        let highlighter: HighlightText = new HighlightText(
+            startOffset,
+            endOffset,
+            classNames
+        );
 
         if (this.answerScript.answers![i].highlightTexts)
-            this.answerScript.answers![i].highlightTexts = [...this.answerScript.answers![i].highlightTexts!, highlighter]
-        else
-            this.answerScript.answers![i].highlightTexts = [highlighter];
+            this.answerScript.answers![i].highlightTexts = [
+                ...this.answerScript.answers![i].highlightTexts!,
+                highlighter,
+            ];
+        else this.answerScript.answers![i].highlightTexts = [highlighter];
 
         // reassign the object to trigger ngOnChange in highlightTexts component
-        this.answerScript.answers![i] = Object.assign({}, this.answerScript.answers![i]);
+        this.answerScript.answers![i] = Object.assign(
+            {},
+            this.answerScript.answers![i]
+        );
     }
 
     /*
@@ -219,10 +390,14 @@ export class MarkingComponent implements OnInit {
         @param set1: [startIndex: number, endIndex: number]
         @param set2: [startIndex: number, endIndex: number]
     */
-    private isInBetween(set1: [number, number], set2: [number, number]){
-        if (set2[0] >= set1[0] && set2[0] <= set1[1] && set2[1] >= set1[0] && set2[1] <= set1[1])
-            return true;
-        return false
+    private isInBetween(set: [number, number], num: number) {
+        if (num >= set[0] && num <= set[1]) return true;
+        return false;
+    }
+
+    private removeObj(array: Array<any>, obj: any) {
+        array = array.filter((element) => element != obj);
+        return array;
     }
 
     onSubmit() {

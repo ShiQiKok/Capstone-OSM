@@ -1,6 +1,6 @@
 <div style="width: 80%" class="pl-4 pr-5">
     <div *ngIf="assessment && answerScript">
-        {{ answerScript | json }}
+        {{ answerScript.answers | json }}
         <!-- <br />
         {{ assessment | json }} -->
     </div>
@@ -25,6 +25,7 @@
                 <h5>Q{{ question.no }}) {{ question.value.question }}</h5>
                 <!-- target for popover -->
                 <app-highlight-text
+                    class="highlight-text-container"
                     [answer]="answerScript.answers[i]"
                     [ngbPopover]="floatToolbar"
                     #p="ngbPopover"

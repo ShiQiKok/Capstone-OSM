@@ -1,11 +1,11 @@
-span.highlight-correct{
+.highlight-correct{
     background-color: #D4F3C5;
 }
 
-span.highlight-wrong{
+.highlight-wrong{
     background-color: #FFCFCF;
 }
 
-span.highlight-wrong, span.highlight-correct{
+.highlight-wrong, .highlight-correct{
     padding: 0.25em 0;
 }
