@@ -16,13 +16,13 @@ import { GradebookService } from 'src/services/gradebook.service';
     styleUrls: ['./assessment-details.component.scss'],
 })
 export class AssessmentDetailsComponent implements OnInit {
-
     // objects
     assessment!: Assessment;
     answerScripts: any = undefined;
     uploadedFile!: File | null;
     markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
     selection = new SelectionModel<AnswerScript>(false, []);
+    finished: number = 0;
 
     // icon
     faUpload = faUpload;
@@ -57,12 +57,20 @@ export class AssessmentDetailsComponent implements OnInit {
         this.answerScripts = await this._answerScriptService.getAll(
             this.assessment.id!
         );
+        this.calculateProgress();
         this.isLoading = false;
     }
 
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
+    }
+
+    calculateProgress() {
+        this.finished = this.answerScripts.filter(
+            (x: any) => x.status === 'Finished'
+        ).length;
+        return Math.floor(this.finished / this.answerScripts.length * 100);
     }
 
     updateAssessment(id: any) {
