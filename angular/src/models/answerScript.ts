@@ -1,7 +1,7 @@
 export enum AnswerScriptStatus{
-    IN_PROGRESS = 'IN PROGRESS',
-    FINISHED = 'FINISHED',
-    NOT_STARTED = 'NOT STARTED'
+    IN_PROGRESS = 'In Progress',
+    FINISHED = 'Finished',
+    NOT_STARTED = 'Not Started'
 }
 
 export class AnswerScript{
