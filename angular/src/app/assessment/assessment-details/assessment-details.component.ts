@@ -16,7 +16,6 @@ import { GradebookService } from 'src/services/gradebook.service';
     styleUrls: ['./assessment-details.component.scss'],
 })
 export class AssessmentDetailsComponent implements OnInit {
-    @ViewChild('content') modelContent!: ElementRef;
 
     // objects
     assessment!: Assessment;
@@ -61,10 +60,6 @@ export class AssessmentDetailsComponent implements OnInit {
         this.isLoading = false;
     }
 
-    // ngAfterViewInit() {
-    //     this.openUploadDialog(this.modelContent);
-    // }
-
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
@@ -97,7 +92,12 @@ export class AssessmentDetailsComponent implements OnInit {
         this._answerScriptService
             .bulkUpload(this.assessment.id!, this.uploadedFile!)
             .then(() => {
-                console.log('uploaded');
+                this._answerScriptService
+                    .getAll(this.assessment.id!)
+                    .then((obj) => {
+                        this.answerScripts = obj;
+                        this.modalService.dismissAll();
+                    });
             });
     }
 
@@ -105,7 +105,10 @@ export class AssessmentDetailsComponent implements OnInit {
         this.selection.toggle(answerScript);
     }
 
-    downloadGradebook(){
-        this._gradebookService.downloadGradebook(this.assessment.id!, `Gradebook - ${this.assessment.name}`);
+    downloadGradebook() {
+        this._gradebookService.downloadGradebook(
+            this.assessment.id!,
+            `Gradebook - ${this.assessment.name}`
+        );
     }
 }
