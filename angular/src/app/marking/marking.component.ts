@@ -5,7 +5,6 @@ import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ViewSDKClient } from 'src/services/view-sdk.service';
-import { TextSelectEvent } from '../directives/text-select-directive.directive';
 
 
 class CustomSelection {
@@ -396,8 +395,15 @@ export class MarkingComponent implements OnInit {
         return array;
     }
 
+    private checkIsMarkingFinished(): boolean{
+        for (let answer of this.answerScript.answers!) {
+            if (answer.marksAwarded === null) return false;
+        }
+        return true;
+    }
+
     onSubmit() {
-        console.log(this.answerScript.answers);
+        this.checkIsMarkingFinished() ? this.answerScript.status = AnswerScriptStatus.FINISHED: null;
         this._answerScriptService
             .update(this.answerScript.id!, this.answerScript)
             .then((obj) => {
