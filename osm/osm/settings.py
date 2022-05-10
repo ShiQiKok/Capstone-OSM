@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'subject',
     'answer_script',
     'storage',
+    'gradebook',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
