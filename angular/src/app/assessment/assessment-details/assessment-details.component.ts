@@ -8,6 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript } from 'src/models/answerScript';
+import { GradebookService } from 'src/services/gradebook.service';
 
 @Component({
     selector: 'app-assessment-details',
@@ -43,6 +44,7 @@ export class AssessmentDetailsComponent implements OnInit {
     constructor(
         private _assessmentService: AssessmentService,
         private _answerScriptService: AnswerScriptService,
+        private _gradebookService: GradebookService,
         private router: Router,
         private route: ActivatedRoute,
         private modalService: NgbModal
@@ -101,5 +103,9 @@ export class AssessmentDetailsComponent implements OnInit {
 
     onRowSelect(answerScript: AnswerScript) {
         this.selection.toggle(answerScript);
+    }
+
+    downloadGradebook(){
+        this._gradebookService.downloadGradebook(this.assessment.id!, `Gradebook - ${this.assessment.name}`);
     }
 }

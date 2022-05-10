@@ -3,21 +3,16 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from openpyxl import Workbook
-from openpyxl.writer.excel import save_virtual_workbook
-from wsgiref.util import FileWrapper
-from django.http import HttpResponse
+from rest_pandas import PandasView, PandasExcelRenderer
+from assessment.models import Assessment
+from answer_script.models import AnswerScript
+from .serializers import GradebookAnswerScriptSerializer
 
-@api_view(['GET'])
-@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def download_gradebook(request):
-    workbook = Workbook()
-    sheet = workbook.active
+class GradebookView(PandasView):
+    queryset = AnswerScript.objects.all()
+    serializer_class = GradebookAnswerScriptSerializer
 
-    response = HttpResponse(save_virtual_workbook(workbook), content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % 'testing.xlsx'
+    def filter_queryset(self, qs):
+        return qs.filter(assessment_id=self.kwargs['assessment_id'])
 
-    return response
-
-
+    renderer_classes = [PandasExcelRenderer]
