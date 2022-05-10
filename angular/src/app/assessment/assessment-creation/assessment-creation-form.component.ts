@@ -267,7 +267,7 @@ export class AssessmentCreationFormComponent
             subject: this.assessmentDetailFormGroup.get('subject')!.value,
             marking_settings:
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
-            questions: JSON.stringify(questionJson),
+            questions: this.questions,
             rubrics: this.rubrics,
             markers: [this.currentUser.id],
         };

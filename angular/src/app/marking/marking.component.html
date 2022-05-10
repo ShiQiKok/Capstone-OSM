@@ -1,9 +1,50 @@
-<div style="width: 80%" class="px-4">
+<div style="width: 80%" class="pl-4 pr-5">
     <div *ngIf="assessment && answerScript">
-        <!-- {{ answerScript | json }} -->
-        <!-- {{ assessment | json }} -->
+        {{ answerScript.answers | json }}
+        <!-- <br />
+        {{ assessment | json }} -->
     </div>
-    <div id="pdf-div" class="pdf-view" style="height: 90vh"></div>
+    <!-- <div *ngIf="isFloatingBarShowed">SHOW BAR</div> -->
+    <ng-template #floatToolbar>
+        <button (click)="highlightText(['highlight-correct'])">Correct</button>
+        <button (click)="highlightText(['highlight-wrong'])">Wrong</button>
+    </ng-template>
+
+    <div id="answerscript-content">
+        <div
+            *ngIf="isEssayBased"
+            id="pdf-div"
+            class="pdf-view"
+            style="height: 90vh"
+        ></div>
+        <div *ngIf="!isEssayBased">
+            <div
+                *ngFor="let question of assessment.questions; let i = index"
+                class="my-4"
+            >
+                <h5>Q{{ question.no }}) {{ question.value.question }}</h5>
+                <!-- target for popover -->
+                <app-highlight-text
+                    class="highlight-text-container"
+                    [answer]="answerScript.answers[i]"
+                    [ngbPopover]="floatToolbar"
+                    #p="ngbPopover"
+                    (mousedown)="p.open()"
+                    (mousedown)="p.close()"
+                >
+                </app-highlight-text>
+                <!-- <div
+                    [ngbPopover]="floatToolbar"
+                    #p="ngbPopover"
+                    (mousedown)="p.open({ autoClose: false })"
+                    (mousedown)="p.close()"
+                    class="border p-4 bg-white answer-box"
+                >
+                    {{ answerScript.answers[i].answer }}
+                </div> -->
+            </div>
+        </div>
+    </div>
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
         <div *ngIf="assessment">
             <div *ngIf="isEssayBased">
@@ -15,18 +56,24 @@
                         (selectionChange)="onGeneralCriteriaChanged()"
                     >
                         <mat-list-option
-                            *ngFor="let c of assessment.rubrics.criterion"
+                            *ngFor="
+                                let c of assessment.rubrics.criterion;
+                                let i = index
+                            "
                             [value]="c"
                             class="border"
                         >
                             {{ c.title }}
                             <input
-                                #input_1
+                                [id]="'input-' + i"
                                 disabled
                                 class="form-control w-25 text-center"
                                 [ngModel]="
-                                    (c.markAwarded * c.totalMarks) / 100
-                                        ? (c.markAwarded * c.totalMarks) / 100
+                                    answerScript.answers[i].marksAwarded != null
+                                        ? (answerScript.answers[i]
+                                              .marksAwarded *
+                                              c.totalMarks) /
+                                          100
                                         : 0
                                 "
                             />
@@ -76,7 +123,11 @@
                                     max="{{
                                         assessment.rubrics.marksRange[i].max
                                     }}"
-                                    [(ngModel)]="selectedCriterion.markAwarded"
+                                    [(ngModel)]="
+                                        answerScript.answers[
+                                            selectedCriterionIndex
+                                        ].marksAwarded
+                                    "
                                     (change)="onMarkAwardedChanged($event)"
                                 />
                             </div>
@@ -84,11 +135,43 @@
                     </mat-selection-list>
                 </div>
             </div>
-            <div *ngIf="!isEssayBased">this is question based</div>
-            <div>Marks: {{ totalMarks }}</div>
-            <button class="btn btn-primary w-100" (click)="onSubmit()">
-                Submit
-            </button>
+            <div *ngIf="!isEssayBased">
+                <mat-list role="list" id="questionMarksPanel">
+                    <mat-list-item
+                        *ngFor="
+                            let question of assessment.questions;
+                            let i = index
+                        "
+                        class="border"
+                        role="listitem"
+                    >
+                        Question {{ question.no }}
+                        <input
+                            type="number"
+                            class="form-control text-center ml-auto"
+                            style="width: 25%"
+                            min="0"
+                            max="{{ question.value.marks }}"
+                            [(ngModel)]="answerScript.answers[i].marksAwarded"
+                            (change)="onMarkAwardedChanged($event)"
+                        />
+                        /
+                        {{ question.value.marks }}
+                    </mat-list-item>
+                </mat-list>
+            </div>
+            <div class="position-absolute bottom-0 end-0 w-100 bg-white">
+                <div class="pl-4">
+                    Marks: {{ answerScript.marks ? answerScript.marks : 0 }}
+                </div>
+                <button
+                    class="btn btn-primary w-100"
+                    style="height: 3rem"
+                    (click)="onSubmit()"
+                >
+                    Submit
+                </button>
+            </div>
         </div>
     </div>
 </div>
