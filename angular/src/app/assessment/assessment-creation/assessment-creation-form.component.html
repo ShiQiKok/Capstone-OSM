@@ -1,3 +1,35 @@
+<ng-template #subjectCreationModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Create a new subject</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="subjectFormGroup" id="subjectFormGroup">
+            <div class="form-group">
+                <label for="newSubject">Subject Name</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    formControlName="newSubject"
+                    id="newSubject"
+                    placeholder="Enter subject name"
+                />
+                <error-message
+                    ngDefaultControl
+                    [formControl]="newSubject"
+                ></error-message>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSubmitNewSubject(modal)">save</button>
+    </div>
+</ng-template>
 <div (click)="setUneditable()">
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
@@ -57,6 +89,9 @@
                                 {{ subject.name }}
                             </option>
                         </select>
+                        <button (click)="openModal(subjectCreationModal)" class="btn btn-link">
+                            + create a new subject
+                        </button>
                         <error-message
                             ngDefaultControl
                             [formControl]="subject"
@@ -267,7 +302,7 @@
                     <ng-container
                         *ngFor="
                             let col of getRubricsMarksRange();
-                            let colIndex = index;
+                            let colIndex = index
                         "
                         matColumnDef="{{
                             col === 'criteria' ? col : col.min + ' - ' + col.max

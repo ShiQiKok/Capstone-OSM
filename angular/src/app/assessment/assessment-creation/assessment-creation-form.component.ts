@@ -13,6 +13,7 @@ import { SubjectService } from 'src/services/subject.service';
 import { faTrashAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 class QuestionInput {
     no?: string | undefined;
@@ -72,6 +73,7 @@ export class AssessmentCreationFormComponent
 
     assessmentDetailFormGroup!: FormGroup;
     questionFormGroup!: FormGroup;
+    subjectFormGroup!: FormGroup;
 
     assessmentTypes = Object.values(AssessmentType);
     markingSettings = Object.values(MarkingSettings);
@@ -221,7 +223,8 @@ export class AssessmentCreationFormComponent
         authenticationService: AuthenticationService,
         private _formBuilder: FormBuilder,
         private _subjectService: SubjectService,
-        private _assessmentService: AssessmentService
+        private _assessmentService: AssessmentService,
+        private _modalService: NgbModal
     ) {
         super(router, authenticationService);
         this._assessmentService.getApi();
@@ -245,6 +248,10 @@ export class AssessmentCreationFormComponent
 
         this.questionFormGroup = this._formBuilder.group({
             totalMark: ['100', Validators.required],
+        });
+
+        this.subjectFormGroup = this._formBuilder.group({
+            newSubject: ['', Validators.required],
         });
     }
 
@@ -393,5 +400,26 @@ export class AssessmentCreationFormComponent
     get defaultSetting() {
         return this.assessmentDetailFormGroup.get('defaultSetting');
     }
+
+    get newSubject() {
+        return this.subjectFormGroup.get('newSubject');
+    }
     // END REGION FormControls Getters
+
+    openModal(modal: any){
+        this._modalService.open(modal);
+    }
+
+    onSubmitNewSubject(modal: any){
+        let userId: number =  this.currentUser.id
+        this._subjectService.create({
+            name: this.subjectFormGroup.get('newSubject')!.value,
+            markers: [userId]
+        }).then((subject) => {
+            console.log(subject);
+        });
+        this._modalService.dismissAll("Subject Submitted");
+        // to reload the page after creating a new subject  
+        window.location.reload();
+    }
 }
