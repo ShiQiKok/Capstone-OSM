@@ -9,7 +9,6 @@ export class AnswerScriptService extends BaseService {
     constructor(http: HttpClient) {
         super(http);
         this.ROOT = this.ROOT + 'answers/';
-        this.getApi();
     }
 
     update(id: number, data: any) {
