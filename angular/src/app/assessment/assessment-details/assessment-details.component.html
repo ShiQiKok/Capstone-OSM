@@ -2,9 +2,13 @@
     <div style="width: 80%" class="px-4">
         <div>
             <div>
-                <h1 class="d-inline">{{ assessment.name }}</h1>
+                <h1 class="d-inline">
+                    {{ assessment.name}}
+                </h1>
+                <fa-icon (click)="openModal(assessmentSetting)" style="font-size: 1.75em; cursor: pointer" class="text-secondary" [icon]="faCog"></fa-icon>
+
                 <button
-                    (click)="openUploadDialog(content)"
+                    (click)="openModal(content)"
                     class="btn btn-primary float-right"
                 >
                     Upload Script
@@ -70,10 +74,8 @@
                         <span
                             class="rounded-pill py-1 px-2 text-white"
                             [class]="{
-                                'bg-primary':
-                                    answer.status === 'In Progress',
-                                'bg-secondary':
-                                answer.status === 'Not Started',
+                                'bg-primary': answer.status === 'In Progress',
+                                'bg-secondary': answer.status === 'Not Started',
                                 'bg-success': answer.status === 'Finished'
                             }"
                         >
@@ -86,7 +88,7 @@
                 <ng-container matColumnDef="marks">
                     <th mat-header-cell *matHeaderCellDef>Marks</th>
                     <td mat-cell *matCellDef="let answer">
-                        {{ answer.marks ? answer.marks : '-' }}
+                        {{ answer.marks ? answer.marks : "-" }}
                     </td>
                 </ng-container>
 
@@ -107,8 +109,15 @@
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
         <div id="assessmentBriefInfo">
             <h4>Your Progress</h4>
-            <p><ngb-progressbar type="primary" [value]="calculateProgress()"></ngb-progressbar></p>
-            <small class="text-end d-block">{{finished}}/{{answerScripts.length}}</small>
+            <p>
+                <ngb-progressbar
+                    type="primary"
+                    [value]="calculateProgress()"
+                ></ngb-progressbar>
+            </p>
+            <small class="text-end d-block"
+                >{{ finished }}/{{ answerScripts.length }}</small
+            >
         </div>
         <div>
             <a
@@ -176,6 +185,59 @@
     </div>
 </ng-template>
 
+<ng-template #assessmentSetting let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Settings</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="assessmentName">Assessment Name</label>
+            <input type="text" class="form-control" id="assessmentName" [(ngModel)]="assessment.name" />
+        </div>
+        <div class="form-group">
+            <label for="assessmentType">Assessment Type</label>
+            <select
+                class="form-select"
+                name="assessmentTypes"
+                id="assessmentTypes"
+            >
+                <option
+                    *ngFor="let type of assessmentTypes"
+                    [value]="type"
+                    [selected]="
+                        type === assessment.type ? true : false
+                    "
+                >
+                    {{ type }}
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="markingSetting">Marking Setting</label>
+            <select
+                class="form-select"
+                name="markingSetting"
+                id="markingSetting"
+            >
+                <option
+                    *ngFor="let setting of markingSettings"
+                    [value]="setting"
+                    [selected]="
+                        setting == assessment.marking_settings ? true : false
+                    "
+                >
+                    {{ setting }}
+                </option>
+            </select>
+        </div>
+    </div>
+</ng-template>
 <mat-spinner
     *ngIf="isLoading"
     [strokeWidth]="2"

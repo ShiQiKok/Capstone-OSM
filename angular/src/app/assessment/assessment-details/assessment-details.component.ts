@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Assessment } from 'src/models/assessment';
+import { Assessment, AssessmentType } from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -9,6 +9,7 @@ import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript } from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-assessment-details',
@@ -22,10 +23,12 @@ export class AssessmentDetailsComponent implements OnInit {
     uploadedFile!: File | null;
     markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
     selection = new SelectionModel<AnswerScript>(false, []);
+    assessmentTypes: AssessmentType[] = Object.values(AssessmentType);
     finished: number = 0;
 
-    // icon
+    // icons
     faUpload = faUpload;
+    faCog = faCog;
 
     // controls
     isLoading: boolean = true;
@@ -87,7 +90,7 @@ export class AssessmentDetailsComponent implements OnInit {
         });
     }
 
-    openUploadDialog(content: any) {
+    openModal(content: any) {
         this.modalService.open(content, { size: 'lg' });
     }
 
