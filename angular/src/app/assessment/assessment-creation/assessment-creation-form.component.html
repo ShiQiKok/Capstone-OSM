@@ -30,7 +30,7 @@
         <button type="button" class="btn btn-primary" (click)="onSubmitNewSubject(modal)">save</button>
     </div>
 </ng-template>
-<div (click)="setUneditable()">
+<div>
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
             <!-- Step 1: Assessment Info -->
@@ -281,124 +281,12 @@
             </mat-step>
 
             <!-- Step 3: Rubrics -->
-            <mat-step [stepControl]="rubricFormGroup" label="Rubrics">
-                <button
-                    class="btn btn-primary d-block ml-auto"
-                    (click)="addRubricsRow($event)"
-                >
-                    + Add Row
-                </button>
-                <button
-                    class="btn btn-primary d-block ml-auto"
-                    (click)="addRubricsColumn($event)"
-                >
-                    + Add Columns
-                </button>
-                <table
-                    mat-table
-                    [dataSource]="rubrics.criterion"
-                    class="mat-elevation-z8 w-100 my-4"
-                >
-                    <ng-container
-                        *ngFor="
-                            let col of getRubricsMarksRange();
-                            let colIndex = index
-                        "
-                        matColumnDef="{{
-                            col === 'criteria' ? col : col.min + ' - ' + col.max
-                        }}"
-                    >
-                        <!-- the header-->
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div>
-                                <span *ngIf="col === 'criteria'">Criteria</span>
-                                <span *ngIf="col !== 'criteria'">
-                                    <span *ngIf="rubrics.isEdit">
-                                        <input
-                                            type="text"
-                                            class="form-control form-control-sm d-inline w-25"
-                                            [(ngModel)]="col.min"
-                                        />
-                                        -
-                                        <input
-                                            type="text"
-                                            class="form-control form-control-sm d-inline w-25"
-                                            [(ngModel)]="col.max"
-                                        />
-                                    </span>
-                                    <span *ngIf="!rubrics.isEdit">
-                                        {{ col.min }} - {{ col.max }}
-                                    </span>
-                                </span>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <div *ngIf="colIndex == 0">
-                                <span *ngIf="!element.isEdit">
-                                    {{ element.title }}
-                                    <br />
-                                    {{ element.description }}
-                                    <br />
-                                    {{ element.totalMarks }}
-                                </span>
-                                <span *ngIf="element.isEdit">
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        [(ngModel)]="element.title"
-                                    />
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        [(ngModel)]="element.description"
-                                    />
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        [(ngModel)]="element.totalMarks"
-                                    />
-                                </span>
-                            </div>
-                            <div *ngIf="colIndex !== 0">
-                                <span *ngIf="!element.isEdit">
-                                    {{
-                                        element.columns[colIndex - 1]
-                                            .description
-                                    }}
-                                </span>
-                                <span *ngIf="element.isEdit">
-                                    <textarea
-                                        placeholder="description..."
-                                        class="form-control"
-                                        [(ngModel)]="
-                                            element.columns[colIndex - 1]
-                                                .description
-                                        "
-                                    ></textarea>
-                                </span>
-                            </div>
-                        </td>
-                    </ng-container>
-                    <tr
-                        mat-header-row
-                        (click)="$event.stopPropagation()"
-                        (dblclick)="rubrics.isEdit = !rubrics.isEdit"
-                        *matHeaderRowDef="getRubricsMarksRangeString()"
-                    ></tr>
-                    <tr
-                        mat-row
-                        (click)="$event.stopPropagation()"
-                        (dblclick)="setUneditable(); row.isEdit = true"
-                        *matRowDef="
-                            let row;
-                            columns: getRubricsMarksRangeString()
-                        "
-                    ></tr>
-                </table>
+            <mat-step label="Rubrics">
+                <app-rubrics-input [(rubrics)]="rubrics" (rubrics)="testing()"></app-rubrics-input>
                 <button matStepperPrevious class="btn btn-outline-primary mr-2">
                     Back
                 </button>
-                <button matStepperNext class="btn btn-primary">Next</button>
+                <button matStepperNext (click)="testing()" class="btn btn-primary">Next</button>
             </mat-step>
 
             <mat-step label="Done">

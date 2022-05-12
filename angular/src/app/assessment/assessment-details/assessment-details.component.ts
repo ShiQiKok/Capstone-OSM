@@ -17,6 +17,7 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
     styleUrls: ['./assessment-details.component.scss'],
 })
 export class AssessmentDetailsComponent implements OnInit {
+    @ViewChild('editRubrics') modal: any;
     // objects
     assessment!: Assessment;
     answerScripts: any = undefined;
@@ -62,11 +63,16 @@ export class AssessmentDetailsComponent implements OnInit {
         );
         this.calculateProgress();
         this.isLoading = false;
+        this.openModal(this.modal, { size: 'xl' });
     }
 
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
+    }
+
+    printObject(){
+        console.log(this.assessment.rubrics);
     }
 
     calculateProgress() {
@@ -90,8 +96,11 @@ export class AssessmentDetailsComponent implements OnInit {
         });
     }
 
-    openModal(content: any) {
-        this.modalService.open(content, { size: 'lg' });
+    openModal(content: any, config: any) {
+        if (config)
+            this.modalService.open(content, config);
+        else
+            this.modalService.open(content, { size: 'lg' });
     }
 
     onFileChange(file: FileList) {

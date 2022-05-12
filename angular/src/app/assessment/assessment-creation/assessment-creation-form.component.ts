@@ -113,110 +113,8 @@ export class AssessmentCreationFormComponent
             isEdit: false,
         },
     ];
-    rubrics: RubricsInput = {
-        marksRange: [
-            { min: 0, max: 39 },
-            { min: 40, max: 49 },
-            { min: 50, max: 59 },
-            { min: 60, max: 69 },
-            { min: 70, max: 100 },
-        ],
-        isEdit: false,
-        criterion: [
-            {
-                title: 'criteria 1',
-                description: 'desc for criteria 1',
-                totalMarks: 25,
-                isEdit: false,
-                columns: [
-                    {
-                        description: 'desc for col 1 in criteria 1',
-                    },
-                    {
-                        description: 'desc for col 2 in criteria 1',
-                    },
-                    {
-                        description: 'desc for col 3 in criteria 1',
-                    },
-                    {
-                        description: 'desc for col 4 in criteria 1',
-                    },
-                    {
-                        description: 'desc for col 5 in criteria 1',
-                    },
-                ],
-            },
-            {
-                title: 'criteria 2',
-                description: 'desc for criteria 2',
-                totalMarks: 25,
-                isEdit: false,
-                columns: [
-                    {
-                        description: 'desc for col 1 in criteria 2',
-                    },
-                    {
-                        description: 'desc for col 2 in criteria 2',
-                    },
-                    {
-                        description: 'desc for col 3 in criteria 2',
-                    },
-                    {
-                        description: 'desc for col 4 in criteria 2',
-                    },
-                    {
-                        description: 'desc for col 5 in criteria 2',
-                    },
-                ],
-            },
-            {
-                title: 'criteria 3',
-                description: 'desc for criteria 3',
-                totalMarks: 25,
-                isEdit: false,
-                columns: [
-                    {
-                        description: 'desc for col 1 in criteria 3',
-                    },
-                    {
-                        description: 'desc for col 2 in criteria 3',
-                    },
-                    {
-                        description: 'desc for col 3 in criteria 3',
-                    },
-                    {
-                        description: 'desc for col 4 in criteria 3',
-                    },
-                    {
-                        description: 'desc for col 5 in criteria 3',
-                    },
-                ],
-            },
-            {
-                title: 'criteria 4',
-                description: 'desc for criteria 4',
-                totalMarks: 25,
-                isEdit: false,
-                columns: [
-                    {
-                        description: 'desc for col 1 in criteria 4',
-                    },
-                    {
-                        description: 'desc for col 2 in criteria 4',
-                    },
-                    {
-                        description: 'desc for col 3 in criteria 4',
-                    },
-                    {
-                        description: 'desc for col 4 in criteria 4',
-                    },
-                    {
-                        description: 'desc for col 5 in criteria 5',
-                    },
-                ],
-            },
-        ],
-    };
+    rubrics!: RubricsInput;
+
 
     constructor(
         router: Router,
@@ -257,6 +155,10 @@ export class AssessmentCreationFormComponent
 
     async ngOnInit() {}
 
+    testing(){
+        console.log(this.rubrics)
+    }
+
     onSubmit(): void {
         let questionJson: any = {};
         this.questions.forEach((q) => {
@@ -282,37 +184,6 @@ export class AssessmentCreationFormComponent
         this._assessmentService.create(this.assessment).then(() => {
             this.router.navigate(['/assessment-list']);
         });
-    }
-
-    setUneditable() {
-        this.rubrics.isEdit = false;
-        this.rubrics.criterion!.forEach((criteria) => {
-            criteria.isEdit = false;
-        });
-    }
-
-    getRubricsMarksRange(): any {
-        if (this.rubrics && this.rubrics.criterion) {
-            return [
-                'criteria',
-                ...this.rubrics.marksRange!.map((c) => {
-                    return c;
-                }),
-            ];
-        }
-        return [];
-    }
-
-    getRubricsMarksRangeString(): any {
-        if (this.rubrics && this.rubrics.criterion) {
-            return [
-                'criteria',
-                ...this.rubrics.marksRange!.map((c) => {
-                    return `${c.min} - ${c.max}`;
-                }),
-            ];
-        }
-        return [];
     }
 
     // To mark the invalid fields dirty for triggering error messages
@@ -351,38 +222,8 @@ export class AssessmentCreationFormComponent
         );
     }
 
-    addRubricsRow(event: any) {
-        event.stopPropagation();
-        this.setUneditable();
-        let len = this.rubrics.marksRange!.length;
-        let row: RubricCriterionInput = {
-            title: 'criteria ' + (this.rubrics.criterion!.length + 1),
-            description: '',
-            totalMarks: 0,
-            isEdit: true,
-            columns: [],
-        };
-        for (let i = 0; i < len; i++) {
-            row.columns!.push({
-                description: '',
-            });
-        }
-        this.rubrics.criterion = [...this.rubrics.criterion!, row];
-    }
 
-    addRubricsColumn(event: any) {
-        event.stopPropagation();
-        this.rubrics.marksRange = [
-            ...this.rubrics.marksRange!,
-            { min: 0, max: 0 },
-        ];
 
-        this.rubrics.criterion!.forEach((c) => {
-            c.columns!.push({
-                description: 'yea',
-            });
-        });
-    }
 
     // REGION FormControls Getters
     get assessmentName() {
@@ -419,7 +260,7 @@ export class AssessmentCreationFormComponent
             console.log(subject);
         });
         this._modalService.dismissAll("Subject Submitted");
-        // to reload the page after creating a new subject  
+        // to reload the page after creating a new subject
         window.location.reload();
     }
 }

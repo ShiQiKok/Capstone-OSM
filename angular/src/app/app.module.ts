@@ -30,6 +30,7 @@ import { MarkingComponent } from './marking/marking.component';
 import { MatListModule } from '@angular/material/list';
 
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
+import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
 
 @NgModule({
     declarations: [
@@ -45,6 +46,7 @@ import { HighlightTextComponent } from './marking/highlight-text/highlight-text.
         SpinnerComponent,
         MarkingComponent,
         HighlightTextComponent,
+        RubricsInputComponent,
     ],
     imports: [
         BrowserModule,

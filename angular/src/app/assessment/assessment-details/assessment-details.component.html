@@ -3,9 +3,14 @@
         <div>
             <div>
                 <h1 class="d-inline">
-                    {{ assessment.name}}
+                    {{ assessment.name }}
                 </h1>
-                <fa-icon (click)="openModal(assessmentSetting)" style="font-size: 1.75em; cursor: pointer" class="text-secondary" [icon]="faCog"></fa-icon>
+                <fa-icon
+                    (click)="openModal(assessmentSetting)"
+                    style="font-size: 1.75em; cursor: pointer"
+                    class="text-secondary"
+                    [icon]="faCog"
+                ></fa-icon>
 
                 <button
                     (click)="openModal(content)"
@@ -24,18 +29,6 @@
                         {{ setting }}
                     </option>
                 </select>
-                <button
-                    class="btn btn-danger"
-                    (click)="deleteAssessment(assessment.id)"
-                >
-                    Delete
-                </button>
-                <button
-                    class="btn btn-info"
-                    (click)="updateAssessment(assessment.id)"
-                >
-                    Update
-                </button>
             </div>
         </div>
         <div id="table-container">
@@ -185,6 +178,7 @@
     </div>
 </ng-template>
 
+<!-- Edit Assessment Modal -->
 <ng-template #assessmentSetting let-modal>
     <div class="modal-header">
         <h4 class="modal-title">Settings</h4>
@@ -198,7 +192,12 @@
     <div class="modal-body">
         <div class="form-group">
             <label for="assessmentName">Assessment Name</label>
-            <input type="text" class="form-control" id="assessmentName" [(ngModel)]="assessment.name" />
+            <input
+                type="text"
+                class="form-control"
+                id="assessmentName"
+                [(ngModel)]="assessment.name"
+            />
         </div>
         <div class="form-group">
             <label for="assessmentType">Assessment Type</label>
@@ -210,16 +209,14 @@
                 <option
                     *ngFor="let type of assessmentTypes"
                     [value]="type"
-                    [selected]="
-                        type === assessment.type ? true : false
-                    "
+                    [selected]="type === assessment.type ? true : false"
                 >
                     {{ type }}
                 </option>
             </select>
         </div>
         <div class="form-group">
-            <label for="markingSetting">Marking Setting</label>
+            <label for="markingSetting">Default Marking Setting</label>
             <select
                 class="form-select"
                 name="markingSetting"
@@ -236,8 +233,58 @@
                 </option>
             </select>
         </div>
+        <div class="row">
+            <div class="form-group col">
+                <label for="rubrics">Rubrics</label>
+                <button
+                    (click)="openModal(editRubrics, { size: 'xl' })"
+                    class="btn btn-outline-primary btn-sm d-inline-block ml-4"
+                >
+                    Edit Rubrics
+                </button>
+            </div>
+            <div class="form-group col">
+                <label for="rubrics">Questions</label>
+                <button
+                    class="btn btn-outline-primary btn-sm d-inline-block ml-4"
+                >
+                    Edit Questions
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-danger"
+            (click)="deleteAssessment(assessment.id)"
+        >
+            Delete
+        </button>
+        <button type="submit" class="btn btn-primary">Confirm</button>
     </div>
 </ng-template>
+
+<!-- //* Edit Rubrics Modal -->
+<ng-template let-modal #editRubrics>
+    <div class="modal-header">
+        <h4 class="modal-title">Rubrics</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <app-rubrics-input [(rubrics)]="assessment.rubrics" ></app-rubrics-input>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" (click)="printObject()">Confirm</button>
+    </div>
+</ng-template>
+
+<!-- Edit Questions Modal -->
+
 <mat-spinner
     *ngIf="isLoading"
     [strokeWidth]="2"
