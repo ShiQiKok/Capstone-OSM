@@ -2,23 +2,28 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import UserSerializer
 from .models import User
+from django.contrib.auth.hashers import check_password
+
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def apiOverview(request):
     api_urls = {
-        'getAll':'users/',
-        'get':'user-detail/',
-        'create':'user-create/',
-        'update':'user-update/',
-        'delete':'user-delete/',
+        'getAll': 'users/',
+        'get': 'user-detail/',
+        'create': 'user-create/',
+        'update': 'user-update/',
+        'delete': 'user-delete/',
+        'check': 'user-check-password/'
     }
 
     return Response(api_urls)
+
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
@@ -29,6 +34,7 @@ def users(request):
 
     return Response(serializer.data)
 
+
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -38,7 +44,8 @@ def userDetails(request, id):
 
     return Response(serializer.data)
 
-@api_view(['GET','POST'])
+
+@api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def createUser(request):
@@ -51,17 +58,22 @@ def createUser(request):
     else:
         return Response(serializer.errors)
 
+
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def updateUser(request, id):
     user = User.objects.get(id=id)
+    print(request.data)
     serializer = UserSerializer(instance=user, data=request.data)
 
     if serializer.is_valid():
         serializer.save()
+        print(serializer.data)
+        return Response(serializer.data)
 
-    return Response(serializer.data)
+    return Response(serializer.errors)
+
 
 @api_view(['DELETE'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
@@ -71,3 +83,21 @@ def deleteUser(request, id):
     user.delete()
 
     return Response("User successfully deleted")
+
+
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def updatePassword(request, id):
+    user = User.objects.get(id=id)
+    serializer = UserSerializer(instance=user)
+
+    if (check_password(request.data['currentPassword'], user.password)):
+        updated_user = serializer.update_password(
+            id, request.data['newPassword'])
+        serializer = UserSerializer(instance=updated_user)
+
+        return Response(serializer.data)
+
+    else:
+        return Response({'details': 'The password provided is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)

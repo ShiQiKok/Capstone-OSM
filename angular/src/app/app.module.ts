@@ -31,6 +31,7 @@ import { MatListModule } from '@angular/material/list';
 
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
 import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
     declarations: [
@@ -66,6 +67,7 @@ import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-
         MatProgressSpinnerModule,
         FontAwesomeModule,
         DragDropModule,
+        MatSnackBarModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

@@ -95,4 +95,13 @@ export class AuthenticationService {
                 });
         });
     }
+
+    setUser(user: any){
+        this.currentUserSubject.next(user);
+        this.currentUser = this.currentUserSubject.asObservable();
+        localStorage.setItem(
+            'currentUser',
+            JSON.stringify(user)
+        );
+    }
 }
