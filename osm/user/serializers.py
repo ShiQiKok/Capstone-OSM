@@ -25,3 +25,9 @@ class UserSerializer(serializers.ModelSerializer):
         email, password, validated_data = self.extract_data(validated_data)
         user = User.objects.create_superuser(email, password, **validated_data)
         return user
+
+    def update_password(self, id, new_password):
+        user = User.objects.get(id=id)
+        user.set_password(new_password)
+        user.save()
+        return user
