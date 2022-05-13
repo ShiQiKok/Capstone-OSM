@@ -1,22 +1,26 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BaseService } from 'src/base.service';
 import { User } from '../models/user';
 
 @Injectable({
     providedIn: 'root',
 })
-export class UserService {
-    constructor(private http: HttpClient) {}
-
-    getAll() {
-        return this.http.get<User[]>('api/users/users');
+export class UserService extends BaseService{
+    constructor(http: HttpClient) {
+        super(http);
+        this.ROOT = this.ROOT + 'users/';
     }
 
     signup(user: User) {
         return this.http.post(`api/users/user-create`, user);
     }
 
-    delete(id: number) {
-        return this.http.delete(`api/user/user-delete/${id}`);
+    checkPassword(userId: number, password: string, newPassword: string) {
+        return new Promise<Object>((resolve, reject) => {
+            this.http
+                .post(this.ROOT + this.ALL_API.check + userId, {currentPassword: password, newPassword: newPassword})
+                .subscribe((obj) => resolve(obj), (err) => reject(err));
+        });
     }
 }

@@ -38,7 +38,6 @@ export class LoginComponent implements OnInit {
             (err) => {
                 this.isFormValid = false;
                 this.errorMessage = err.error.detail;
-                // console.log(err.error.detail)
             }
         );
     }

@@ -30,6 +30,7 @@ import { MarkingComponent } from './marking/marking.component';
 import { MatListModule } from '@angular/material/list';
 
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
     declarations: [
@@ -64,6 +65,7 @@ import { HighlightTextComponent } from './marking/highlight-text/highlight-text.
         MatProgressSpinnerModule,
         FontAwesomeModule,
         DragDropModule,
+        MatSnackBarModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
