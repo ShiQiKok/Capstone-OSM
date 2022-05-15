@@ -82,13 +82,6 @@ export class AuthenticationService {
         });
     }
 
-    isTokenExpired(token: any): boolean {
-        let token_decoded = this.decodeToken(token);
-        let token_expires = new Date(token_decoded.exp * 1000);
-
-        return new Date().getTime() > token_expires.getTime();
-    }
-
     refreshToken(token: any) {
         return this.http.post(
             'api/token/refresh/',
