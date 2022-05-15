@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppComponent } from 'src/app/app.component';
@@ -14,6 +14,7 @@ import { faTrashAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
 
 class QuestionInput {
     no?: string | undefined;
@@ -61,8 +62,10 @@ class RubricMarkRangeInput {
 })
 export class AssessmentCreationFormComponent
     extends AppComponent
-    implements OnInit
 {
+    // Component Reference
+    @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
+
     // icons
     faTrashAlt = faTrashAlt;
     faEllipsisV = faEllipsisV;
@@ -153,10 +156,10 @@ export class AssessmentCreationFormComponent
         });
     }
 
-    async ngOnInit() {}
-
-    testing(){
-        console.log(this.rubrics)
+    emitEvent(){
+        // using reference component to trigger the event emit
+        this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
+        console.log(this.rubrics);
     }
 
     onSubmit(): void {
@@ -221,8 +224,6 @@ export class AssessmentCreationFormComponent
             event.currentIndex
         );
     }
-
-
 
 
     // REGION FormControls Getters

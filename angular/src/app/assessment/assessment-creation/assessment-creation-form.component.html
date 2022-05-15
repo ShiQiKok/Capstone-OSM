@@ -282,11 +282,11 @@
 
             <!-- Step 3: Rubrics -->
             <mat-step label="Rubrics">
-                <app-rubrics-input [(rubrics)]="rubrics" (rubrics)="testing()"></app-rubrics-input>
+                <app-rubrics-input #rubricsInput [(rubrics)]="rubrics" (rubrics)="testing()"></app-rubrics-input>
                 <button matStepperPrevious class="btn btn-outline-primary mr-2">
                     Back
                 </button>
-                <button matStepperNext (click)="testing()" class="btn btn-primary">Next</button>
+                <button matStepperNext (click)="emitEvent()" class="btn btn-primary">Next</button>
             </mat-step>
 
             <mat-step label="Done">
