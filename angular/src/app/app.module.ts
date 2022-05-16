@@ -32,6 +32,7 @@ import { MatListModule } from '@angular/material/list';
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
 import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { QuestionInputComponent } from './shared-component/question-input/question-input.component';
 
 @NgModule({
     declarations: [
@@ -48,6 +49,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         MarkingComponent,
         HighlightTextComponent,
         RubricsInputComponent,
+        QuestionInputComponent,
     ],
     imports: [
         BrowserModule,

@@ -10,11 +10,13 @@ import {
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
-import { faTrashAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+
 import { AssessmentService } from 'src/services/assessment.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
+import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
 
 class QuestionInput {
     no?: string | undefined;
@@ -63,17 +65,14 @@ class RubricMarkRangeInput {
 export class AssessmentCreationFormComponent extends AppComponent {
     // Component Reference
     @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
+    @ViewChild('questionsInput') questionsInput!: QuestionInputComponent;
 
     // icons
     faTrashAlt = faTrashAlt;
-    faEllipsisV = faEllipsisV;
-
     isLoading: boolean = true;
-
     assessment?: Assessment;
 
     assessmentDetailFormGroup!: FormGroup;
-    questionFormGroup!: FormGroup;
     subjectFormGroup!: FormGroup;
 
     assessmentTypes = Object.values(AssessmentType);
@@ -81,43 +80,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
     subjects: any = [];
     selectedSubjectName: string = '';
 
-    questionDisplayedColumns: string[] = [
-        'drag',
-        'no',
-        'question',
-        'marks',
-        'actions',
-    ];
-
-    questionReviewColumns: string[] = ['no', 'question', 'marks'];
-
-    questions: QuestionInput[] = [
-        {
-            no: '1',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '2',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '3',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '4',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '5',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-    ];
+    questions!: QuestionInput[];
     rubrics!: RubricsInput;
 
     constructor(
@@ -148,16 +111,19 @@ export class AssessmentCreationFormComponent extends AppComponent {
             ],
         });
 
-        this.questionFormGroup = this._formBuilder.group({
-            totalMark: ['100', Validators.required],
-        });
 
         this.subjectFormGroup = this._formBuilder.group({
             newSubject: ['', Validators.required],
         });
     }
 
-    emitEvent() {
+    emitQuestionInputEvent() {
+        // using reference component to trigger the event emit
+        this.questionsInput.questionsChange.emit(this.questionsInput.questions);
+        console.log(this.questions);
+    }
+
+    emitRubricsInputEvent() {
         // using reference component to trigger the event emit
         this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
         console.log(this.rubrics);
@@ -200,31 +166,14 @@ export class AssessmentCreationFormComponent extends AppComponent {
             if (form === this.assessmentDetailFormGroup) {
                 this.selectedSubjectName = this.subjects.find(
                     (subject: any) => {
-                        return subject.id ==
-                            this.assessmentDetailFormGroup.value.subject;
+                        return (
+                            subject.id ==
+                            this.assessmentDetailFormGroup.value.subject
+                        );
                     }
                 ).name;
             }
         }
-    }
-
-    addQuestion() {
-        let ques = new QuestionInput('', { question: '', marks: 0 }, true);
-        this.questions = [...this.questions, ques];
-    }
-
-    updateQuestion(element: QuestionInput) {
-        element.isEdit = !element.isEdit;
-    }
-
-    deleteQuestion(element: QuestionInput) {
-        this.questions = this.questions.filter((e) => e !== element);
-    }
-
-    getTotalMark() {
-        return this.questions
-            .map((q) => q.value?.marks)
-            .reduce((a, b) => a! + b!);
     }
 
     drop(event: CdkDragDrop<QuestionInput[]>) {

@@ -20,7 +20,7 @@
                 </button>
             </div>
             <div>
-                <select name="markingSettings" id="markingSettingSelect">
+                <select class="form-select my-2 ml-auto" style="width: 25%" name="markingSettings" id="markingSettingSelect">
                     <option
                         *ngFor="let setting of markingSettings"
                         value="setting"
@@ -196,7 +196,7 @@
                 type="text"
                 class="form-control"
                 id="assessmentName"
-                [(ngModel)]="assessment.name"
+                [(ngModel)]="newAssessmentName"
             />
         </div>
         <div class="form-group">
@@ -246,6 +246,7 @@
             <div class="form-group col">
                 <label for="rubrics">Questions</label>
                 <button
+                    (click)="openModal(editQuestions, { size: 'xl' })"
                     class="btn btn-outline-primary btn-sm d-inline-block ml-4"
                 >
                     Edit Questions
@@ -260,11 +261,11 @@
         >
             Delete Assessment
         </button>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button (click)="onSave()" class="btn btn-primary">Save Changes</button>
     </div>
 </ng-template>
 
-<!-- //* Edit Rubrics Modal -->
+<!-- * Edit Rubrics Modal -->
 <ng-template let-modal #editRubrics>
     <div class="modal-header">
         <h4 class="modal-title">Rubrics</h4>
@@ -286,13 +287,46 @@
         <button class="btn btn-secondary text-white" (click)="modal.close()">
             Cancel
         </button>
-        <button class="btn btn-primary" (click)="saveEditedRubrics(rubricsInput, modal)">
+        <button
+            class="btn btn-primary"
+            (click)="saveEditedRubrics(rubricsInput, modal)"
+        >
             Confirm
         </button>
     </div>
 </ng-template>
 
-<!-- Edit Questions Modal -->
+<!-- * Edit Questions Modal -->
+<ng-template let-modal #editQuestions>
+    <div class="modal-header">
+        <h4 class="modal-title">Question</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <app-question-input
+            #questionsInput
+            [(questions)]="assessment.questions"
+            [isEditingMode]="true"
+        >
+        </app-question-input>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-secondary text-white" (click)="modal.close()">
+            Cancel
+        </button>
+        <button
+            class="btn btn-primary"
+            (click)="saveEditedQuestions(questionsInput, modal)"
+        >
+            Confirm
+        </button>
+    </div>
+</ng-template>
 
 <mat-spinner
     *ngIf="isLoading"
