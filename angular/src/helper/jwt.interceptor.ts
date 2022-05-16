@@ -27,7 +27,6 @@ export class JwtInterceptor implements HttpInterceptor {
         let currentUser = this.authenticationService.currentUserValue();
 
         if (currentUser && currentUser.token) {
-            console.log(currentUser)
             request = this.addTokenHeader(request, currentUser.token['access']);
         }
 
