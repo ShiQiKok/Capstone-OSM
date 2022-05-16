@@ -8,6 +8,8 @@ import { AssessmentService } from 'src/services/assessment.service';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubjectService } from 'src/services/subject.service';
+import { AnswerScriptService } from 'src/services/answer-script.service';
+import { AnswerScript } from 'src/models/answerScript';
 
 @Component({
     selector: 'app-assessment-list',
@@ -26,6 +28,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         router: Router,
         authenticationService: AuthenticationService,
         private _assessmentService: AssessmentService,
+        private _answerScriptService: AnswerScriptService,
         private _subjectService: SubjectService,
         private modalService: NgbModal
     ) {
@@ -43,6 +46,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     private async getApi() {
         await this._subjectService.getApi();
         await this._assessmentService.getApi();
+        await this._answerScriptService.getApi();
     }
 
     private async getAll() {
@@ -54,11 +58,31 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         )) as Assessment[];
     }
 
+    async calculateProgress(assessmentId: any) {
+        //     let total = answerScripts.length;
+        //     let finished = answerScripts.filter(
+        //         (x: any) => x.status === 'Finished'
+        //     ).length;
+        //     return Math.floor(finished / total * 100);
+        // });
+        // console.log(list);
+        return 75;
+    }
+
     private async mapAssessment() {
         this.subjects.forEach((subject) => {
-            let list = this.assessmentList.filter(
+            let list: any = this.assessmentList.filter(
                 (assessment) => assessment.subject == subject.id
             );
+            list.forEach(async (a: any) => {
+                let answers: any = await this._answerScriptService.getAll(a.id);
+                let finish = answers.filter(
+                    (a: AnswerScript) => a.status === 'Finished'
+                );
+                let total = answers.length;
+                a.progress = Math.floor((finish.length / total) * 100);
+            });
+
             this.assessments[subject.id] = list;
         });
     }
@@ -78,5 +102,4 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
             scrollable: true,
         });
     }
-
 }

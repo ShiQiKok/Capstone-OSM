@@ -1,18 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AnswerScript, HighlightText } from 'src/models/answerScript';
+import { AnswerScript, AnswerScriptStatus, HighlightText } from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ViewSDKClient } from 'src/services/view-sdk.service';
-import { TextSelectEvent } from '../directives/text-select-directive.directive';
 
-class FloatingBarPosition {
-    top!: number;
-    left!: number;
-    width!: number;
-    height!: number;
-}
 
 class CustomSelection {
     anchorNode: Node;
@@ -49,7 +42,6 @@ export class MarkingComponent implements OnInit {
     selectedCriterion!: any;
     selectedCriterionIndex!: number;
     selectedDetailedCriterion!: any;
-    floatingBarPosition!: FloatingBarPosition;
 
     totalMarks: number = 0;
 
@@ -127,6 +119,9 @@ export class MarkingComponent implements OnInit {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
+            if (this.answerScript.status === AnswerScriptStatus.NOT_STARTED){
+                this.answerScript.status = AnswerScriptStatus.IN_PROGRESS;
+            }
             this._assessmentService
                 .get(this.answerScript.assessment!)
                 .then((obj) => {
@@ -138,7 +133,7 @@ export class MarkingComponent implements OnInit {
         });
     }
 
-    loadScript() {
+    private loadScript() {
         this.viewSDKClient.ready().then(() => {
             /* Invoke file preview */
             this.viewSDKClient.previewFile(
@@ -400,8 +395,15 @@ export class MarkingComponent implements OnInit {
         return array;
     }
 
+    private checkIsMarkingFinished(): boolean{
+        for (let answer of this.answerScript.answers!) {
+            if (answer.marksAwarded === null) return false;
+        }
+        return true;
+    }
+
     onSubmit() {
-        console.log(this.answerScript.answers);
+        this.checkIsMarkingFinished() ? this.answerScript.status = AnswerScriptStatus.FINISHED: null;
         this._answerScriptService
             .update(this.answerScript.id!, this.answerScript)
             .then((obj) => {

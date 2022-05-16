@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppComponent } from 'src/app/app.component';
@@ -10,9 +10,13 @@ import {
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
-import { faTrashAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+
 import { AssessmentService } from 'src/services/assessment.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
+import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
 
 class QuestionInput {
     no?: string | undefined;
@@ -58,170 +62,34 @@ class RubricMarkRangeInput {
     selector: 'app-assessment-creation-form',
     templateUrl: './assessment-creation-form.component.html',
 })
-export class AssessmentCreationFormComponent
-    extends AppComponent
-    implements OnInit
-{
+export class AssessmentCreationFormComponent extends AppComponent {
+    // Component Reference
+    @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
+    @ViewChild('questionsInput') questionsInput!: QuestionInputComponent;
+
     // icons
     faTrashAlt = faTrashAlt;
-    faEllipsisV = faEllipsisV;
-
     isLoading: boolean = true;
-
     assessment?: Assessment;
 
     assessmentDetailFormGroup!: FormGroup;
-    questionFormGroup!: FormGroup;
+    subjectFormGroup!: FormGroup;
 
     assessmentTypes = Object.values(AssessmentType);
     markingSettings = Object.values(MarkingSettings);
     subjects: any = [];
+    selectedSubjectName: string = '';
 
-    questionDisplayedColumns: string[] = [
-        'drag',
-        'no',
-        'question',
-        'marks',
-        'actions',
-    ];
-    questions: QuestionInput[] = [
-        {
-            no: '1',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '2',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '3',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '4',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '5',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-    ];
-    rubrics: RubricsInput = {
-        marksRange: [
-            { min: 0, max: 39 },
-            { min: 40, max: 49 },
-            { min: 50, max: 59 },
-            { min: 60, max: 69 },
-            { min: 70, max: 100 },
-        ],
-        isEdit: false,
-        criterion: [
-            {
-                title: 'criteria 1',
-                description: 'desc for criteria 1',
-                totalMarks: 25,
-                isEdit: false,
-                columns: [
-                    {
-                        description: 'desc for col 1 in criteria 1',
-                    },
-                    {
-                        description: 'desc for col 2 in criteria 1',
-                    },
-                    {
-                        description: 'desc for col 3 in criteria 1',
-                    },
-                    {
-                        description: 'desc for col 4 in criteria 1',
-                    },
-                    {
-                        description: 'desc for col 5 in criteria 1',
-                    },
-                ],
-            },
-            {
-                title: 'criteria 2',
-                description: 'desc for criteria 2',
-                totalMarks: 25,
-                isEdit: false,
-                columns: [
-                    {
-                        description: 'desc for col 1 in criteria 2',
-                    },
-                    {
-                        description: 'desc for col 2 in criteria 2',
-                    },
-                    {
-                        description: 'desc for col 3 in criteria 2',
-                    },
-                    {
-                        description: 'desc for col 4 in criteria 2',
-                    },
-                    {
-                        description: 'desc for col 5 in criteria 2',
-                    },
-                ],
-            },
-            {
-                title: 'criteria 3',
-                description: 'desc for criteria 3',
-                totalMarks: 25,
-                isEdit: false,
-                columns: [
-                    {
-                        description: 'desc for col 1 in criteria 3',
-                    },
-                    {
-                        description: 'desc for col 2 in criteria 3',
-                    },
-                    {
-                        description: 'desc for col 3 in criteria 3',
-                    },
-                    {
-                        description: 'desc for col 4 in criteria 3',
-                    },
-                    {
-                        description: 'desc for col 5 in criteria 3',
-                    },
-                ],
-            },
-            {
-                title: 'criteria 4',
-                description: 'desc for criteria 4',
-                totalMarks: 25,
-                isEdit: false,
-                columns: [
-                    {
-                        description: 'desc for col 1 in criteria 4',
-                    },
-                    {
-                        description: 'desc for col 2 in criteria 4',
-                    },
-                    {
-                        description: 'desc for col 3 in criteria 4',
-                    },
-                    {
-                        description: 'desc for col 4 in criteria 4',
-                    },
-                    {
-                        description: 'desc for col 5 in criteria 5',
-                    },
-                ],
-            },
-        ],
-    };
+    questions!: QuestionInput[];
+    rubrics!: RubricsInput;
 
     constructor(
         router: Router,
         authenticationService: AuthenticationService,
         private _formBuilder: FormBuilder,
         private _subjectService: SubjectService,
-        private _assessmentService: AssessmentService
+        private _assessmentService: AssessmentService,
+        private _modalService: NgbModal
     ) {
         super(router, authenticationService);
         this._assessmentService.getApi();
@@ -243,21 +111,32 @@ export class AssessmentCreationFormComponent
             ],
         });
 
-        this.questionFormGroup = this._formBuilder.group({
-            totalMark: ['100', Validators.required],
+
+        this.subjectFormGroup = this._formBuilder.group({
+            newSubject: ['', Validators.required],
         });
     }
 
-    async ngOnInit() {}
+    emitQuestionInputEvent() {
+        // using reference component to trigger the event emit
+        this.questionsInput.questionsChange.emit(this.questionsInput.questions);
+        console.log(this.questions);
+    }
+
+    emitRubricsInputEvent() {
+        // using reference component to trigger the event emit
+        this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
+        console.log(this.rubrics);
+    }
 
     onSubmit(): void {
         let questionJson: any = {};
         this.questions.forEach((q) => {
             questionJson[q.no!] = q.value;
         });
-        delete this.rubrics.isEdit
+        delete this.rubrics.isEdit;
         this.rubrics.criterion!.forEach((c) => {
-            delete c.isEdit
+            delete c.isEdit;
         });
 
         // TODO: rubrics need to remove isEdit property
@@ -277,63 +156,24 @@ export class AssessmentCreationFormComponent
         });
     }
 
-    setUneditable() {
-        this.rubrics.isEdit = false;
-        this.rubrics.criterion!.forEach((criteria) => {
-            criteria.isEdit = false;
-        });
-    }
-
-    getRubricsMarksRange(): any {
-        if (this.rubrics && this.rubrics.criterion) {
-            return [
-                'criteria',
-                ...this.rubrics.marksRange!.map((c) => {
-                    return c;
-                }),
-            ];
-        }
-        return [];
-    }
-
-    getRubricsMarksRangeString(): any {
-        if (this.rubrics && this.rubrics.criterion) {
-            return [
-                'criteria',
-                ...this.rubrics.marksRange!.map((c) => {
-                    return `${c.min} - ${c.max}`;
-                }),
-            ];
-        }
-        return [];
-    }
-
     // To mark the invalid fields dirty for triggering error messages
     validateForm(form: FormGroup): void {
         if (form.invalid) {
             Object.values(form.controls).forEach((formControl) => {
                 formControl.invalid ? formControl.markAsDirty() : null;
             });
+        } else {
+            if (form === this.assessmentDetailFormGroup) {
+                this.selectedSubjectName = this.subjects.find(
+                    (subject: any) => {
+                        return (
+                            subject.id ==
+                            this.assessmentDetailFormGroup.value.subject
+                        );
+                    }
+                ).name;
+            }
         }
-    }
-
-    addQuestion() {
-        let ques = new QuestionInput('', { question: '', marks: 0 }, true);
-        this.questions = [...this.questions, ques];
-    }
-
-    updateQuestion(element: QuestionInput) {
-        element.isEdit = !element.isEdit;
-    }
-
-    deleteQuestion(element: QuestionInput) {
-        this.questions = this.questions.filter((e) => e !== element);
-    }
-
-    getTotalMark() {
-        return this.questions
-            .map((q) => q.value?.marks)
-            .reduce((a, b) => a! + b!);
     }
 
     drop(event: CdkDragDrop<QuestionInput[]>) {
@@ -342,39 +182,6 @@ export class AssessmentCreationFormComponent
             event.previousIndex,
             event.currentIndex
         );
-    }
-
-    addRubricsRow(event: any) {
-        event.stopPropagation();
-        this.setUneditable();
-        let len = this.rubrics.marksRange!.length;
-        let row: RubricCriterionInput = {
-            title: 'criteria ' + (this.rubrics.criterion!.length + 1),
-            description: '',
-            totalMarks: 0,
-            isEdit: true,
-            columns: [],
-        };
-        for (let i = 0; i < len; i++) {
-            row.columns!.push({
-                description: '',
-            });
-        }
-        this.rubrics.criterion = [...this.rubrics.criterion!, row];
-    }
-
-    addRubricsColumn(event: any) {
-        event.stopPropagation();
-        this.rubrics.marksRange = [
-            ...this.rubrics.marksRange!,
-            { min: 0, max: 0 },
-        ];
-
-        this.rubrics.criterion!.forEach((c) => {
-            c.columns!.push({
-                description: 'yea',
-            });
-        });
     }
 
     // REGION FormControls Getters
@@ -393,5 +200,35 @@ export class AssessmentCreationFormComponent
     get defaultSetting() {
         return this.assessmentDetailFormGroup.get('defaultSetting');
     }
+
+    get newSubject() {
+        return this.subjectFormGroup.get('newSubject');
+    }
     // END REGION FormControls Getters
+
+    openModal(modal: any) {
+        this._modalService.open(modal);
+    }
+
+    onSubmitNewSubject(modal: any) {
+        let userId: number = this.currentUser.id;
+        this._subjectService
+            .create({
+                name: this.subjectFormGroup.get('newSubject')!.value,
+                markers: [userId],
+            })
+            .then((subject) => {
+                console.log(subject);
+            });
+        this._modalService.dismissAll('Subject Submitted');
+        // to reload the page after creating a new subject
+        window.location.reload();
+    }
+
+    setUneditable(event: any): void {
+        this.rubricsInput.rubrics.isEdit = false;
+        this.rubricsInput.rubrics.criterion!.forEach((criteria: any) => {
+            criteria.isEdit = false;
+        });
+    }
 }

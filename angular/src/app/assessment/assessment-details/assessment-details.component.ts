@@ -1,14 +1,27 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Assessment } from 'src/models/assessment';
+import { Assessment, AssessmentType } from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+    NgbActiveModal,
+    NgbModal,
+    NgbModalRef,
+} from '@ng-bootstrap/ng-bootstrap';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript } from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
+import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
 
 @Component({
     selector: 'app-assessment-details',
@@ -16,17 +29,19 @@ import { GradebookService } from 'src/services/gradebook.service';
     styleUrls: ['./assessment-details.component.scss'],
 })
 export class AssessmentDetailsComponent implements OnInit {
-    @ViewChild('content') modelContent!: ElementRef;
-
     // objects
     assessment!: Assessment;
     answerScripts: any = undefined;
     uploadedFile!: File | null;
     markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
     selection = new SelectionModel<AnswerScript>(false, []);
+    assessmentTypes: AssessmentType[] = Object.values(AssessmentType);
+    finished: number = 0;
+    newAssessmentName!: string;
 
-    // icon
+    // icons
     faUpload = faUpload;
+    faCog = faCog;
 
     // controls
     isLoading: boolean = true;
@@ -58,16 +73,25 @@ export class AssessmentDetailsComponent implements OnInit {
         this.answerScripts = await this._answerScriptService.getAll(
             this.assessment.id!
         );
+        this.calculateProgress();
         this.isLoading = false;
     }
-
-    // ngAfterViewInit() {
-    //     this.openUploadDialog(this.modelContent);
-    // }
 
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
+        this.newAssessmentName = this.assessment.name!;
+    }
+
+    printObject() {
+        console.log(this.assessment.rubrics);
+    }
+
+    calculateProgress() {
+        this.finished = this.answerScripts.filter(
+            (x: any) => x.status === 'Finished'
+        ).length;
+        return Math.floor((this.finished / this.answerScripts.length) * 100);
     }
 
     updateAssessment(id: any) {
@@ -84,8 +108,9 @@ export class AssessmentDetailsComponent implements OnInit {
         });
     }
 
-    openUploadDialog(content: any) {
-        this.modalService.open(content, { size: 'lg' });
+    openModal(content: any, config: any) {
+        if (config) this.modalService.open(content, config);
+        else this.modalService.open(content, { size: 'lg' });
     }
 
     onFileChange(file: FileList) {
@@ -97,7 +122,12 @@ export class AssessmentDetailsComponent implements OnInit {
         this._answerScriptService
             .bulkUpload(this.assessment.id!, this.uploadedFile!)
             .then(() => {
-                console.log('uploaded');
+                this._answerScriptService
+                    .getAll(this.assessment.id!)
+                    .then((obj) => {
+                        this.answerScripts = obj;
+                        this.modalService.dismissAll();
+                    });
             });
     }
 
@@ -105,7 +135,43 @@ export class AssessmentDetailsComponent implements OnInit {
         this.selection.toggle(answerScript);
     }
 
-    downloadGradebook(){
-        this._gradebookService.downloadGradebook(this.assessment.id!, `Gradebook - ${this.assessment.name}`);
+    downloadGradebook() {
+        this._gradebookService.downloadGradebook(
+            this.assessment.id!,
+            `Gradebook - ${this.assessment.name}`
+        );
+    }
+
+    saveEditedRubrics(
+        rubricsInput: RubricsInputComponent,
+        modal: NgbActiveModal
+    ) {
+        rubricsInput.rubricsChange.emit(rubricsInput.rubrics);
+        this._assessmentService
+            .update(this.assessment.id!, this.assessment)
+            .then(() => {
+                modal.close();
+            });
+    }
+
+    saveEditedQuestions(
+        questionsInput: QuestionInputComponent,
+        modal: NgbActiveModal
+    ) {
+        questionsInput.questionsChange.emit(questionsInput.questions);
+        this._assessmentService
+            .update(this.assessment.id!, this.assessment)
+            .then(() => {
+                modal.close();
+            });
+    }
+
+    onSave() {
+        this.assessment.name = this.newAssessmentName;
+        this._assessmentService
+            .update(this.assessment.id!, this.assessment)
+            .then(() => {
+                this.modalService.dismissAll();
+            });
     }
 }

@@ -1,4 +1,42 @@
-<div (click)="setUneditable()">
+<ng-template #subjectCreationModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Create a new subject</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="subjectFormGroup" id="subjectFormGroup">
+            <div class="form-group">
+                <label for="newSubject">Subject Name</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    formControlName="newSubject"
+                    id="newSubject"
+                    placeholder="Enter subject name"
+                />
+                <error-message
+                    ngDefaultControl
+                    [formControl]="newSubject"
+                ></error-message>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button
+            type="button"
+            class="btn btn-primary"
+            (click)="onSubmitNewSubject(modal)"
+        >
+            save
+        </button>
+    </div>
+</ng-template>
+<div (click)="setUneditable($event)">
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
             <!-- Step 1: Assessment Info -->
@@ -57,6 +95,12 @@
                                 {{ subject.name }}
                             </option>
                         </select>
+                        <button
+                            (click)="openModal(subjectCreationModal)"
+                            class="btn btn-link"
+                        >
+                            + create a new subject
+                        </button>
                         <error-message
                             ngDefaultControl
                             [formControl]="subject"
@@ -93,284 +137,112 @@
                     </div>
                 </form>
             </mat-step>
+
             <!-- Step 2: Question -->
             <mat-step [stepControl]="questionFormGroup" label="Questions">
-                <form [formGroup]="questionFormGroup" id="questionForm">
-                    <div class="form-group d-flex align-items-center mt-2">
-                        <label for="totalMark" class="mr-4">Total Mark</label>
-                        <input
-                            type="text"
-                            class="form-control w-25 d-block ml-auto"
-                            id="totalMark"
-                            name="totalMark"
-                            value="{{ getTotalMark() }}"
-                            disabled
-                        />
-                    </div>
-                </form>
-
-                <button
-                    class="btn btn-primary d-block ml-auto"
-                    (click)="addQuestion()"
-                >
-                    + Add Question
-                </button>
-
-                <table
-                    mat-table
-                    [dataSource]="questions"
-                    class="mat-elevation-z8 w-100 my-4"
-                >
-                    <ng-container matColumnDef="drag">
-                        <th mat-header-cell *matHeaderCellDef style="width: 5%">
-                            Drag
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <fa-icon [icon]="faEllipsisV"></fa-icon>
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="no">
-                        <th
-                            mat-header-cell
-                            *matHeaderCellDef
-                            style="width: 10%"
-                        >
-                            No.
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <span *ngIf="!element.isEdit">
-                                {{ element.no }}
-                            </span>
-                            <span *ngIf="element.isEdit">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    [(ngModel)]="element.no"
-                                />
-                            </span>
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="question">
-                        <th
-                            mat-header-cell
-                            *matHeaderCellDef
-                            style="width: 60%"
-                        >
-                            Questions
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <span *ngIf="!element.isEdit">
-                                {{ element.value.question }}
-                            </span>
-                            <span *ngIf="element.isEdit">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    [(ngModel)]="element.value.question"
-                                />
-                            </span>
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="marks">
-                        <th
-                            mat-header-cell
-                            *matHeaderCellDef
-                            style="width: 10%"
-                        >
-                            Marks
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <span *ngIf="!element.isEdit">
-                                {{ element.value.marks }}
-                            </span>
-                            <span *ngIf="element.isEdit">
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    [(ngModel)]="element.value.marks"
-                                />
-                            </span>
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="actions">
-                        <th
-                            mat-header-cell
-                            *matHeaderCellDef
-                            style="width: 20%"
-                        ></th>
-                        <td mat-cell *matCellDef="let element">
-                            <div *ngIf="!element.isEdit" class="text-end">
-                                <button
-                                    class="btn btn-link"
-                                    (click)="deleteQuestion(element)"
-                                >
-                                    <fa-icon
-                                        [icon]="faTrashAlt"
-                                        style="color: red"
-                                    ></fa-icon>
-                                </button>
-                                <button
-                                    (click)="updateQuestion(element)"
-                                    class="btn btn-outline-primary"
-                                >
-                                    Edit
-                                </button>
-                            </div>
-                            <div *ngIf="element.isEdit" class="text-end">
-                                <button
-                                    (click)="updateQuestion(element)"
-                                    class="btn btn-primary"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </td>
-                    </ng-container>
-
-                    <tr
-                        mat-header-row
-                        *matHeaderRowDef="questionDisplayedColumns"
-                    ></tr>
-                    <tr
-                        mat-row
-                        *matRowDef="let row; columns: questionDisplayedColumns"
-                    ></tr>
-                </table>
+                <app-question-input
+                    #questionsInput
+                    [(questions)]="questions"
+                    [isEditingMode]="true"
+                ></app-question-input>
                 <button matStepperPrevious class="btn btn-outline-primary mr-2">
                     Back
                 </button>
-                <button matStepperNext class="btn btn-primary">Next</button>
+                <button
+                    matStepperNext
+                    class="btn btn-primary"
+                    (click)="emitQuestionInputEvent()"
+                >
+                    Next
+                </button>
             </mat-step>
 
             <!-- Step 3: Rubrics -->
-            <mat-step [stepControl]="rubricFormGroup" label="Rubrics">
-                <button
-                    class="btn btn-primary d-block ml-auto"
-                    (click)="addRubricsRow($event)"
-                >
-                    + Add Row
-                </button>
-                <button
-                    class="btn btn-primary d-block ml-auto"
-                    (click)="addRubricsColumn($event)"
-                >
-                    + Add Columns
-                </button>
-                <table
-                    mat-table
-                    [dataSource]="rubrics.criterion"
-                    class="mat-elevation-z8 w-100 my-4"
-                >
-                    <ng-container
-                        *ngFor="
-                            let col of getRubricsMarksRange();
-                            let colIndex = index;
-                        "
-                        matColumnDef="{{
-                            col === 'criteria' ? col : col.min + ' - ' + col.max
-                        }}"
-                    >
-                        <!-- the header-->
-                        <th mat-header-cell *matHeaderCellDef>
-                            <div>
-                                <span *ngIf="col === 'criteria'">Criteria</span>
-                                <span *ngIf="col !== 'criteria'">
-                                    <span *ngIf="rubrics.isEdit">
-                                        <input
-                                            type="text"
-                                            class="form-control form-control-sm d-inline w-25"
-                                            [(ngModel)]="col.min"
-                                        />
-                                        -
-                                        <input
-                                            type="text"
-                                            class="form-control form-control-sm d-inline w-25"
-                                            [(ngModel)]="col.max"
-                                        />
-                                    </span>
-                                    <span *ngIf="!rubrics.isEdit">
-                                        {{ col.min }} - {{ col.max }}
-                                    </span>
-                                </span>
-                            </div>
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            <div *ngIf="colIndex == 0">
-                                <span *ngIf="!element.isEdit">
-                                    {{ element.title }}
-                                    <br />
-                                    {{ element.description }}
-                                    <br />
-                                    {{ element.totalMarks }}
-                                </span>
-                                <span *ngIf="element.isEdit">
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        [(ngModel)]="element.title"
-                                    />
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        [(ngModel)]="element.description"
-                                    />
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        [(ngModel)]="element.totalMarks"
-                                    />
-                                </span>
-                            </div>
-                            <div *ngIf="colIndex !== 0">
-                                <span *ngIf="!element.isEdit">
-                                    {{
-                                        element.columns[colIndex - 1]
-                                            .description
-                                    }}
-                                </span>
-                                <span *ngIf="element.isEdit">
-                                    <textarea
-                                        placeholder="description..."
-                                        class="form-control"
-                                        [(ngModel)]="
-                                            element.columns[colIndex - 1]
-                                                .description
-                                        "
-                                    ></textarea>
-                                </span>
-                            </div>
-                        </td>
-                    </ng-container>
-                    <tr
-                        mat-header-row
-                        (click)="$event.stopPropagation()"
-                        (dblclick)="rubrics.isEdit = !rubrics.isEdit"
-                        *matHeaderRowDef="getRubricsMarksRangeString()"
-                    ></tr>
-                    <tr
-                        mat-row
-                        (click)="$event.stopPropagation()"
-                        (dblclick)="setUneditable(); row.isEdit = true"
-                        *matRowDef="
-                            let row;
-                            columns: getRubricsMarksRangeString()
-                        "
-                    ></tr>
-                </table>
+            <mat-step label="Rubrics">
+                <app-rubrics-input
+                    #rubricsInput
+                    [(rubrics)]="rubrics"
+                    [isEditingMode]="true"
+                ></app-rubrics-input>
                 <button matStepperPrevious class="btn btn-outline-primary mr-2">
                     Back
                 </button>
-                <button matStepperNext class="btn btn-primary">Next</button>
+                <button
+                    matStepperNext
+                    (click)="emitRubricsInputEvent()"
+                    class="btn btn-primary"
+                >
+                    Next
+                </button>
             </mat-step>
 
-            <mat-step label="Done">
-                <p>You are now done.</p>
+            <!-- Step 4: Review -->
+            <mat-step label="Review">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Assessment Name</th>
+                            <td>
+                                {{
+                                    assessmentDetailFormGroup.value
+                                        .assessmentName
+                                }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Assessment Type</th>
+                            <td>
+                                {{
+                                    assessmentDetailFormGroup.value
+                                        .assessmentType
+                                }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Subject</th>
+                            <td>
+                                {{ selectedSubjectName }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Default Marking Setting</th>
+                            <td>
+                                {{
+                                    assessmentDetailFormGroup.value
+                                        .defaultSetting
+                                }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <strong> Questions </strong>
+                                <app-question-input
+                                    [(questions)]="questions"
+                                    [isEditingMode]="false"
+                                ></app-question-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <strong>Rubrics</strong>
+                                <app-rubrics-input
+                                    [isEditingMode]="false"
+                                    [(rubrics)]="rubrics"
+                                ></app-rubrics-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div>
-                    <button matStepperPrevious>Back</button>
-                    <button (click)="onSubmit()">submit</button>
+                    <button
+                        class="btn btn-outline-primary mr-2"
+                        matStepperPrevious
+                    >
+                        Back
+                    </button>
+                    <button class="btn btn-primary" (click)="onSubmit()">
+                        submit
+                    </button>
                 </div>
             </mat-step>
         </mat-stepper>

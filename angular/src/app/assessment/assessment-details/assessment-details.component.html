@@ -2,16 +2,25 @@
     <div style="width: 80%" class="px-4">
         <div>
             <div>
-                <h1 class="d-inline">{{ assessment.name }}</h1>
+                <h1 class="d-inline">
+                    {{ assessment.name }}
+                </h1>
+                <fa-icon
+                    (click)="openModal(assessmentSetting)"
+                    style="font-size: 1.75em; cursor: pointer"
+                    class="text-secondary"
+                    [icon]="faCog"
+                ></fa-icon>
+
                 <button
-                    (click)="openUploadDialog(content)"
+                    (click)="openModal(content)"
                     class="btn btn-primary float-right"
                 >
                     Upload Script
                 </button>
             </div>
             <div>
-                <select name="markingSettings" id="markingSettingSelect">
+                <select class="form-select my-2 ml-auto" style="width: 25%" name="markingSettings" id="markingSettingSelect">
                     <option
                         *ngFor="let setting of markingSettings"
                         value="setting"
@@ -20,18 +29,6 @@
                         {{ setting }}
                     </option>
                 </select>
-                <button
-                    class="btn btn-danger"
-                    (click)="deleteAssessment(assessment.id)"
-                >
-                    Delete
-                </button>
-                <button
-                    class="btn btn-info"
-                    (click)="updateAssessment(assessment.id)"
-                >
-                    Update
-                </button>
             </div>
         </div>
         <div id="table-container">
@@ -67,7 +64,16 @@
                 <ng-container matColumnDef="status">
                     <th mat-header-cell *matHeaderCellDef>Status</th>
                     <td mat-cell *matCellDef="let answer">
-                        {{ answer.status }}
+                        <span
+                            class="rounded-pill py-1 px-2 text-white"
+                            [class]="{
+                                'bg-primary': answer.status === 'In Progress',
+                                'bg-secondary': answer.status === 'Not Started',
+                                'bg-success': answer.status === 'Finished'
+                            }"
+                        >
+                            {{ answer.status }}
+                        </span>
                     </td>
                 </ng-container>
 
@@ -75,11 +81,15 @@
                 <ng-container matColumnDef="marks">
                     <th mat-header-cell *matHeaderCellDef>Marks</th>
                     <td mat-cell *matCellDef="let answer">
-                        {{ answer.marks }}
+                        {{ answer.marks ? answer.marks : "-" }}
                     </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-primary"></tr>
+                <tr
+                    mat-header-row
+                    *matHeaderRowDef="displayedColumns"
+                    class="bg-primary"
+                ></tr>
                 <tr
                     mat-row
                     *matRowDef="let row; columns: displayedColumns"
@@ -92,12 +102,28 @@
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
         <div id="assessmentBriefInfo">
             <h4>Your Progress</h4>
+            <p>
+                <ngb-progressbar
+                    type="primary"
+                    [value]="calculateProgress()"
+                ></ngb-progressbar>
+            </p>
+            <small class="text-end d-block"
+                >{{ finished }}/{{ answerScripts.length }}</small
+            >
         </div>
         <div>
-            <a *ngIf="selection.selected.length > 0" routerLink="/marking/{{selection.selected[0].id}}" class="btn btn-primary d-block">Start Marking</a>
+            <a
+                *ngIf="selection.selected.length > 0"
+                routerLink="/marking/{{ selection.selected[0].id }}"
+                class="btn btn-primary d-block"
+                >Start Marking</a
+            >
         </div>
         <div>
-            <a (click)="downloadGradebook()" class="btn btn-link d-block">Gradebook Export</a>
+            <a (click)="downloadGradebook()" class="btn btn-link d-block"
+                >Gradebook Export</a
+            >
         </div>
     </div>
 </div>
@@ -116,7 +142,7 @@
     <div class="modal-body">
         <small>File types accepted: CSV, ZIP, DOC, DOCX, and PDF.</small>
         <div
-            style="height: 250px; border: 2px dashed #4277FF;"
+            style="height: 250px; border: 2px dashed #4277ff"
             class="d-flex flex-column align-items-center justify-content-center my-4"
         >
             <fa-icon
@@ -148,6 +174,156 @@
             (click)="bulkUpload()"
         >
             Submit
+        </button>
+    </div>
+</ng-template>
+
+<!-- Edit Assessment Modal -->
+<ng-template #assessmentSetting let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Settings</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="assessmentName">Assessment Name</label>
+            <input
+                type="text"
+                class="form-control"
+                id="assessmentName"
+                [(ngModel)]="newAssessmentName"
+            />
+        </div>
+        <div class="form-group">
+            <label for="assessmentType">Assessment Type</label>
+            <select
+                class="form-select"
+                name="assessmentTypes"
+                id="assessmentTypes"
+            >
+                <option
+                    *ngFor="let type of assessmentTypes"
+                    [value]="type"
+                    [selected]="type === assessment.type ? true : false"
+                >
+                    {{ type }}
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="markingSetting">Default Marking Setting</label>
+            <select
+                class="form-select"
+                name="markingSetting"
+                id="markingSetting"
+            >
+                <option
+                    *ngFor="let setting of markingSettings"
+                    [value]="setting"
+                    [selected]="
+                        setting == assessment.marking_settings ? true : false
+                    "
+                >
+                    {{ setting }}
+                </option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="form-group col">
+                <label for="rubrics">Rubrics</label>
+                <button
+                    (click)="openModal(editRubrics, { size: 'xl' })"
+                    class="btn btn-outline-primary btn-sm d-inline-block ml-4"
+                >
+                    Edit Rubrics
+                </button>
+            </div>
+            <div class="form-group col">
+                <label for="rubrics">Questions</label>
+                <button
+                    (click)="openModal(editQuestions, { size: 'xl' })"
+                    class="btn btn-outline-primary btn-sm d-inline-block ml-4"
+                >
+                    Edit Questions
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-danger"
+            (click)="deleteAssessment(assessment.id)"
+        >
+            Delete Assessment
+        </button>
+        <button (click)="onSave()" class="btn btn-primary">Save Changes</button>
+    </div>
+</ng-template>
+
+<!-- * Edit Rubrics Modal -->
+<ng-template let-modal #editRubrics>
+    <div class="modal-header">
+        <h4 class="modal-title">Rubrics</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <app-rubrics-input
+            #rubricsInput
+            [isEditingMode]="true"
+            [(rubrics)]="assessment.rubrics"
+        ></app-rubrics-input>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-secondary text-white" (click)="modal.close()">
+            Cancel
+        </button>
+        <button
+            class="btn btn-primary"
+            (click)="saveEditedRubrics(rubricsInput, modal)"
+        >
+            Confirm
+        </button>
+    </div>
+</ng-template>
+
+<!-- * Edit Questions Modal -->
+<ng-template let-modal #editQuestions>
+    <div class="modal-header">
+        <h4 class="modal-title">Question</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <app-question-input
+            #questionsInput
+            [(questions)]="assessment.questions"
+            [isEditingMode]="true"
+        >
+        </app-question-input>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-secondary text-white" (click)="modal.close()">
+            Cancel
+        </button>
+        <button
+            class="btn btn-primary"
+            (click)="saveEditedQuestions(questionsInput, modal)"
+        >
+            Confirm
         </button>
     </div>
 </ng-template>

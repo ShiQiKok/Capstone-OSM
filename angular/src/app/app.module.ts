@@ -28,9 +28,11 @@ import { SpinnerComponent } from './shared-component/spinner/spinner.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MarkingComponent } from './marking/marking.component';
 import { MatListModule } from '@angular/material/list';
-import { TextSelectDirective } from './directives/text-select-directive.directive';
+
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
+import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { QuestionInputComponent } from './shared-component/question-input/question-input.component';
 
 @NgModule({
     declarations: [
@@ -45,8 +47,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         AssessmentCreationFormComponent,
         SpinnerComponent,
         MarkingComponent,
-        TextSelectDirective,
         HighlightTextComponent,
+        RubricsInputComponent,
+        QuestionInputComponent,
     ],
     imports: [
         BrowserModule,
