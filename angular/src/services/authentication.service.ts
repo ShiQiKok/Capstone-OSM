@@ -29,6 +29,10 @@ export class AuthenticationService {
         return this.currentUserSubject.value;
     }
 
+    public setUserSubject(obj: any): void {
+        this.currentUserSubject.next(obj);
+    }
+
     async login(username: string, password: string) {
         return new Promise((resolve, reject) => {
             this.http
@@ -46,7 +50,6 @@ export class AuthenticationService {
                         this.currentUserSubject.next({
                             token: token,
                         });
-
                         // update the currentUser observable
                         let user = JSON.parse(
                             JSON.stringify(await this.updateData(token))
@@ -79,15 +82,30 @@ export class AuthenticationService {
         });
     }
 
+    refreshToken(token: any) {
+        return this.http.post(
+            'api/token/refresh/',
+            {
+                refreshToken: token,
+            },
+            this.httpOptions
+        );
+    }
+
+    private decodeToken(token: any) {
+        const token_parts = token['access'].split(/\./);
+        const token_decoded = JSON.parse(window.atob(token_parts[1]));
+
+        return token_decoded;
+    }
+
     // this function returns a JSON-like User object
-    private updateData(token: any) {
+    updateData(token: any) {
         return new Promise((resolve, reject) => {
             // decode the token to read the username and expiration timestamp
-            const token_parts = token['access'].split(/\./);
-            const token_decoded = JSON.parse(window.atob(token_parts[1]));
-            let token_expires = new Date(token_decoded.exp * 1000);
-
+            let token_decoded = this.decodeToken(token);
             let user_id = token_decoded.user_id;
+
             this.http
                 .get('api/users/user-details/' + user_id + '/')
                 .subscribe((data) => {
