@@ -1,12 +1,6 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnInit,
-    Output,
-    SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MatTable } from '@angular/material/table';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 class RubricsInput {
     marksRange?: RubricMarkRangeInput[] | undefined;
@@ -39,6 +33,10 @@ class RubricMarkRangeInput {
 export class RubricsInputComponent implements OnInit {
     @Input() rubrics!: RubricsInput;
     @Output() rubricsChange = new EventEmitter<RubricsInput>();
+
+    @ViewChild(MatTable) table!: MatTable<any>;
+
+    faTrashAlt = faTrashAlt;
 
     template: RubricsInput = {
         marksRange: [
@@ -153,7 +151,23 @@ export class RubricsInputComponent implements OnInit {
         }
     }
 
-    getRubricsMarksRange(): any {
+    getColumnWidth() {
+        let len = this.getRubricsMarksRange().length;
+        let width = 100 / len;
+        return `${width}%`;
+    }
+
+    addIconIndex!: number;
+    showAddIconIndex(criterion: RubricCriterionInput, index: any) {
+        if (index != 0) {
+            this.addIconIndex = index;
+            // index = index - 1;
+            // console.log(criterion)
+            // console.log(index);
+        }
+    }
+
+    getRubricsMarksRange() {
         if (this.rubrics && this.rubrics.criterion) {
             return [
                 'criteria',
@@ -196,18 +210,46 @@ export class RubricsInputComponent implements OnInit {
         this.rubrics.criterion = [...this.rubrics.criterion!, row];
     }
 
+    removeRubricsRow(event: any, obj: any) {
+        event.stopPropagation();
+        let index  = this.rubrics.criterion!.indexOf(obj);
+
+        if (index !== -1){
+            this.rubrics.criterion!.splice(index, 1);
+        }
+
+        this.table.renderRows();
+    }
+
     addRubricsColumn(event: any): void {
         event.stopPropagation();
-        this.rubrics.marksRange = [
-            ...this.rubrics.marksRange!,
-            { min: 0, max: 0 },
-        ];
+        this.setUneditable();
 
-        this.rubrics.criterion!.forEach((c: any) => {
-            c.columns!.push({
-                description: 'yea',
+        this.rubrics.marksRange?.splice(this.addIconIndex, 0, {
+            min: 0,
+            max: 0,
+        });
+
+        this.rubrics.criterion!.forEach((criterion: any) => {
+            criterion.columns!.splice(this.addIconIndex, 0, {
+                description: undefined,
             });
         });
+
+        this.rubrics.isEdit = true;
+    }
+
+    removeRubricsColumn(event: any) {
+        event.stopPropagation();
+        console.log('?');
+        this.setUneditable();
+
+        this.rubrics.marksRange?.splice(this.addIconIndex - 1, 1);
+
+        this.rubrics.criterion!.forEach((criterion: any) => {
+            criterion.columns!.splice(this.addIconIndex - 1, 1);
+        });
+        this.rubrics.isEdit = false;
     }
 
     setUneditable(): void {
@@ -215,6 +257,5 @@ export class RubricsInputComponent implements OnInit {
         this.rubrics.criterion!.forEach((criteria: any) => {
             criteria.isEdit = false;
         });
-        this.rubricsChange.emit(this.rubrics);
     }
 }

@@ -264,4 +264,11 @@ export class AssessmentCreationFormComponent
         // to reload the page after creating a new subject
         window.location.reload();
     }
+
+    setUneditable(event: any): void {
+        this.rubricsInput.rubrics.isEdit = false;
+        this.rubricsInput.rubrics.criterion!.forEach((criteria: any) => {
+            criteria.isEdit = false;
+        });
+    }
 }

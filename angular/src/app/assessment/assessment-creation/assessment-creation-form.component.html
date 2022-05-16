@@ -30,7 +30,7 @@
         <button type="button" class="btn btn-primary" (click)="onSubmitNewSubject(modal)">save</button>
     </div>
 </ng-template>
-<div>
+<div (click)="setUneditable($event)">
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
             <!-- Step 1: Assessment Info -->
@@ -128,6 +128,7 @@
                     </div>
                 </form>
             </mat-step>
+            
             <!-- Step 2: Question -->
             <mat-step [stepControl]="questionFormGroup" label="Questions">
                 <form [formGroup]="questionFormGroup" id="questionForm">
@@ -292,8 +293,8 @@
             <mat-step label="Done">
                 <p>You are now done.</p>
                 <div>
-                    <button matStepperPrevious>Back</button>
-                    <button (click)="onSubmit()">submit</button>
+                    <button class="btn btn-outline-primary mr-2" matStepperPrevious>Back</button>
+                    <button class="btn btn-primary" (click)="onSubmit()">submit</button>
                 </div>
             </mat-step>
         </mat-stepper>
