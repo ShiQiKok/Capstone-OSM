@@ -1,15 +1,22 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript } from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
 
 @Component({
     selector: 'app-assessment-details',
@@ -17,7 +24,6 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
     styleUrls: ['./assessment-details.component.scss'],
 })
 export class AssessmentDetailsComponent implements OnInit {
-    @ViewChild('editRubrics') modal: any;
     // objects
     assessment!: Assessment;
     answerScripts: any = undefined;
@@ -50,7 +56,7 @@ export class AssessmentDetailsComponent implements OnInit {
         private _gradebookService: GradebookService,
         private router: Router,
         private route: ActivatedRoute,
-        private modalService: NgbModal
+        private modalService: NgbModal,
     ) {}
 
     async ngOnInit() {
@@ -63,7 +69,6 @@ export class AssessmentDetailsComponent implements OnInit {
         );
         this.calculateProgress();
         this.isLoading = false;
-        this.openModal(this.modal, { size: 'xl' });
     }
 
     async getAssessmentDetails() {
@@ -71,7 +76,7 @@ export class AssessmentDetailsComponent implements OnInit {
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
     }
 
-    printObject(){
+    printObject() {
         console.log(this.assessment.rubrics);
     }
 
@@ -79,7 +84,7 @@ export class AssessmentDetailsComponent implements OnInit {
         this.finished = this.answerScripts.filter(
             (x: any) => x.status === 'Finished'
         ).length;
-        return Math.floor(this.finished / this.answerScripts.length * 100);
+        return Math.floor((this.finished / this.answerScripts.length) * 100);
     }
 
     updateAssessment(id: any) {
@@ -97,10 +102,8 @@ export class AssessmentDetailsComponent implements OnInit {
     }
 
     openModal(content: any, config: any) {
-        if (config)
-            this.modalService.open(content, config);
-        else
-            this.modalService.open(content, { size: 'lg' });
+        if (config) this.modalService.open(content, config);
+        else this.modalService.open(content, { size: 'lg' });
     }
 
     onFileChange(file: FileList) {
@@ -130,5 +133,14 @@ export class AssessmentDetailsComponent implements OnInit {
             this.assessment.id!,
             `Gradebook - ${this.assessment.name}`
         );
+    }
+
+    saveEditedRubrics(rubricsInput: RubricsInputComponent, modal: NgbActiveModal) {
+        rubricsInput.rubricsChange.emit(rubricsInput.rubrics);
+        this._assessmentService
+            .update(this.assessment.id!, this.assessment)
+            .then(() => {
+                modal.close()
+            });
     }
 }

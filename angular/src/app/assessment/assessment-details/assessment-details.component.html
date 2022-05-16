@@ -258,9 +258,9 @@
             class="btn btn-danger"
             (click)="deleteAssessment(assessment.id)"
         >
-            Delete
+            Delete Assessment
         </button>
-        <button type="submit" class="btn btn-primary">Confirm</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
     </div>
 </ng-template>
 
@@ -276,10 +276,19 @@
         ></button>
     </div>
     <div class="modal-body">
-        <app-rubrics-input [(rubrics)]="assessment.rubrics" ></app-rubrics-input>
+        <app-rubrics-input
+            #rubricsInput
+            [isEditingMode]="true"
+            [(rubrics)]="assessment.rubrics"
+        ></app-rubrics-input>
     </div>
     <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" (click)="printObject()">Confirm</button>
+        <button class="btn btn-secondary text-white" (click)="modal.close()">
+            Cancel
+        </button>
+        <button class="btn btn-primary" (click)="saveEditedRubrics(rubricsInput, modal)">
+            Confirm
+        </button>
     </div>
 </ng-template>
 
