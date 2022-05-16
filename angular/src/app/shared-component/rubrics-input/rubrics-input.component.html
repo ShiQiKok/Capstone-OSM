@@ -41,7 +41,7 @@
                         <span *ngIf="!rubrics.isEdit">
                             {{ col.min }} - {{ col.max }}
                         </span>
-                        <span *ngIf="colIndex === addIconIndex">
+                        <span *ngIf="colIndex === addIconIndex && isEditingMode">
                             <button
                                 class="btn btn-sm btn-link"
                                 (click)="removeRubricsColumn($event)"
@@ -107,7 +107,7 @@
                             />
                         </div>
                     </span>
-                    <div class="mt-3">
+                    <div class="mt-3" *ngIf="isEditingMode">
                         <button
                             class="btn btn-sm btn-link"
                             (click)="removeRubricsRow($event, element)"
@@ -149,17 +149,18 @@
         <tr
             mat-header-row
             (click)="$event.stopPropagation()"
-            (dblclick)="setUneditable(); rubrics.isEdit = !rubrics.isEdit"
+            (dblclick)="onHeaderDoubleClick()"
             *matHeaderRowDef="getRubricsMarksRangeString()"
         ></tr>
         <tr
             mat-row
             (click)="$event.stopPropagation()"
-            (dblclick)="setUneditable(); row.isEdit = true"
+            (dblclick)="onBodyDoubleClick(row)"
             *matRowDef="let row; columns: getRubricsMarksRangeString()"
         ></tr>
     </table>
     <button
+        *ngIf="isEditingMode"
         class="btn btn-link d-block ml-auto"
         (click)="addRubricsRow($event)"
     >

@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    ViewChild,
+} from '@angular/core';
 import { MatTable } from '@angular/material/table';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -32,6 +39,7 @@ class RubricMarkRangeInput {
 })
 export class RubricsInputComponent implements OnInit {
     @Input() rubrics!: RubricsInput;
+    @Input() isEditingMode!: boolean;
     @Output() rubricsChange = new EventEmitter<RubricsInput>();
 
     @ViewChild(MatTable) table!: MatTable<any>;
@@ -212,9 +220,9 @@ export class RubricsInputComponent implements OnInit {
 
     removeRubricsRow(event: any, obj: any) {
         event.stopPropagation();
-        let index  = this.rubrics.criterion!.indexOf(obj);
+        let index = this.rubrics.criterion!.indexOf(obj);
 
-        if (index !== -1){
+        if (index !== -1) {
             this.rubrics.criterion!.splice(index, 1);
         }
 
@@ -250,6 +258,20 @@ export class RubricsInputComponent implements OnInit {
             criterion.columns!.splice(this.addIconIndex - 1, 1);
         });
         this.rubrics.isEdit = false;
+    }
+
+    onHeaderDoubleClick() {
+        if (this.isEditingMode) {
+            this.setUneditable();
+            this.rubrics.isEdit = !this.rubrics.isEdit;
+        }
+    }
+
+    onBodyDoubleClick(row: any) {
+        if (this.isEditingMode) {
+            this.setUneditable();
+            row.isEdit = !row.isEdit;
+        }
     }
 
     setUneditable(): void {

@@ -60,9 +60,7 @@ class RubricMarkRangeInput {
     selector: 'app-assessment-creation-form',
     templateUrl: './assessment-creation-form.component.html',
 })
-export class AssessmentCreationFormComponent
-    extends AppComponent
-{
+export class AssessmentCreationFormComponent extends AppComponent {
     // Component Reference
     @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
 
@@ -81,6 +79,7 @@ export class AssessmentCreationFormComponent
     assessmentTypes = Object.values(AssessmentType);
     markingSettings = Object.values(MarkingSettings);
     subjects: any = [];
+    selectedSubjectName: string = '';
 
     questionDisplayedColumns: string[] = [
         'drag',
@@ -89,6 +88,9 @@ export class AssessmentCreationFormComponent
         'marks',
         'actions',
     ];
+
+    questionReviewColumns: string[] = ['no', 'question', 'marks'];
+
     questions: QuestionInput[] = [
         {
             no: '1',
@@ -117,7 +119,6 @@ export class AssessmentCreationFormComponent
         },
     ];
     rubrics!: RubricsInput;
-
 
     constructor(
         router: Router,
@@ -156,7 +157,7 @@ export class AssessmentCreationFormComponent
         });
     }
 
-    emitEvent(){
+    emitEvent() {
         // using reference component to trigger the event emit
         this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
         console.log(this.rubrics);
@@ -167,9 +168,9 @@ export class AssessmentCreationFormComponent
         this.questions.forEach((q) => {
             questionJson[q.no!] = q.value;
         });
-        delete this.rubrics.isEdit
+        delete this.rubrics.isEdit;
         this.rubrics.criterion!.forEach((c) => {
-            delete c.isEdit
+            delete c.isEdit;
         });
 
         // TODO: rubrics need to remove isEdit property
@@ -195,6 +196,15 @@ export class AssessmentCreationFormComponent
             Object.values(form.controls).forEach((formControl) => {
                 formControl.invalid ? formControl.markAsDirty() : null;
             });
+        } else {
+            if (form === this.assessmentDetailFormGroup) {
+                this.selectedSubjectName = this.subjects.find(
+                    (subject: any) => {
+                        return subject.id ==
+                            this.assessmentDetailFormGroup.value.subject;
+                    }
+                ).name;
+            }
         }
     }
 
@@ -225,7 +235,6 @@ export class AssessmentCreationFormComponent
         );
     }
 
-
     // REGION FormControls Getters
     get assessmentName() {
         return this.assessmentDetailFormGroup.get('assessmentName');
@@ -248,19 +257,21 @@ export class AssessmentCreationFormComponent
     }
     // END REGION FormControls Getters
 
-    openModal(modal: any){
+    openModal(modal: any) {
         this._modalService.open(modal);
     }
 
-    onSubmitNewSubject(modal: any){
-        let userId: number =  this.currentUser.id
-        this._subjectService.create({
-            name: this.subjectFormGroup.get('newSubject')!.value,
-            markers: [userId]
-        }).then((subject) => {
-            console.log(subject);
-        });
-        this._modalService.dismissAll("Subject Submitted");
+    onSubmitNewSubject(modal: any) {
+        let userId: number = this.currentUser.id;
+        this._subjectService
+            .create({
+                name: this.subjectFormGroup.get('newSubject')!.value,
+                markers: [userId],
+            })
+            .then((subject) => {
+                console.log(subject);
+            });
+        this._modalService.dismissAll('Subject Submitted');
         // to reload the page after creating a new subject
         window.location.reload();
     }

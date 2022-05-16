@@ -27,7 +27,13 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSubmitNewSubject(modal)">save</button>
+        <button
+            type="button"
+            class="btn btn-primary"
+            (click)="onSubmitNewSubject(modal)"
+        >
+            save
+        </button>
     </div>
 </ng-template>
 <div (click)="setUneditable($event)">
@@ -89,7 +95,10 @@
                                 {{ subject.name }}
                             </option>
                         </select>
-                        <button (click)="openModal(subjectCreationModal)" class="btn btn-link">
+                        <button
+                            (click)="openModal(subjectCreationModal)"
+                            class="btn btn-link"
+                        >
                             + create a new subject
                         </button>
                         <error-message
@@ -128,7 +137,7 @@
                     </div>
                 </form>
             </mat-step>
-            
+
             <!-- Step 2: Question -->
             <mat-step [stepControl]="questionFormGroup" label="Questions">
                 <form [formGroup]="questionFormGroup" id="questionForm">
@@ -283,18 +292,173 @@
 
             <!-- Step 3: Rubrics -->
             <mat-step label="Rubrics">
-                <app-rubrics-input #rubricsInput [(rubrics)]="rubrics" (rubrics)="testing()"></app-rubrics-input>
+                <app-rubrics-input
+                    #rubricsInput
+                    [(rubrics)]="rubrics"
+                    [isEditingMode]="true"
+                ></app-rubrics-input>
                 <button matStepperPrevious class="btn btn-outline-primary mr-2">
                     Back
                 </button>
-                <button matStepperNext (click)="emitEvent()" class="btn btn-primary">Next</button>
+                <button
+                    matStepperNext
+                    (click)="emitEvent()"
+                    class="btn btn-primary"
+                >
+                    Next
+                </button>
             </mat-step>
 
-            <mat-step label="Done">
-                <p>You are now done.</p>
+            <!-- Step 4: Review -->
+            <mat-step label="Review">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Assessment Name</th>
+                            <td>
+                                {{
+                                    assessmentDetailFormGroup.value
+                                        .assessmentName
+                                }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Assessment Type</th>
+                            <td>
+                                {{
+                                    assessmentDetailFormGroup.value
+                                        .assessmentType
+                                }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Subject</th>
+                            <td>
+                                {{ selectedSubjectName }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Default Marking Setting</th>
+                            <td>
+                                {{
+                                    assessmentDetailFormGroup.value
+                                        .defaultSetting
+                                }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <strong> Questions </strong>
+                                <table
+                                    mat-table
+                                    [dataSource]="questions"
+                                    class="mat-elevation-z8 w-100 my-4"
+                                >
+                                    <ng-container matColumnDef="no">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            style="width: 10%"
+                                        >
+                                            No.
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <span *ngIf="!element.isEdit">
+                                                {{ element.no }}
+                                            </span>
+                                            <span *ngIf="element.isEdit">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    [(ngModel)]="element.no"
+                                                />
+                                            </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="question">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            style="width: 60%"
+                                        >
+                                            Questions
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <span *ngIf="!element.isEdit">
+                                                {{ element.value.question }}
+                                            </span>
+                                            <span *ngIf="element.isEdit">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    [(ngModel)]="
+                                                        element.value.question
+                                                    "
+                                                />
+                                            </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="marks">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            style="width: 10%"
+                                        >
+                                            Marks
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <span *ngIf="!element.isEdit">
+                                                {{ element.value.marks }}
+                                            </span>
+                                            <span *ngIf="element.isEdit">
+                                                <input
+                                                    type="number"
+                                                    class="form-control"
+                                                    [(ngModel)]="
+                                                        element.value.marks
+                                                    "
+                                                />
+                                            </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr
+                                        mat-header-row
+                                        *matHeaderRowDef="questionReviewColumns"
+                                    ></tr>
+                                    <tr
+                                        mat-row
+                                        *matRowDef="
+                                            let row;
+                                            columns: questionReviewColumns
+                                        "
+                                    ></tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <strong>Rubrics</strong>
+                                <app-rubrics-input
+                                    [isEditingMode]="false"
+                                    [(rubrics)]="rubrics"
+                                ></app-rubrics-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div>
-                    <button class="btn btn-outline-primary mr-2" matStepperPrevious>Back</button>
-                    <button class="btn btn-primary" (click)="onSubmit()">submit</button>
+                    <button
+                        class="btn btn-outline-primary mr-2"
+                        matStepperPrevious
+                    >
+                        Back
+                    </button>
+                    <button class="btn btn-primary" (click)="onSubmit()">
+                        submit
+                    </button>
                 </div>
             </mat-step>
         </mat-stepper>
