@@ -11,7 +11,7 @@ from django.contrib.auth.hashers import check_password
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([])
 def apiOverview(request):
     api_urls = {
         'getAll': 'users/',
@@ -45,9 +45,9 @@ def userDetails(request, id):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'POST'])
-@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
 def createUser(request):
     serializer = UserSerializer(data=request.data)
 
