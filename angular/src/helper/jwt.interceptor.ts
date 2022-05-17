@@ -26,16 +26,20 @@ export class JwtInterceptor implements HttpInterceptor {
         // add authorization header with jwt token if available
         let currentUser = this.authenticationService.currentUserValue();
 
-        if (currentUser && currentUser.token) {
-            request = this.addTokenHeader(request, currentUser.token['access']);
+        if (currentUser) {
+
+            if (currentUser.token)
+                request = this.addTokenHeader(request, currentUser.token['access']);
+
+            return next.handle(request).pipe(catchError((error) => {
+                if (error instanceof HttpErrorResponse && error.status === 401) {
+                    return this.handle401Error(request, next, currentUser.token['refresh']);
+                }
+                return throwError(error);
+            }))
         }
 
-        return next.handle(request).pipe(catchError((error) => {
-            if (error instanceof HttpErrorResponse && error.status === 401) {
-                return this.handle401Error(request, next, currentUser.token['refresh']);
-            }
-            return throwError(error);
-        }))
+        return next.handle(request);
     }
 
     private addTokenHeader(request: HttpRequest<any>, token: string){

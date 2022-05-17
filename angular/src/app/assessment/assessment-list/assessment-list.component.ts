@@ -51,10 +51,10 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
 
     private async getAll() {
         this.subjects = (await this._subjectService.getAll(
-            this.currentUser.id
+            this.currentUser.id!
         )) as Subject[];
         this.assessmentList = (await this._assessmentService.getAll(
-            this.currentUser.id
+            this.currentUser.id!
         )) as Assessment[];
     }
 

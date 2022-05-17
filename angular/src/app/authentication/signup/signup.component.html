@@ -1,4 +1,4 @@
-<div class="">
+<div class="container">
     <div class="w-50 mx-auto card">
         <div class="card-body">
             <h2>Welcome to OSM!</h2>
@@ -6,48 +6,96 @@
         </div>
         <hr />
         <div class="card-body">
-            <form>
+            <form [formGroup]="signupFormGroup" id="signupFormGroup">
                 <div class="form-group">
-                    <label for="email">Email Address</label>
+                    <label for="username">Username</label>
                     <input
-                        type="email"
+                        type="text"
                         class="form-control"
+                        formControlName="username"
+                        id="username"
+                        placeholder="Enter username"
+                    />
+                    <error-message
+                        ngDefaultControl
+                        [formControl]="username"
+                    ></error-message>
+                </div>
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="firstName"
+                        id="firstName"
+                        placeholder="Enter first name"
+                    />
+                    <error-message
+                        ngDefaultControl
+                        [formControl]="firstName"
+                    ></error-message>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="lastName"
+                        id="lastName"
+                        placeholder="Enter last name"
+                    />
+                    <error-message
+                        ngDefaultControl
+                        [formControl]="lastName"
+                    ></error-message>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="email"
                         id="email"
-                        aria-describedby="emailHelp"
                         placeholder="Enter email"
                     />
-                    <small id="emailHelp" class="form-text text-muted"
-                        >We'll never share your email with anyone else.</small
-                    >
+                    <error-message
+                        ngDefaultControl
+                        [formControl]="email"
+                    ></error-message>
                 </div>
                 <div class="form-group">
-                    <label for="password1">Password</label>
+                    <label for="password">Password</label>
                     <input
-                        type="password"
+                        type="text"
                         class="form-control"
-                        id="password1"
-                        placeholder="Password"
+                        formControlName="password"
+                        id="password"
+                        placeholder="Enter password"
                     />
+                    <error-message
+                        ngDefaultControl
+                        [formControl]="password"
+                    ></error-message>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="confirmPassword"
+                        id="firstName"
+                        placeholder="Enter your password again"
+                    />
+                    <error-message
+                        ngDefaultControl
+                        [formControl]="confirmPassword"
+                    ></error-message>
                 </div>
 
-                <div class="form-group form-check">
-                    <input
-                        type="checkbox"
-                        class="form-check-input"
-                        id="remember-me-check"
-                    />
-                    <label class="form-check-label" for="remember-me-check"
-                        >Remember me</label
-                    >
-                </div>
-                <button type="submit" class="btn btn-primary d-block w-100">
+                <button
+                (click)="onSubmit()" class="btn btn-primary d-block w-100">
                     Submit
                 </button>
-
-                <!-- add forget password link -->
-                <div class="text-center mt-2">
-                    <a href="#">Forget Password?</a>
-                </div>
             </form>
         </div>
     </div>

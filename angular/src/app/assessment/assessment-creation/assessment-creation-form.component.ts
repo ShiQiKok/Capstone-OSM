@@ -95,7 +95,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
         this._assessmentService.getApi();
         this._subjectService.getApi().then(() => {
             this._subjectService
-                .getAll(this.currentUser.id)
+                .getAll(this.currentUser.id!)
                 .then((subjects) => {
                     this.subjects = subjects;
                 });
@@ -148,7 +148,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
             questions: this.questions,
             rubrics: this.rubrics,
-            markers: [this.currentUser.id],
+            markers: [this.currentUser.id!],
         };
 
         this._assessmentService.create(this.assessment).then(() => {
@@ -211,7 +211,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
     }
 
     onSubmitNewSubject(modal: any) {
-        let userId: number = this.currentUser.id;
+        let userId: number = this.currentUser.id!;
         this._subjectService
             .create({
                 name: this.subjectFormGroup.get('newSubject')!.value,

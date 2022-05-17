@@ -39,10 +39,10 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
     ) {
         super(router, _authenticationService);
         this.dummyUser = {
-            username: this.currentUser.username,
-            first_name: this.currentUser.first_name,
-            last_name: this.currentUser.last_name,
-            email: this.currentUser.email,
+            username: this.currentUser.username!,
+            first_name: this.currentUser.first_name!,
+            last_name: this.currentUser.last_name!,
+            email: this.currentUser.email!,
         };
 
         this.passwordForm = this._formBuilder.group({
@@ -65,7 +65,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
         this.currentUser.first_name = this.dummyUser.first_name;
         this.currentUser.last_name = this.dummyUser.last_name;
         this.currentUser.email = this.dummyUser.email;
-        this._userService.update(this.currentUser.id, this.currentUser).then(user => {
+        this._userService.update(this.currentUser.id!, this.currentUser).then(user => {
             this._authenticationService.setUser(this.currentUser);
         })
         this.isEditing = false;
@@ -77,7 +77,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
     onNewPasswordSubmit(){
         if(this.passwordForm.value.newPassword === this.passwordForm.value.confirmPassword){
-            this._userService.checkPassword(this.currentUser.id, this.passwordForm.value.currentPassword, this.passwordForm.value.newPassword).then(data => {
+            this._userService.checkPassword(this.currentUser.id!, this.passwordForm.value.currentPassword, this.passwordForm.value.newPassword).then(data => {
                 this.modalService.dismissAll();
                 this._snackBar.open('Password changed successfully!', '', {
                     duration: 3000
