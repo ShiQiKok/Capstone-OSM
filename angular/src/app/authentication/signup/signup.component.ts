@@ -5,6 +5,7 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { User } from 'src/models/user';
 import { UserService } from 'src/services/user.service';
 import { AppComponent } from '../../app.component';
@@ -18,6 +19,7 @@ export class SignupComponent implements OnInit {
     signupFormGroup: FormGroup;
 
     constructor(
+        private router: Router,
         private _formBuilder: FormBuilder,
         private _userService: UserService
     ) {
@@ -33,7 +35,6 @@ export class SignupComponent implements OnInit {
 
     async ngOnInit() {
         await this._userService.getApi();
-        console.log(this._userService.ALL_API);
     }
 
     onSubmit() {
@@ -55,6 +56,7 @@ export class SignupComponent implements OnInit {
                     .create(user)
                     .then((user) => {
                         console.log(user);
+                        this.onSuccessCallback();
                     })
                     .catch((err) => {
                         console.log(err);
@@ -86,5 +88,21 @@ export class SignupComponent implements OnInit {
     }
     get confirmPassword() {
         return this.signupFormGroup.get('confirmPassword');
+    }
+
+    onSuccessCallback(){
+        // update HTML content
+        let body = document.querySelector('div#content-body')!;
+        body.innerHTML = `
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Successful!</h5>
+                <p class="card-text">Your account is successfully created. You'll be redirected to the login page in a while!</p>
+            </div>
+        </div>`;
+
+        setTimeout(() => {
+            this.router.navigate(['/login']);
+        }, 3000);
     }
 }
