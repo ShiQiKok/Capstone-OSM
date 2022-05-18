@@ -276,16 +276,7 @@ def process_data(filename, assessment_id, file, criteria_num):
 
     temp = [ {"marksAwarded": None} for i in range(criteria_num)]
 
-
-    marks = []
-    for marker in markers:
-        marks.append(
-            {
-                "markerId": marker.id,
-                "totalMark": 0,
-                "distribution": temp
-            }
-        )
+    marks = [{"markerId": marker.id, "totalMark": 0, "distribution": temp} for marker in markers]
 
     return {
         "student_name": student_fname + ' ' + student_lname,
