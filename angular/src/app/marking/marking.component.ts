@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AnswerScript, AnswerScriptStatus, HighlightText } from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
@@ -51,6 +51,7 @@ export class MarkingComponent implements OnInit {
     isFloatingBarShowed: boolean = false;
 
     constructor(
+        private router: Router,
         private route: ActivatedRoute,
         private _answerScriptService: AnswerScriptService,
         private _assessmentService: AssessmentService,
@@ -407,7 +408,7 @@ export class MarkingComponent implements OnInit {
         this._answerScriptService
             .update(this.answerScript.id!, this.answerScript)
             .then((obj) => {
-                console.log(obj);
+                this.router.navigate([`/assessment-details/${this.assessment.id}`]);
             });
     }
 }
