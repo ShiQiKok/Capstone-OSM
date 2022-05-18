@@ -6,8 +6,20 @@
     </div>
     <!-- <div *ngIf="isFloatingBarShowed">SHOW BAR</div> -->
     <ng-template #floatToolbar>
-        <button (click)="highlightText(['highlight-correct'])">Correct</button>
-        <button (click)="highlightText(['highlight-wrong'])">Wrong</button>
+        <button
+            class="btn btn-sm btn-outline-primary d-inline-block"
+            style="width: 2rem"
+            (click)="highlightText(['highlight-correct'])"
+        >
+            <fa-icon [icon]="faCheck"> </fa-icon>
+        </button>
+        <button
+            class="btn btn-sm btn-outline-danger d-inline-block ml-2"
+            style="width: 2rem"
+            (click)="highlightText(['highlight-wrong'])"
+        >
+            <fa-icon [icon]="faTimes"> </fa-icon>
+        </button>
     </ng-template>
 
     <div id="answerscript-content">

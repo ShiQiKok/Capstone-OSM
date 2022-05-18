@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { AnswerScript, AnswerScriptStatus, HighlightText } from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
@@ -49,6 +50,10 @@ export class MarkingComponent implements OnInit {
     isEssayBased?: boolean = true;
     isRubricsDetailsShowed: boolean = false;
     isFloatingBarShowed: boolean = false;
+
+    //icon
+    faCheck = faCheck;
+    faTimes = faTimes;
 
     constructor(
         private router: Router,
