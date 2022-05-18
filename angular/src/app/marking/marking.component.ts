@@ -1,10 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-    AnswerScript,
-    AnswerScriptStatus,
-    HighlightText,
-} from 'src/models/answerScript';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { AnswerScript, AnswerScriptStatus, HighlightText } from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
@@ -66,6 +63,10 @@ export class MarkingComponent extends AppComponent implements OnInit {
     isEssayBased?: boolean = true;
     isRubricsDetailsShowed: boolean = false;
     isFloatingBarShowed: boolean = false;
+
+    //icon
+    faCheck = faCheck;
+    faTimes = faTimes;
 
     constructor(
         router: Router,
@@ -449,7 +450,7 @@ export class MarkingComponent extends AppComponent implements OnInit {
         this._answerScriptService
             .update(this.answerScript.id!, this.answerScript)
             .then((obj) => {
-                console.log(obj);
+                this.router.navigate([`/assessment-details/${this.assessment.id}`]);
             });
     }
 }

@@ -81,11 +81,8 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         );
 
         if (this.answerScripts.length > 0){
-            this.markerIndex = this.answerScripts[0].marks.findIndex((obj: any) => {
-                return obj.markerId === this.currentUser.id
-            })
+            this.updateMatchedMarkerIndex();
         }
-        console.log(this.markerIndex)
         this.calculateProgress();
         this.isLoading = false;
     }
@@ -139,9 +136,18 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                     .getAll(this.assessment.id!)
                     .then((obj) => {
                         this.answerScripts = obj;
+                        this.updateMatchedMarkerIndex();
                         this.modalService.dismissAll();
+                    }).catch((err) => {
+                        console.log('something wrong')
                     });
             });
+    }
+
+    private updateMatchedMarkerIndex(){
+        this.markerIndex = this.answerScripts[0].marks.findIndex((obj: any) => {
+            return obj.markerId === this.currentUser.id
+        })
     }
 
     onRowSelect(answerScript: AnswerScript) {

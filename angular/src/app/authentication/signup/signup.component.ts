@@ -8,7 +8,6 @@ import {
 import { Router } from '@angular/router';
 import { User } from 'src/models/user';
 import { UserService } from 'src/services/user.service';
-import { AppComponent } from '../../app.component';
 
 @Component({
     selector: 'app-signup',
@@ -24,12 +23,12 @@ export class SignupComponent implements OnInit {
         private _userService: UserService
     ) {
         this.signupFormGroup = this._formBuilder.group({
-            username: ['user6', Validators.required],
-            firstName: ['undefined', Validators.required],
-            lastName: ['undefined', Validators.required],
-            email: ['user6@gmail.com', Validators.required],
-            password: ['123qwe', Validators.required],
-            confirmPassword: ['123qwe', Validators.required],
+            username: ['', Validators.required],
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
+            email: ['', Validators.required],
+            password: ['', Validators.required],
+            confirmPassword: ['', Validators.required],
         });
     }
 
