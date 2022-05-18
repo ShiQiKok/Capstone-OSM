@@ -197,8 +197,10 @@ export class MarkingComponent extends AppComponent implements OnInit {
                         this.assessment.rubrics.criterion[i].totalMarks) /
                     100;
             } else {
-                this.answerScript.marks +=
-                    this.marks.distribution[i].marksAwarded;
+                if (this.marks.distribution[i].marksAwarded !== null){
+                    this.marks.totalMarks +=
+                    this.marks.distribution[i].marksAwarded!;
+                }
             }
         }
     }
