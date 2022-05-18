@@ -81,7 +81,7 @@
                 <ng-container matColumnDef="marks">
                     <th mat-header-cell *matHeaderCellDef>Marks</th>
                     <td mat-cell *matCellDef="let answer">
-                        {{ answer.marks ? answer.marks : "-" }}
+                        {{ answer.marks[markerIndex].totalMarks ? answer.marks[markerIndex].totalMarks : "-"}}
                     </td>
                 </ng-container>
 

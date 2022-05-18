@@ -12,15 +12,6 @@ export class UserService extends BaseService {
         this.ROOT = this.ROOT + 'users/';
     }
 
-    signup(user: User) {
-        return new Promise<Object>((resolve, reject) => {
-            this.http.post(this.ROOT + this.ALL_API.create, user).subscribe(
-                (obj) => resolve(obj),
-                (err) => reject(err)
-            );
-        });
-    }
-
     checkPassword(userId: number, password: string, newPassword: string) {
         return new Promise<Object>((resolve, reject) => {
             this.http
@@ -28,6 +19,17 @@ export class UserService extends BaseService {
                     currentPassword: password,
                     newPassword: newPassword,
                 })
+                .subscribe(
+                    (obj) => resolve(obj),
+                    (err) => reject(err)
+                );
+        });
+    }
+
+    getCollabUser(){
+        return new Promise<any>((resolve, reject) => {
+            this.http
+                .get(this.ROOT + this.ALL_API.collab)
                 .subscribe(
                     (obj) => resolve(obj),
                     (err) => reject(err)

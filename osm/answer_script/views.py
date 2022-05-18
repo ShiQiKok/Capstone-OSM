@@ -161,6 +161,8 @@ def bulk_create(request):
         return content
 
     def process_csv_content(content, assessment_id):
+        assessment = Assessment.objects.get(id=assessment_id)
+        markers = assessment.markers.all()
         record = []
         header = [h.replace('"', '') for h in content[0]]
         content = content[1:]
@@ -180,14 +182,25 @@ def bulk_create(request):
             answer_list = []
             for k in question_keys:
                 answer_list.append({
-                    "answer": row[k],
-                    "marksAwarded": 0
+                    "answer": row[k]
                 })
+
+            temp = [ {"marksAwarded": None} for i in range(len(question_keys))]
+
+            marks = []
+            for marker in markers:
+                marks.append(
+                    {
+                        "markerId": marker.id,
+                        "totalMark": 0,
+                        "distribution": temp
+                    }
+                )
 
             answers.append({
                     "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
                     "student_id": row['Email address'],
-                    "marks": None,
+                    "marks": marks,
                     "answers": answer_list,
                     "assessment": assessment_id,
                     "script": None
@@ -254,19 +267,31 @@ def bulk_create(request):
 
 
 # TODO: change student ID
+# process PDF file's data
 def process_data(filename, assessment_id, file, criteria_num):
     student_fname, student_lname, student_id, _ = filename.split('_')
     student_id = str(uuid.uuid4())
-    answers = []
+    assessment = Assessment.objects.get(id=assessment_id)
+    markers = assessment.markers.all()
 
-    for i in range(criteria_num):
-        answers.append({"marksAwarded": None})
+    temp = [ {"marksAwarded": None} for i in range(criteria_num)]
+
+
+    marks = []
+    for marker in markers:
+        marks.append(
+            {
+                "markerId": marker.id,
+                "totalMark": 0,
+                "distribution": temp
+            }
+        )
 
     return {
         "student_name": student_fname + ' ' + student_lname,
         "student_id": student_id,
-        "marks": None,
-        "answers": answers,
+        "marks": marks,
+        "answers": None,
         "assessment": assessment_id,
         "script": file
     }

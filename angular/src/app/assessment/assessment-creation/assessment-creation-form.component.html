@@ -36,7 +36,8 @@
         </button>
     </div>
 </ng-template>
-<div (click)="setUneditable($event)">
+<!-- (click)="setUneditable($event)" -->
+<div>
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
             <!-- Step 1: Assessment Info -->
@@ -174,6 +175,40 @@
                 >
                     Next
                 </button>
+            </mat-step>
+
+            <!-- Step 4: Marking Collaboration -->
+            <mat-step label="Collaboration">
+                <div class="form-group" class="my-4">
+                    <label for="collaborators">Collaborators <small class="text-secondary">(optional)</small> </label>
+                    <input
+                        (keydown.enter)="onEnterPressed($event)"
+                        id="collaborators"
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter email or username"
+                        #collaborators
+                    />
+                    <small class="text-danger" id="collaborationMsg"></small>
+                </div>
+                <div *ngIf="selectedCollabUser.length > 0" class="my-4">
+                    <h6>Collaborators:</h6>
+                    <mat-chip-list [selectable]="false">
+                        <mat-chip
+                            *ngFor="let user of selectedCollabUser"
+                            (removed)="removeCollaborator(user)"
+                        >
+                            {{ user.username }}: {{ user.email }}
+                            <button matChipRemove>
+                                <fa-icon [icon]="faTimesCircle"></fa-icon>
+                            </button>
+                        </mat-chip>
+                    </mat-chip-list>
+                </div>
+                <button matStepperPrevious class="btn btn-outline-primary mr-2">
+                    Back
+                </button>
+                <button matStepperNext class="btn btn-primary">Next</button>
             </mat-step>
 
             <!-- Step 4: Review -->

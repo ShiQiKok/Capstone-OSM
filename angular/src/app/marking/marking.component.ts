@@ -5,8 +5,9 @@ import { AnswerScript, AnswerScriptStatus, HighlightText } from 'src/models/answ
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
+import { AuthenticationService } from 'src/services/authentication.service';
 import { ViewSDKClient } from 'src/services/view-sdk.service';
-
+import { AppComponent } from '../app.component';
 
 class CustomSelection {
     anchorNode: Node;
@@ -27,12 +28,22 @@ class CustomSelection {
     }
 }
 
+class MarkDistribution {
+    marksAwarded: number | undefined;
+}
+
+class Marks {
+    markerId!: number;
+    distribution!: MarkDistribution[];
+    totalMarks!: number;
+}
+
 @Component({
     selector: 'app-marking',
     templateUrl: './marking.component.html',
     styleUrls: ['./marking.component.scss'],
 })
-export class MarkingComponent implements OnInit {
+export class MarkingComponent extends AppComponent implements OnInit {
     @ViewChild('generalCriteriaList') generalCriteriaList!: any;
     @ViewChild('detailCriteriaList') detailCriteriaList!: any;
     @ViewChild('floatingBar') floatToolbar!: any;
@@ -43,6 +54,8 @@ export class MarkingComponent implements OnInit {
     selectedCriterion!: any;
     selectedCriterionIndex!: number;
     selectedDetailedCriterion!: any;
+
+    marks!: Marks;
 
     totalMarks: number = 0;
 
@@ -56,12 +69,15 @@ export class MarkingComponent implements OnInit {
     faTimes = faTimes;
 
     constructor(
-        private router: Router,
+        router: Router,
+        _authenticationService: AuthenticationService,
         private route: ActivatedRoute,
         private _answerScriptService: AnswerScriptService,
         private _assessmentService: AssessmentService,
         private viewSDKClient: ViewSDKClient
-    ) {}
+    ) {
+        super(router, _authenticationService);
+    }
 
     async ngOnInit() {
         await this.loadApi();
@@ -97,8 +113,8 @@ export class MarkingComponent implements OnInit {
 
         // Expand the selected criterion
         let m =
-            this.answerScript.answers![this.selectedCriterionIndex]
-                .marksAwarded;
+            this.marks.distribution[this.selectedCriterionIndex].marksAwarded;
+
         if (m != null) {
             for (
                 let i = 0;
@@ -125,9 +141,16 @@ export class MarkingComponent implements OnInit {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
-            if (this.answerScript.status === AnswerScriptStatus.NOT_STARTED){
+            if (this.answerScript.status === AnswerScriptStatus.NOT_STARTED) {
                 this.answerScript.status = AnswerScriptStatus.IN_PROGRESS;
             }
+
+            this.marks = data.marks.filter((obj: Marks) => {
+                return obj.markerId == this.currentUser.id;
+            })[0];
+
+            console.log(this.marks);
+
             this._assessmentService
                 .get(this.answerScript.assessment!)
                 .then((obj) => {
@@ -167,16 +190,19 @@ export class MarkingComponent implements OnInit {
             inputElement.value = max;
         }
 
-        this.answerScript.marks = 0;
-        for (let i = 0; i < this.answerScript.answers!.length; i++) {
-            if (this.isEssayBased)
-                this.answerScript.marks +=
-                    (this.answerScript.answers![i].marksAwarded! *
+        this.marks.totalMarks = 0;
+        for (let i = 0; i < this.marks.distribution.length; i++) {
+            if (this.isEssayBased) {
+                this.marks.totalMarks +=
+                    (this.marks.distribution[i].marksAwarded! *
                         this.assessment.rubrics.criterion[i].totalMarks) /
                     100;
-            else
-                this.answerScript.marks +=
-                    this.answerScript.answers![i].marksAwarded;
+            } else {
+                if (this.marks.distribution[i].marksAwarded !== null){
+                    this.marks.totalMarks +=
+                    this.marks.distribution[i].marksAwarded!;
+                }
+            }
         }
     }
 
@@ -401,15 +427,26 @@ export class MarkingComponent implements OnInit {
         return array;
     }
 
-    private checkIsMarkingFinished(): boolean{
-        for (let answer of this.answerScript.answers!) {
-            if (answer.marksAwarded === null) return false;
+    private checkIsMarkingFinished(): boolean {
+        for (let obj of this.marks.distribution!) {
+            if (obj.marksAwarded === null) return false;
         }
         return true;
     }
 
     onSubmit() {
-        this.checkIsMarkingFinished() ? this.answerScript.status = AnswerScriptStatus.FINISHED: null;
+        this.checkIsMarkingFinished()
+            ? (this.answerScript.status = AnswerScriptStatus.FINISHED)
+            : null;
+
+        let i = this.answerScript.marks.findIndex((obj: Marks) => {
+            return obj.markerId === this.currentUser.id;
+        })
+
+        if (i != -1){
+            this.answerScript.marks[i] = Object.assign({}, this.marks);
+        }
+
         this._answerScriptService
             .update(this.answerScript.id!, this.answerScript)
             .then((obj) => {

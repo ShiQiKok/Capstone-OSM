@@ -25,7 +25,7 @@ export class BaseService {
     }
 
     get(id: number) {
-        return new Promise<Object>((resolve, reject) => {
+        return new Promise<any>((resolve, reject) => {
             this.http
                 .get(this.ROOT + this.ALL_API.get + id)
                 .subscribe((obj) => resolve(obj));

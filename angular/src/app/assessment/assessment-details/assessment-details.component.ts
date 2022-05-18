@@ -22,13 +22,15 @@ import { GradebookService } from 'src/services/gradebook.service';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
 import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
+import { AppComponent } from 'src/app/app.component';
+import { AuthenticationService } from 'src/services/authentication.service';
 
 @Component({
     selector: 'app-assessment-details',
     templateUrl: './assessment-details.component.html',
     styleUrls: ['./assessment-details.component.scss'],
 })
-export class AssessmentDetailsComponent implements OnInit {
+export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     // objects
     assessment!: Assessment;
     answerScripts: any = undefined;
@@ -38,6 +40,7 @@ export class AssessmentDetailsComponent implements OnInit {
     assessmentTypes: AssessmentType[] = Object.values(AssessmentType);
     finished: number = 0;
     newAssessmentName!: string;
+    markerIndex!: number;
 
     // icons
     faUpload = faUpload;
@@ -57,13 +60,16 @@ export class AssessmentDetailsComponent implements OnInit {
     ];
 
     constructor(
+        router: Router,
+        _authenticationService: AuthenticationService,
         private _assessmentService: AssessmentService,
         private _answerScriptService: AnswerScriptService,
         private _gradebookService: GradebookService,
-        private router: Router,
         private route: ActivatedRoute,
         private modalService: NgbModal
-    ) {}
+    ) {
+        super(router, _authenticationService);
+    }
 
     async ngOnInit() {
         this.isLoading = true;
@@ -73,6 +79,13 @@ export class AssessmentDetailsComponent implements OnInit {
         this.answerScripts = await this._answerScriptService.getAll(
             this.assessment.id!
         );
+
+        if (this.answerScripts.length > 0){
+            this.markerIndex = this.answerScripts[0].marks.findIndex((obj: any) => {
+                return obj.markerId === this.currentUser.id
+            })
+        }
+        console.log(this.markerIndex)
         this.calculateProgress();
         this.isLoading = false;
     }
