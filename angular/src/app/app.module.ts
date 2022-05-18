@@ -32,6 +32,7 @@ import { MatListModule } from '@angular/material/list';
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
 import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import {MatChipsModule} from '@angular/material/chips';
 import { QuestionInputComponent } from './shared-component/question-input/question-input.component';
 
 @NgModule({
@@ -70,6 +71,7 @@ import { QuestionInputComponent } from './shared-component/question-input/questi
         FontAwesomeModule,
         DragDropModule,
         MatSnackBarModule,
+        MatChipsModule
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
