@@ -32,8 +32,9 @@ import { MatListModule } from '@angular/material/list';
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
 import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import {MatChipsModule} from '@angular/material/chips';
+import { MatChipsModule } from '@angular/material/chips';
 import { QuestionInputComponent } from './shared-component/question-input/question-input.component';
+import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
 
 @NgModule({
     declarations: [
@@ -71,11 +72,12 @@ import { QuestionInputComponent } from './shared-component/question-input/questi
         FontAwesomeModule,
         DragDropModule,
         MatSnackBarModule,
-        MatChipsModule
+        MatChipsModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         UserService,
+        PendingChangesGuard,
     ],
     bootstrap: [AppComponent],
 })
