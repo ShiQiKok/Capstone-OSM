@@ -69,9 +69,8 @@
                                 disabled
                                 class="form-control w-25 text-center"
                                 [ngModel]="
-                                    answerScript.answers[i].marksAwarded != null
-                                        ? (answerScript.answers[i]
-                                              .marksAwarded *
+                                    marks.distribution[i].marksAwarded != null
+                                        ? (marks.distribution[i].marksAwarded *
                                               c.totalMarks) /
                                           100
                                         : 0
@@ -124,7 +123,7 @@
                                         assessment.rubrics.marksRange[i].max
                                     }}"
                                     [(ngModel)]="
-                                        answerScript.answers[
+                                        marks.distribution[
                                             selectedCriterionIndex
                                         ].marksAwarded
                                     "
@@ -149,10 +148,10 @@
                         <input
                             type="number"
                             class="form-control text-center ml-auto"
-                            style="width: 25%"
+                            style="width: 30%"
                             min="0"
                             max="{{ question.value.marks }}"
-                            [(ngModel)]="answerScript.answers[i].marksAwarded"
+                            [(ngModel)]="marks.distribution[i].marksAwarded"
                             (change)="onMarkAwardedChanged($event)"
                         />
                         /
@@ -162,7 +161,7 @@
             </div>
             <div class="position-absolute bottom-0 end-0 w-100 bg-white">
                 <div class="pl-4">
-                    Marks: {{ answerScript.marks ? answerScript.marks : 0 }}
+                    Marks: {{ marks.totalMarks ? marks.totalMarks : 0 }}
                 </div>
                 <button
                     class="btn btn-primary w-100"

@@ -1,5 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppComponent } from 'src/app/app.component';
 import {
@@ -10,13 +15,16 @@ import {
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { faTimesCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
 import { AssessmentService } from 'src/services/assessment.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
 import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
+import { UserService } from 'src/services/user.service';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { ignoreElements } from 'rxjs/operators';
 
 class QuestionInput {
     no?: string | undefined;
@@ -58,6 +66,12 @@ class RubricMarkRangeInput {
     max?: number | undefined;
 }
 
+class UserCollabInfo {
+    id!: number;
+    username!: string;
+    email!: string;
+}
+
 @Component({
     selector: 'app-assessment-creation-form',
     templateUrl: './assessment-creation-form.component.html',
@@ -66,6 +80,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
     // Component Reference
     @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
     @ViewChild('questionsInput') questionsInput!: QuestionInputComponent;
+    @ViewChild('collaborators') collaborators!: ElementRef;
 
     // icons
     faTrashAlt = faTrashAlt;
@@ -79,9 +94,13 @@ export class AssessmentCreationFormComponent extends AppComponent {
     markingSettings = Object.values(MarkingSettings);
     subjects: any = [];
     selectedSubjectName: string = '';
+    collabUsers: UserCollabInfo[] = [];
+    selectedCollabUser: UserCollabInfo[] = [];
 
     questions!: QuestionInput[];
     rubrics!: RubricsInput;
+
+    faTimesCircle = faTimesCircle;
 
     constructor(
         router: Router,
@@ -89,16 +108,25 @@ export class AssessmentCreationFormComponent extends AppComponent {
         private _formBuilder: FormBuilder,
         private _subjectService: SubjectService,
         private _assessmentService: AssessmentService,
+        private _userService: UserService,
         private _modalService: NgbModal
     ) {
         super(router, authenticationService);
         this._assessmentService.getApi();
+
         this._subjectService.getApi().then(() => {
             this._subjectService
                 .getAll(this.currentUser.id!)
                 .then((subjects) => {
                     this.subjects = subjects;
                 });
+        });
+
+        this._userService.getApi().then(() => {
+            this._userService.getCollabUser().then((users) => {
+                this.collabUsers = users;
+                console.log(this.collabUsers);
+            });
         });
 
         this.assessmentDetailFormGroup = this._formBuilder.group({
@@ -110,7 +138,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
                 Validators.required,
             ],
         });
-
 
         this.subjectFormGroup = this._formBuilder.group({
             newSubject: ['', Validators.required],
@@ -139,6 +166,17 @@ export class AssessmentCreationFormComponent extends AppComponent {
             delete c.isEdit;
         });
 
+
+        let collaborators = this.selectedCollabUser.map((u) => {
+            return u.id
+        })
+
+        if (!collaborators.includes(this.currentUser.id!)){
+            collaborators.push(this.currentUser.id!)
+        }
+
+        console.log(collaborators);
+
         // TODO: rubrics need to remove isEdit property
         this.assessment = {
             name: this.assessmentDetailFormGroup.get('assessmentName')!.value,
@@ -148,7 +186,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
             questions: this.questions,
             rubrics: this.rubrics,
-            markers: [this.currentUser.id!],
+            markers: collaborators,
         };
 
         this._assessmentService.create(this.assessment).then(() => {
@@ -230,5 +268,33 @@ export class AssessmentCreationFormComponent extends AppComponent {
         this.rubricsInput.rubrics.criterion!.forEach((criteria: any) => {
             criteria.isEdit = false;
         });
+    }
+
+    onEnterPressed(event: Event) {
+        let inputValue = this.collaborators.nativeElement.value;
+        let msgElement = document.querySelector('#collaborationMsg')!;
+        let user = this.collabUsers.find((user) => {
+            if (user.email == inputValue || user.username == inputValue) {
+                return true;
+            }
+            return false;
+        });
+
+        if (user && !this.selectedCollabUser.includes(user)) {
+            this.selectedCollabUser.push(user);
+            msgElement.innerHTML = '';
+        } else if (!user){
+            msgElement.innerHTML = 'User not found! Please make sure you have entered the correct email or username.';
+        }
+
+        this.collaborators.nativeElement.value = '';
+    }
+
+    removeCollaborator(user: UserCollabInfo) {
+        let index = this.selectedCollabUser.indexOf(user);
+
+        if (index >= 0) {
+            this.selectedCollabUser.splice(index, 1);
+        }
     }
 }

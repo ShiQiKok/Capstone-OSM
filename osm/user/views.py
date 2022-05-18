@@ -4,7 +4,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserCollabSerializer
 from .models import User
 from django.contrib.auth.hashers import check_password
 
@@ -19,7 +19,8 @@ def apiOverview(request):
         'create': 'user-create/',
         'update': 'user-update/',
         'delete': 'user-delete/',
-        'check': 'user-check-password/'
+        'check': 'user-check-password/',
+        'collab': 'user-collab/',
     }
 
     return Response(api_urls)
@@ -31,6 +32,15 @@ def apiOverview(request):
 def users(request):
     users = User.objects.all().order_by('-id')
     serializer = UserSerializer(users, many=True)
+
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def usersCollab(request):
+    users = User.objects.all().order_by('-id')
+    serializer = UserCollabSerializer(users, many=True)
 
     return Response(serializer.data)
 
