@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/helper/auth.gurd';
+import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
 import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form.component';
 import { AssessmentDetailsComponent } from './assessment/assessment-details/assessment-details.component';
 import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
@@ -36,6 +37,7 @@ const routes: Routes = [
         path: 'marking/:id',
         component: MarkingComponent,
         canActivate: [AuthGuard],
+        canDeactivate: [PendingChangesGuard]
     }
 
 ];

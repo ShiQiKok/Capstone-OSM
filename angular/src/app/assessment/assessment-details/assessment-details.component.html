@@ -81,7 +81,7 @@
                 <ng-container matColumnDef="marks">
                     <th mat-header-cell *matHeaderCellDef>Marks</th>
                     <td mat-cell *matCellDef="let answer">
-                        {{ answer.marks[markerIndex].totalMarks ? answer.marks[markerIndex].totalMarks : "-"}}
+                        {{ answer.marks[markerIndex].totalMark ? answer.marks[markerIndex].totalMark : "-"}}
                     </td>
                 </ng-container>
 
@@ -257,7 +257,7 @@
     <div class="modal-footer">
         <button
             class="btn btn-danger"
-            (click)="deleteAssessment(assessment.id)"
+            (click)="openModal(deleteConfirmation, {})"
         >
             Delete Assessment
         </button>
@@ -293,6 +293,27 @@
         >
             Confirm
         </button>
+    </div>
+</ng-template>
+
+<ng-template let-modal #deleteConfirmation>
+    <div class="modal-header">
+        <h4 class="modal-title">Warning!</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to delete this assessment?</p>
+    </div>
+    <div class="modal-footer">
+        <div>
+            <button (click)="modal.dismiss('Cross click')" class="btn btn-outline-primary">Cancel</button>
+            <button (click)="deleteAssessment(assessment.id)" class="btn btn-danger">Delete</button>
+        </div>
     </div>
 </ng-template>
 

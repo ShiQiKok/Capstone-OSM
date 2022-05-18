@@ -1,7 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { AnswerScript, AnswerScriptStatus, HighlightText } from 'src/models/answerScript';
+import { Observable } from 'rxjs';
+import { ComponentCanDeactivate } from 'src/helper/pending-changes.guard';
+import {
+    AnswerScript,
+    AnswerScriptStatus,
+    HighlightText,
+} from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
@@ -35,7 +41,7 @@ class MarkDistribution {
 class Marks {
     markerId!: number;
     distribution!: MarkDistribution[];
-    totalMarks!: number;
+    totalMark!: number;
 }
 
 @Component({
@@ -43,7 +49,10 @@ class Marks {
     templateUrl: './marking.component.html',
     styleUrls: ['./marking.component.scss'],
 })
-export class MarkingComponent extends AppComponent implements OnInit {
+export class MarkingComponent
+    extends AppComponent
+    implements OnInit, ComponentCanDeactivate
+{
     @ViewChild('generalCriteriaList') generalCriteriaList!: any;
     @ViewChild('detailCriteriaList') detailCriteriaList!: any;
     @ViewChild('floatingBar') floatToolbar!: any;
@@ -56,6 +65,7 @@ export class MarkingComponent extends AppComponent implements OnInit {
     selectedDetailedCriterion!: any;
 
     marks!: Marks;
+    initialMarksDistribution!: MarkDistribution[];
 
     totalMarks: number = 0;
 
@@ -63,6 +73,7 @@ export class MarkingComponent extends AppComponent implements OnInit {
     isEssayBased?: boolean = true;
     isRubricsDetailsShowed: boolean = false;
     isFloatingBarShowed: boolean = false;
+    isSubmitted: boolean = false;
 
     //icon
     faCheck = faCheck;
@@ -82,6 +93,14 @@ export class MarkingComponent extends AppComponent implements OnInit {
     async ngOnInit() {
         await this.loadApi();
         this.getDetail();
+    }
+
+    @HostListener('window:beforeunload')
+    canDeactivate(): Observable<boolean> | boolean {
+        if (!this.isSubmitted) {
+            return JSON.stringify(this.marks.distribution) === JSON.stringify(this.initialMarksDistribution);
+        }
+        return true;
     }
 
     async loadApi() {
@@ -148,8 +167,7 @@ export class MarkingComponent extends AppComponent implements OnInit {
             this.marks = data.marks.filter((obj: Marks) => {
                 return obj.markerId == this.currentUser.id;
             })[0];
-
-            console.log(this.marks);
+            this.initialMarksDistribution = JSON.parse(JSON.stringify(this.marks.distribution));
 
             this._assessmentService
                 .get(this.answerScript.assessment!)
@@ -190,17 +208,17 @@ export class MarkingComponent extends AppComponent implements OnInit {
             inputElement.value = max;
         }
 
-        this.marks.totalMarks = 0;
+        this.marks.totalMark = 0;
         for (let i = 0; i < this.marks.distribution.length; i++) {
             if (this.isEssayBased) {
-                this.marks.totalMarks +=
+                this.marks.totalMark +=
                     (this.marks.distribution[i].marksAwarded! *
                         this.assessment.rubrics.criterion[i].totalMarks) /
                     100;
             } else {
-                if (this.marks.distribution[i].marksAwarded !== null){
-                    this.marks.totalMarks +=
-                    this.marks.distribution[i].marksAwarded!;
+                if (this.marks.distribution[i].marksAwarded !== null) {
+                    this.marks.totalMark +=
+                        this.marks.distribution[i].marksAwarded!;
                 }
             }
         }
@@ -270,8 +288,6 @@ export class MarkingComponent extends AppComponent implements OnInit {
         let endOffset = 0;
 
         // calculate the offsets
-        // console.log(children);
-        // console.log(selection);
         let hasStartNodeMatched = false;
         // if the selection is within the same node
         for (let child of children) {
@@ -286,7 +302,6 @@ export class MarkingComponent extends AppComponent implements OnInit {
                           selection.anchorOffset);
                 break;
             } else if (child === startNode) {
-                // console.log(2);
                 hasStartNodeMatched = true;
                 startOffset += selection.anchorOffset;
             } else if (child === endNode) {
@@ -294,16 +309,13 @@ export class MarkingComponent extends AppComponent implements OnInit {
                     startOffset +
                     selection.focusOffset +
                     (startNode.textContent!.length - selection.anchorOffset);
-                // console.log(3);
                 break;
             } else {
-                // console.log(4);
                 hasStartNodeMatched
                     ? (endOffset += child.textContent!.length)
                     : (startOffset += child.textContent!.length);
             }
         }
-        console.log(startOffset, endOffset);
 
         // find the index of the highlighted component
         let highlightTextComponent =
@@ -441,16 +453,19 @@ export class MarkingComponent extends AppComponent implements OnInit {
 
         let i = this.answerScript.marks.findIndex((obj: Marks) => {
             return obj.markerId === this.currentUser.id;
-        })
+        });
 
-        if (i != -1){
+        if (i != -1) {
             this.answerScript.marks[i] = Object.assign({}, this.marks);
         }
 
         this._answerScriptService
             .update(this.answerScript.id!, this.answerScript)
             .then((obj) => {
-                this.router.navigate([`/assessment-details/${this.assessment.id}`]);
+                this.isSubmitted = true;
+                this.router.navigate([
+                    `/assessment-details/${this.assessment.id}`,
+                ]);
             });
     }
 }

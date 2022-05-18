@@ -24,6 +24,7 @@ import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/ru
 import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
 import { AppComponent } from 'src/app/app.component';
 import { AuthenticationService } from 'src/services/authentication.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-assessment-details',
@@ -66,7 +67,8 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         private _answerScriptService: AnswerScriptService,
         private _gradebookService: GradebookService,
         private route: ActivatedRoute,
-        private modalService: NgbModal
+        private modalService: NgbModal,
+        private _snackBar: MatSnackBar
     ) {
         super(router, _authenticationService);
     }
@@ -80,7 +82,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             this.assessment.id!
         );
 
-        if (this.answerScripts.length > 0){
+        if (this.answerScripts.length > 0) {
             this.updateMatchedMarkerIndex();
         }
         this.calculateProgress();
@@ -114,7 +116,11 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     deleteAssessment(id: any) {
         this._assessmentService.delete(id).then(() => {
+            this.modalService.dismissAll();
             this.router.navigate(['/assessment-list']);
+            this._snackBar.open('The assessment is deleted!', 'ok', {
+                duration: 3000
+            });
         });
     }
 
@@ -138,16 +144,17 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                         this.answerScripts = obj;
                         this.updateMatchedMarkerIndex();
                         this.modalService.dismissAll();
-                    }).catch((err) => {
-                        console.log('something wrong')
+                    })
+                    .catch((err) => {
+                        console.log('something wrong');
                     });
             });
     }
 
-    private updateMatchedMarkerIndex(){
+    private updateMatchedMarkerIndex() {
         this.markerIndex = this.answerScripts[0].marks.findIndex((obj: any) => {
-            return obj.markerId === this.currentUser.id
-        })
+            return obj.markerId === this.currentUser.id;
+        });
     }
 
     onRowSelect(answerScript: AnswerScript) {
