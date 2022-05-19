@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {
     FormBuilder,
-    FormControl,
     FormGroup,
     Validators,
 } from '@angular/forms';
@@ -16,6 +15,9 @@ import { UserService } from 'src/services/user.service';
 })
 export class SignupComponent implements OnInit {
     signupFormGroup: FormGroup;
+    isFormSubmitted: boolean = false;
+
+    errorMessage: string = '';
 
     constructor(
         private router: Router,
@@ -26,7 +28,9 @@ export class SignupComponent implements OnInit {
             username: ['', Validators.required],
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
-            email: ['', Validators.required],
+            email: ['', [Validators.required, Validators.pattern(
+                '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'
+            )]],
             password: ['', Validators.required],
             confirmPassword: ['', Validators.required],
         });
@@ -37,18 +41,18 @@ export class SignupComponent implements OnInit {
     }
 
     onSubmit() {
-        console.log('1');
+        this.isFormSubmitted = true;
+        this.errorMessage = '';
         // check if form valid
         if (this.signupFormGroup.valid) {
-            console.log('2');
             // check if passwords match
             if (this.password!.value === this.confirmPassword!.value) {
                 let user: User = {
-                    username: this.username!.value,
-                    first_name: this.firstName!.value,
-                    last_name: this.lastName!.value,
-                    email: this.email!.value,
-                    password: this.password!.value,
+                    username: this.username.value,
+                    first_name: this.firstName.value,
+                    last_name: this.lastName.value,
+                    email: this.email.value,
+                    password: this.password.value,
                 };
 
                 this._userService
@@ -58,8 +62,25 @@ export class SignupComponent implements OnInit {
                         this.onSuccessCallback();
                     })
                     .catch((err) => {
-                        console.log(err);
+                        let error = err.error
+                        console.log(error)
+                        Object.keys(error).forEach((e) => {
+                            switch (e) {
+                                case 'username':
+                                    this.errorMessage = `Username: ${error[e]}`;
+                                    this.signupFormGroup.controls['username'].setValue('');
+                                    break;
+                                case 'email':
+                                    this.errorMessage = `Email: ${error[e]}`;
+                                    this.signupFormGroup.controls['email'].setValue('');
+                                    break;
+                            }
+                        })
                     });
+            } else {
+                this.errorMessage = "Passwords don't match!";
+                this.signupFormGroup.controls['password'].setValue('');
+                this.signupFormGroup.controls['confirmPassword'].setValue('');
             }
         } else {
             Object.values(this.signupFormGroup.controls).forEach(
@@ -71,22 +92,22 @@ export class SignupComponent implements OnInit {
     }
 
     get username() {
-        return this.signupFormGroup.get('username');
+        return this.signupFormGroup.get('username')!;
     }
     get firstName() {
-        return this.signupFormGroup.get('firstName');
+        return this.signupFormGroup.get('firstName')!;
     }
     get lastName() {
-        return this.signupFormGroup.get('lastName');
+        return this.signupFormGroup.get('lastName')!;
     }
     get email() {
-        return this.signupFormGroup.get('email');
+        return this.signupFormGroup.get('email')!;
     }
     get password() {
-        return this.signupFormGroup.get('password');
+        return this.signupFormGroup.get('password')!;
     }
     get confirmPassword() {
-        return this.signupFormGroup.get('confirmPassword');
+        return this.signupFormGroup.get('confirmPassword')!;
     }
 
     onSuccessCallback(){

@@ -9,34 +9,40 @@ export class BaseService {
 
     getApi() {
         return new Promise<Object>((resolve, reject) => {
-            this.http.get(this.ROOT).subscribe((api) => {
-                this.ALL_API = api;
-                resolve(this.ALL_API);
-            });
+            this.http.get(this.ROOT).subscribe(
+                (api) => {
+                    this.ALL_API = api;
+                    resolve(this.ALL_API);
+                },
+                (err) => reject(err)
+            );
         });
     }
 
     getAll(userId: number) {
         return new Promise<Object>((resolve, reject) => {
-            this.http
-                .get(this.ROOT + this.ALL_API.getAll + userId)
-                .subscribe((list) => resolve(list));
+            this.http.get(this.ROOT + this.ALL_API.getAll + userId).subscribe(
+                (list) => resolve(list),
+                (err) => reject(err)
+            );
         });
     }
 
     get(id: number) {
         return new Promise<any>((resolve, reject) => {
-            this.http
-                .get(this.ROOT + this.ALL_API.get + id)
-                .subscribe((obj) => resolve(obj));
+            this.http.get(this.ROOT + this.ALL_API.get + id).subscribe(
+                (obj) => resolve(obj),
+                (err) => reject(err)
+            );
         });
     }
 
     create(object: any) {
         return new Promise<Object>((resolve, reject) => {
-            this.http
-                .post(this.ROOT + this.ALL_API.create, object)
-                .subscribe((list) => resolve(list));
+            this.http.post(this.ROOT + this.ALL_API.create, object).subscribe(
+                (list) => resolve(list),
+                (err) => reject(err)
+            );
         });
     }
 
@@ -44,7 +50,10 @@ export class BaseService {
         return new Promise<Object>((resolve, reject) => {
             this.http
                 .post(`${this.ROOT}${this.ALL_API.update}${id}/`, data, {})
-                .subscribe((obj) => resolve(obj));
+                .subscribe(
+                    (obj) => resolve(obj),
+                    (err) => reject(err)
+                );
         });
     }
 

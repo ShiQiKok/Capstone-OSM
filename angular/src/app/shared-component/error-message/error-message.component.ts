@@ -34,7 +34,7 @@ export class ErrorMessageComponent implements OnInit {
                         break;
                     }
                     case 'pattern': {
-                        this.errorMessage = 'Please enter a valid input.';
+                        this.errorMessage = 'Please enter a valid email.';
                         break;
                     }
                 }

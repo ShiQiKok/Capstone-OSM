@@ -66,7 +66,7 @@ def createUser(request):
         user_serializer = UserSerializer(user, many=False)
         return Response(user_serializer.data)
     else:
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -82,7 +82,7 @@ def updateUser(request, id):
         print(serializer.data)
         return Response(serializer.data)
 
-    return Response(serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE'])
@@ -110,4 +110,4 @@ def updatePassword(request, id):
         return Response(serializer.data)
 
     else:
-        return Response({'details': 'The password provided is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'The password provided is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)

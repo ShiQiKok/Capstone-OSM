@@ -1,11 +1,11 @@
 <div class="container my-4">
     <div class="mx-auto mt-5 align-middle w-50">
         <div class="card shadow rounded">
-            <div class="card-body mt-3">
-                <h2>Welcome to OSM!</h2>
+            <div class="card-body pt-5 text-primary" style="background: rgba(85, 110, 230, 0.25) url('../../../assets/auth-deco.png') right no-repeat; background-size: contain">
+                <h2>Welcome Back!</h2>
                 <p>Sign in to continue</p>
             </div>
-            <hr class="dropdown-divider" />
+
             <div class="card-body">
                 <div
                     *ngIf="!isFormValid"
@@ -14,7 +14,7 @@
                 >
                     {{ errorMessage }}
                 </div>
-                <form (ngSubmit)="onSubmit()">
+                <form (ngSubmit)="onSubmit()" class="text-primary">
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input
@@ -53,7 +53,7 @@
                             class="form-check-input"
                             id="remember-me-check"
                         />
-                        <label class="form-check-label" for="remember-me-check"
+                        <label class="form-check-label text-dark" for="remember-me-check"
                             >Remember me</label
                         >
                     </div>

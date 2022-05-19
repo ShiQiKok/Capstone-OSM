@@ -110,7 +110,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
                 })
                 .catch((err) => {
                     this.showErrorMessage = true;
-                    this.errorMessage = err.error.details;
+                    this.errorMessage = err.error.detail;
                 });
         }else {
             this.showErrorMessage = true;
