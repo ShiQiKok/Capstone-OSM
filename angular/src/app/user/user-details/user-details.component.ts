@@ -119,6 +119,13 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
         this.clearForm(this.passwordForm);
     }
 
+    cancelEdit(){
+        this.isEditing = false;
+        this.userInfoForm.controls['firstName'].setValue(this.currentUser.first_name);
+        this.userInfoForm.controls['lastName'].setValue(this.currentUser.last_name);
+        this.userInfoForm.controls['email'].setValue(this.currentUser.email);
+    }
+
     togglePasswordVisibility(id: string, icon: any){
         let element = document.getElementById(id) as HTMLInputElement;
         element.type === 'password' ? element.type = 'text' : element.type = 'password';
