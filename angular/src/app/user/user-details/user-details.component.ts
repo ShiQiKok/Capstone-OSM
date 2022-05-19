@@ -16,7 +16,6 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
     styleUrls: ['./user-details.component.scss'],
 })
 export class UserDetailsComponent extends AppComponent implements OnInit {
-    @ViewChild('passwordModal') passwordModal: any;
 
     isEditing: boolean = false;
     isEditingPassword: boolean = false;
@@ -62,10 +61,6 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
     ngOnInit() {
         this._userService.getApi();
-    }
-
-    ngAfterViewInit() {
-        this.modalService.open(this.passwordModal);
     }
 
     editUserInfo() {

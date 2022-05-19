@@ -33,7 +33,7 @@ export class AuthenticationService {
         this.currentUserSubject.next(obj);
     }
 
-    async login(username: string, password: string) {
+    login(username: string, password: string) {
         return new Promise((resolve, reject) => {
             this.http
                 .post<any>(
