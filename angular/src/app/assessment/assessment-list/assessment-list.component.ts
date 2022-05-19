@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from 'src/app/app.component';
@@ -6,10 +6,10 @@ import { Assessment } from 'src/models/assessment';
 import { Subject } from 'src/models/subject';
 import { AssessmentService } from 'src/services/assessment.service';
 import { AuthenticationService } from 'src/services/authentication.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubjectService } from 'src/services/subject.service';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AnswerScript } from 'src/models/answerScript';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-assessment-list',
@@ -23,6 +23,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     assessmentList: Assessment[] = [];
 
     assessments: any = {};
+    faPlus = faPlus;
 
     constructor(
         router: Router,

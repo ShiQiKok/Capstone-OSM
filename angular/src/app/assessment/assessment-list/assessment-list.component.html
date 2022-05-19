@@ -3,6 +3,7 @@
         class="btn btn-primary d-block ml-auto"
         routerLink="/assessment-create"
     >
+        <fa-icon [icon]="faPlus" class="mr-1"></fa-icon>
         Create Assessment
     </button>
     <div *ngFor="let obj of assessments | keyvalue" class="my-4">
@@ -12,8 +13,8 @@
                     {{ getSubjectName(obj.value[0].subject) }}
                 </h4>
                 <div class="mt-4 rounded">
-                    <div *ngFor="let a of obj.value" class="my-3">
-                        <div class="card d-flex flex-row">
+                    <div *ngFor="let a of obj.value" class="my-3 ">
+                        <div class="card d-flex flex-row hoverable-card">
                             <div class="card-body">
                                 <div>
                                     <span>{{ a.name }}</span>
