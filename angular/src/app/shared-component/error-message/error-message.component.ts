@@ -33,6 +33,10 @@ export class ErrorMessageComponent implements OnInit {
                         this.errorMessage = 'This field is required.';
                         break;
                     }
+                    case 'pattern': {
+                        this.errorMessage = 'Please enter a valid input.';
+                        break;
+                    }
                 }
             });
         }

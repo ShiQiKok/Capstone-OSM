@@ -98,7 +98,10 @@ export class MarkingComponent
     @HostListener('window:beforeunload')
     canDeactivate(): Observable<boolean> | boolean {
         if (!this.isSubmitted) {
-            return JSON.stringify(this.marks.distribution) === JSON.stringify(this.initialMarksDistribution);
+            return (
+                JSON.stringify(this.marks.distribution) ===
+                JSON.stringify(this.initialMarksDistribution)
+            );
         }
         return true;
     }
@@ -167,7 +170,9 @@ export class MarkingComponent
             this.marks = data.marks.filter((obj: Marks) => {
                 return obj.markerId == this.currentUser.id;
             })[0];
-            this.initialMarksDistribution = JSON.parse(JSON.stringify(this.marks.distribution));
+            this.initialMarksDistribution = JSON.parse(
+                JSON.stringify(this.marks.distribution)
+            );
 
             this._assessmentService
                 .get(this.answerScript.assessment!)

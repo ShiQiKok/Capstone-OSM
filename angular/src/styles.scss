@@ -2,11 +2,11 @@
 $body-bg: #F8F8FB;
 $primary: #4277FF;
 $secondary: #A9A9A9;
-$success:  #91DE69;
+$success:  #66BB6A;
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@use '~@angular/material' as mat;
 // Plus imports for other components in your app.
+@use '~@angular/material' as mat;
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
@@ -47,6 +47,7 @@ secondary: #A5E3FF
 
 
 @import "../node_modules/bootstrap/scss/bootstrap";
+
 
 $dark-blue: (
   "dark-blue": #00248F
