@@ -6,12 +6,20 @@ class UserAuthBackend(BaseBackend):
     def authenticate(self, request=None, username=None, password=None):
         try:
             user = User.objects.get(username=username)
-            # print(user.password)
-            # print(password)
-            # print(check_password(password, user.password))
-            if check_password(password, user.password):
-                return user
-            else:
-                print("password not match")
         except User.DoesNotExist:
             return None
+        else:
+            if user.check_password(password):
+                return user
+        return None
+
+class EmailBackend(BaseBackend):
+    def authenticate(self, request=None, username=None, password=None):
+        try:
+            user = User.objects.get(email=username)
+        except User.DoesNotExist:
+            return None
+        else:
+            if user.check_password(password):
+                return user
+        return None
