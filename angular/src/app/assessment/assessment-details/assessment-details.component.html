@@ -155,6 +155,26 @@
                         </div>
                     </div>
                 </div>
+                <div *ngIf="assessment.type === 'question_based'">
+                    <!-- {{assessment.questions | json}} -->
+                    <div *ngFor="let q of assessment.questions; let i = index">
+                        <div class="row my-2">
+                            <div class="col">
+                                Question {{ i + 1 }}
+                            </div>
+                            <div class="col">
+                                {{
+                                    selection.selected[0].marks[markerIndex]
+                                        .distribution[i].marksAwarded
+                                        ? selection.selected[0].marks[markerIndex]
+                                        .distribution[i].marksAwarded
+                                        : "-"
+                                }}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
                 <div class="row mt-4">
                     <div class="col">
