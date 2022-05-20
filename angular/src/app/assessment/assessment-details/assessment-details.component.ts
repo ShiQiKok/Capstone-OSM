@@ -1,20 +1,10 @@
-import {
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    OnInit,
-    ViewChild,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Assessment, AssessmentType } from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
-import {
-    NgbActiveModal,
-    NgbModal,
-    NgbModalRef,
-} from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript } from 'src/models/answerScript';
@@ -25,6 +15,7 @@ import { QuestionInputComponent } from 'src/app/shared-component/question-input/
 import { AppComponent } from 'src/app/app.component';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
     selector: 'app-assessment-details',
@@ -34,7 +25,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     // objects
     assessment!: Assessment;
-    answerScripts: any = undefined;
+    answerScripts!: MatTableDataSource<AnswerScript>;
     uploadedFile!: File | null;
     markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
     selection = new SelectionModel<AnswerScript>(false, []);
@@ -78,11 +69,13 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         await this._assessmentService.getApi();
         await this._answerScriptService.getApi();
         await this.getAssessmentDetails();
-        this.answerScripts = await this._answerScriptService.getAll(
-            this.assessment.id!
+        this.answerScripts = new MatTableDataSource(
+            (await this._answerScriptService.getAll(
+                this.assessment.id!
+            )) as AnswerScript[]
         );
 
-        if (this.answerScripts.length > 0) {
+        if (this.answerScripts.data.length > 0) {
             this.updateMatchedMarkerIndex();
         }
         this.calculateProgress();
@@ -100,10 +93,12 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     }
 
     calculateProgress() {
-        this.finished = this.answerScripts.filter(
+        this.finished = this.answerScripts.data.filter(
             (x: any) => x.status === 'Finished'
         ).length;
-        return Math.floor((this.finished / this.answerScripts.length) * 100);
+        return Math.floor(
+            (this.finished / this.answerScripts.data.length) * 100
+        );
     }
 
     updateAssessment(id: any) {
@@ -119,7 +114,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             this.modalService.dismissAll();
             this.router.navigate(['/assessment-list']);
             this._snackBar.open('The assessment is deleted!', 'ok', {
-                duration: 3000
+                duration: 3000,
             });
         });
     }
@@ -141,7 +136,9 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                 this._answerScriptService
                     .getAll(this.assessment.id!)
                     .then((obj) => {
-                        this.answerScripts = obj;
+                        this.answerScripts = new MatTableDataSource(
+                            obj as AnswerScript[]
+                        );
                         this.updateMatchedMarkerIndex();
                         this.modalService.dismissAll();
                     })
@@ -152,9 +149,11 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     }
 
     private updateMatchedMarkerIndex() {
-        this.markerIndex = this.answerScripts[0].marks.findIndex((obj: any) => {
-            return obj.markerId === this.currentUser.id;
-        });
+        this.markerIndex = this.answerScripts.data[0].marks.findIndex(
+            (obj: any) => {
+                return obj.markerId === this.currentUser.id;
+            }
+        );
     }
 
     onRowSelect(answerScript: AnswerScript) {
@@ -199,5 +198,10 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             .then(() => {
                 this.modalService.dismissAll();
             });
+    }
+
+    filterValue(event: Event) {
+        let value = (event.target as HTMLInputElement).value;
+        this.answerScripts.filter = value.trim().toLowerCase();
     }
 }
