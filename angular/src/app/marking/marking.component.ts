@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
@@ -45,6 +45,7 @@ class Marks {
 }
 
 @Component({
+    encapsulation: ViewEncapsulation.None,
     selector: 'app-marking',
     templateUrl: './marking.component.html',
     styleUrls: ['./marking.component.scss'],
@@ -63,10 +64,8 @@ export class MarkingComponent
     selectedCriterion!: any;
     selectedCriterionIndex!: number;
     selectedDetailedCriterion!: any;
-
     marks!: Marks;
     initialMarksDistribution!: MarkDistribution[];
-
     totalMarks: number = 0;
 
     // controls
@@ -78,6 +77,17 @@ export class MarkingComponent
     //icon
     faCheck = faCheck;
     faTimes = faTimes;
+
+    @HostListener('window:beforeunload')
+    canDeactivate(): Observable<boolean> | boolean {
+        if (!this.isSubmitted) {
+            return (
+                JSON.stringify(this.marks.distribution) ===
+                JSON.stringify(this.initialMarksDistribution)
+            );
+        }
+        return true;
+    }
 
     constructor(
         router: Router,
@@ -93,17 +103,6 @@ export class MarkingComponent
     async ngOnInit() {
         await this.loadApi();
         this.getDetail();
-    }
-
-    @HostListener('window:beforeunload')
-    canDeactivate(): Observable<boolean> | boolean {
-        if (!this.isSubmitted) {
-            return (
-                JSON.stringify(this.marks.distribution) ===
-                JSON.stringify(this.initialMarksDistribution)
-            );
-        }
-        return true;
     }
 
     async loadApi() {
@@ -163,6 +162,7 @@ export class MarkingComponent
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
+
             if (this.answerScript.status === AnswerScriptStatus.NOT_STARTED) {
                 this.answerScript.status = AnswerScriptStatus.IN_PROGRESS;
             }
@@ -181,7 +181,9 @@ export class MarkingComponent
 
                     this.checkControls();
                 });
+
             if (this.answerScript.script) this.loadScript();
+
         });
     }
 

@@ -1,3 +1,5 @@
+@import "../../styles.scss";
+
 .notransition {
     background-color: red !important;
 }
@@ -10,18 +12,27 @@ div#sideNav {
 }
 
 .expandedList {
-    height: 100px !important;
+    height: auto !important;
 }
 
-.mat-list-base .mat-list-item .mat-list-text,
-.mat-list-base .mat-list-option .mat-list-text,
-#generalCriteriaList mat-list-option div.mat-list-text {
-    flex-direction: row;
-    align-items: center;
-    background-color: red;
+#detailCriteriaList mat-list-option,
+#generalCriteriaList mat-list-option {
+    height: auto;
+    padding: 0.5rem auto !important;
+    transition: 300ms;
 }
 
-#generalCriteriaList mat-list-option,
-#questionMarksPanel .mat-list-item {
-    height: 5rem;
+mat-list-option:not(:first-child) {
+    margin: 1rem 0 !important;
+    padding: 0.5rem auto !important;
+    transition: 300ms;
+}
+
+mat-list-option{
+    height: auto !important;
+}
+
+
+div.mat-list-text {
+    padding: 0.5rem 0 1rem !important;
 }
