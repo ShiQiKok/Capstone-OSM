@@ -28,7 +28,7 @@ import { SpinnerComponent } from './shared-component/spinner/spinner.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MarkingComponent } from './marking/marking.component';
 import { MatListModule } from '@angular/material/list';
-
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
 import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -73,6 +73,7 @@ import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
         DragDropModule,
         MatSnackBarModule,
         MatChipsModule,
+        MatSlideToggleModule
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

@@ -1,10 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import {
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppComponent } from 'src/app/app.component';
 import {
@@ -23,8 +18,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
 import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
 import { UserService } from 'src/services/user.service';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { ignoreElements } from 'rxjs/operators';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 class QuestionInput {
     no?: string | undefined;
@@ -81,6 +75,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
     @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
     @ViewChild('questionsInput') questionsInput!: QuestionInputComponent;
     @ViewChild('collaborators') collaborators!: ElementRef;
+    @ViewChild('questionToggle') questionToggle!: MatSlideToggle;
 
     // icons
     faTrashAlt = faTrashAlt;
@@ -97,7 +92,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
     collabUsers: UserCollabInfo[] = [];
     selectedCollabUser: UserCollabInfo[] = [];
 
-    questions!: QuestionInput[];
+    questions!: QuestionInput[] | undefined;
     rubrics!: RubricsInput;
 
     faTimesCircle = faTimesCircle;
@@ -125,7 +120,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
         this._userService.getApi().then(() => {
             this._userService.getCollabUser().then((users) => {
                 this.collabUsers = users;
-                console.log(this.collabUsers);
             });
         });
 
@@ -144,10 +138,21 @@ export class AssessmentCreationFormComponent extends AppComponent {
         });
     }
 
+    ngAfterViewInit() {
+        console.log(this.questionToggle);
+    }
+
     emitQuestionInputEvent() {
-        // using reference component to trigger the event emit
-        this.questionsInput.questionsChange.emit(this.questionsInput.questions);
+        if (this.questionToggle.checked) {
+            // using reference component to trigger the event emit
+            this.questionsInput.questionsChange.emit(
+                this.questionsInput.questions
+            );
+        } else {
+            this.questions = undefined;
+        }
         console.log(this.questions);
+
     }
 
     emitRubricsInputEvent() {
@@ -157,41 +162,35 @@ export class AssessmentCreationFormComponent extends AppComponent {
     }
 
     onSubmit(): void {
-        let questionJson: any = {};
-        this.questions.forEach((q) => {
-            questionJson[q.no!] = q.value;
-        });
         delete this.rubrics.isEdit;
         this.rubrics.criterion!.forEach((c) => {
             delete c.isEdit;
         });
 
-
         let collaborators = this.selectedCollabUser.map((u) => {
-            return u.id
-        })
+            return u.id;
+        });
 
-        if (!collaborators.includes(this.currentUser.id!)){
-            collaborators.push(this.currentUser.id!)
+        if (!collaborators.includes(this.currentUser.id!)) {
+            collaborators.push(this.currentUser.id!);
         }
 
-        console.log(collaborators);
-
-        // TODO: rubrics need to remove isEdit property
         this.assessment = {
             name: this.assessmentDetailFormGroup.get('assessmentName')!.value,
             type: this.assessmentDetailFormGroup.get('assessmentType')!.value,
             subject: this.assessmentDetailFormGroup.get('subject')!.value,
             marking_settings:
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
-            questions: this.questions,
+            questions: this.questions ? this.questions : null,
             rubrics: this.rubrics,
             markers: collaborators,
         };
 
-        this._assessmentService.create(this.assessment).then(() => {
-            this.router.navigate(['/assessment-list']);
-        });
+        console.log(this.assessment);
+
+        // this._assessmentService.create(this.assessment).then(() => {
+        //     this.router.navigate(['/assessment-list']);
+        // });
     }
 
     // To mark the invalid fields dirty for triggering error messages
@@ -212,14 +211,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
                 ).name;
             }
         }
-    }
-
-    drop(event: CdkDragDrop<QuestionInput[]>) {
-        moveItemInArray(
-            this.questions,
-            event.previousIndex,
-            event.currentIndex
-        );
     }
 
     // REGION FormControls Getters
@@ -283,8 +274,9 @@ export class AssessmentCreationFormComponent extends AppComponent {
         if (user && !this.selectedCollabUser.includes(user)) {
             this.selectedCollabUser.push(user);
             msgElement.innerHTML = '';
-        } else if (!user){
-            msgElement.innerHTML = 'User not found! Please make sure you have entered the correct email or username.';
+        } else if (!user) {
+            msgElement.innerHTML =
+                'User not found! Please make sure you have entered the correct email or username.';
         }
 
         this.collaborators.nativeElement.value = '';

@@ -73,7 +73,7 @@
                                     type == 'essay_based' ? true : false
                                 "
                             >
-                                {{ type }}
+                                {{ type.replaceAll("_", " ") | titlecase }}
                             </option>
                         </select>
                         <error-message
@@ -119,7 +119,7 @@
                                 *ngFor="let setting of markingSettings"
                                 [value]="setting"
                             >
-                                {{ setting }}
+                                {{ setting.replaceAll("_", " ") | titlecase }}
                             </option>
                         </select>
                         <error-message
@@ -141,7 +141,16 @@
 
             <!-- Step 2: Question -->
             <mat-step [stepControl]="questionFormGroup" label="Questions">
+                <div class="my-4">
+                    <mat-slide-toggle
+                        #questionToggle
+                        [checked]="assessmentType.value == 'question_based'"
+                        [color]="primary"
+                        >Enable Questions
+                    </mat-slide-toggle>
+                </div>
                 <app-question-input
+                    *ngIf="questionToggle.checked"
                     #questionsInput
                     [(questions)]="questions"
                     [isEditingMode]="true"
@@ -180,7 +189,10 @@
             <!-- Step 4: Marking Collaboration -->
             <mat-step label="Collaboration">
                 <div class="form-group" class="my-4">
-                    <label for="collaborators">Collaborators <small class="text-secondary">(optional)</small> </label>
+                    <label for="collaborators"
+                        >Collaborators
+                        <small class="text-secondary">(optional)</small>
+                    </label>
                     <input
                         (keydown.enter)="onEnterPressed($event)"
                         id="collaborators"
