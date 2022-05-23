@@ -139,7 +139,7 @@
                         "
                         class="row my-2"
                     >
-                        <div class="col">
+                        <div class="col-8">
                             {{ c.title | titlecase }}
                         </div>
                         <div class="col">
@@ -159,7 +159,7 @@
                     <!-- {{assessment.questions | json}} -->
                     <div *ngFor="let q of assessment.questions; let i = index">
                         <div class="row my-2">
-                            <div class="col">
+                            <div class="col-8">
                                 Question {{ i + 1 }}
                             </div>
                             <div class="col">
@@ -177,7 +177,7 @@
                 </div>
 
                 <div class="row mt-4">
-                    <div class="col">
+                    <div class="col-8">
                         <h5>Total Mark</h5>
                     </div>
                     <div class="col">

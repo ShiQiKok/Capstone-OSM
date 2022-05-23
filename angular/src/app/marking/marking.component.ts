@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { ComponentCanDeactivate } from 'src/helper/pending-changes.guard';
 import {
@@ -77,6 +77,7 @@ export class MarkingComponent
     //icon
     faCheck = faCheck;
     faTimes = faTimes;
+    faAngleLeft = faAngleLeft;
 
     @HostListener('window:beforeunload')
     canDeactivate(): Observable<boolean> | boolean {

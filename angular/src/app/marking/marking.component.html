@@ -91,26 +91,28 @@
                         </mat-selection-list>
                     </div>
                     <div *ngIf="isRubricsDetailsShowed">
-                        <a
-                            (click)="
-                                isRubricsDetailsShowed = !isRubricsDetailsShowed
-                            "
-                            class="btn btn-primary"
-                        >
-                            back
-                        </a>
+                        <div>
+                            <a
+                                (click)="
+                                    isRubricsDetailsShowed =
+                                        !isRubricsDetailsShowed
+                                "
+                                class="btn btn-outline-primary btn-sm"
+                            >
+                                <fa-icon [icon]="faAngleLeft"> </fa-icon>
+                                <!-- <i class="fas fa-angle-left"></i> -->
+                            </a>
+                            <h3 class="d-inline-block">
+                                {{ selectedCriterion.title }}
+                            </h3>
+
+                            <p>{{ selectedCriterion.description }}</p>
+                        </div>
                         <mat-selection-list
                             #detailCriteriaList
                             [multiple]="false"
                             (selectionChange)="onDetailedCriteriaChanged()"
-
                         >
-                            <div>
-                                <h3 class="d-inline-block">
-                                    {{ selectedCriterion.title }}
-                                </h3>
-                                <p>{{ selectedCriterion.description }}</p>
-                            </div>
                             <mat-list-option
                                 *ngFor="
                                     let detail of selectedCriterion.columns.reverse();
@@ -151,16 +153,20 @@
                                         class="form-control d-inline"
                                         type="number"
                                         min="{{
-                                            assessment.rubrics.marksRange[assessment.rubrics.marksRange
-                                            .length -
-                                            1 -
-                                            i].min
+                                            assessment.rubrics.marksRange[
+                                                assessment.rubrics.marksRange
+                                                    .length -
+                                                    1 -
+                                                    i
+                                            ].min
                                         }}"
                                         max="{{
-                                            assessment.rubrics.marksRange[assessment.rubrics.marksRange
-                                            .length -
-                                            1 -
-                                            i].max
+                                            assessment.rubrics.marksRange[
+                                                assessment.rubrics.marksRange
+                                                    .length -
+                                                    1 -
+                                                    i
+                                            ].max
                                         }}"
                                         [(ngModel)]="
                                             marks.distribution[
