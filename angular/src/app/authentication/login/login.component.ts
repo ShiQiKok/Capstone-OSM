@@ -29,6 +29,8 @@ export class LoginComponent implements OnInit {
     }
 
     onSubmit() {
+        let checkbox = document.getElementById('rememberMeCheck') as HTMLInputElement;
+
         this.isUsernameValid = true;
         this.isPasswordValid = true;
 
@@ -37,8 +39,8 @@ export class LoginComponent implements OnInit {
         } else if (this.password === '') {
             this.isPasswordValid = false;
         } else {
-            this.authenticationService.login(this.username, this.password).then(
-                (data) => {
+            this.authenticationService.login(this.username, this.password, checkbox.checked).then(
+                () => {
                     let returnUrl = this.route.snapshot.queryParams.returnUrl;
                     this.router.navigate([returnUrl || '/user-details']);
                 },

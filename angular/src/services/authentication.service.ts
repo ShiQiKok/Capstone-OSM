@@ -20,8 +20,11 @@ export class AuthenticationService {
         this.currentUserSubject = new BehaviorSubject<any>(
             localStorage.getItem('currentUser')
                 ? JSON.parse(localStorage.getItem('currentUser') as string)
+                : sessionStorage.getItem('currentUser')
+                ? JSON.parse(sessionStorage.getItem('currentUser') as string)
                 : null
         );
+
         this.currentUser = this.currentUserSubject.asObservable();
     }
 
@@ -33,7 +36,7 @@ export class AuthenticationService {
         this.currentUserSubject.next(obj);
     }
 
-    login(username: string, password: string) {
+    login(username: string, password: string, rememberUser: boolean) {
         return new Promise((resolve, reject) => {
             this.http
                 .post<any>(
@@ -57,10 +60,17 @@ export class AuthenticationService {
                         user['token'] = token;
 
                         // set current user in local storage
-                        localStorage.setItem(
-                            'currentUser',
-                            JSON.stringify(user)
-                        );
+                        if (rememberUser) {
+                            localStorage.setItem(
+                                'currentUser',
+                                JSON.stringify(user)
+                            );
+                        } else {
+                            sessionStorage.setItem(
+                                'currentUser',
+                                JSON.stringify(user)
+                            );
+                        }
 
                         // assign the real user object to the currentUserSubject
                         this.currentUserSubject.next(user);
@@ -114,12 +124,9 @@ export class AuthenticationService {
         });
     }
 
-    setUser(user: any){
+    setUser(user: any) {
         this.currentUserSubject.next(user);
         this.currentUser = this.currentUserSubject.asObservable();
-        localStorage.setItem(
-            'currentUser',
-            JSON.stringify(user)
-        );
+        localStorage.setItem('currentUser', JSON.stringify(user));
     }
 }
