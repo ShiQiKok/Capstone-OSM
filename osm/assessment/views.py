@@ -2,20 +2,22 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import AssessmentSerializer
 from .models import Assessment
+
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def overview(request):
     api_urls = {
-        'getAll':'assessments/',
-        'get':'assessment-details/',
-        'create':'assessment-create/',
-        'update':'assessment-update/',
-        'delete':'assessment-delete/',
+        'getAll': 'assessments/',
+        'get': 'assessment-details/',
+        'create': 'assessment-create/',
+        'update': 'assessment-update/',
+        'delete': 'assessment-delete/',
     }
 
     return Response(api_urls)
@@ -38,7 +40,7 @@ def assessment_details(request, id):
 
     return Response(serializer.data)
 
-@api_view(['GET','POST'])
+@api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def create_assessment(request):
@@ -48,7 +50,7 @@ def create_assessment(request):
         serializer.save()
         return Response(serializer.data)
     else:
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])

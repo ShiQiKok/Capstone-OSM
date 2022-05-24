@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from subject.models import Subject
 
 
@@ -14,13 +15,11 @@ class Assessment(models.Model):
 
     name = models.CharField(max_length=255)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    type = models.CharField(
-        max_length=20, choices=AssessmentType.choices, default=AssessmentType.QUESTION_BASED)
-    marking_setting = models.CharField(
-        max_length=20, choices=MarkingSetting.choices, default=MarkingSetting.MARK_BY_SCRIPT)
+    type = models.CharField(max_length=20, choices=AssessmentType.choices, default=AssessmentType.QUESTION_BASED)
+    marking_setting = models.CharField(max_length=20, choices=MarkingSetting.choices, default=MarkingSetting.MARK_BY_SCRIPT)
     data_created = models.DateTimeField(auto_now_add=True)
-    rubrics = models.JSONField(max_length=255, blank=True)
-    questions = models.JSONField(max_length=255, blank=True)
+    rubrics = models.JSONField(max_length=255, blank=True, null=True)
+    questions = models.JSONField(max_length=255, blank=True, null=True)
     markers = models.ManyToManyField('user.User', related_name='assessments')
 
     def __str__(self):

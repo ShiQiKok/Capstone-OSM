@@ -13,12 +13,12 @@ import { SubjectService } from 'src/services/subject.service';
 import { faTimesCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
 import { AssessmentService } from 'src/services/assessment.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
 import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
 import { UserService } from 'src/services/user.service';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 class QuestionInput {
     no?: string | undefined;
@@ -71,31 +71,35 @@ class UserCollabInfo {
     templateUrl: './assessment-creation-form.component.html',
 })
 export class AssessmentCreationFormComponent extends AppComponent {
-    // Component Reference
+    // Component References
     @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
     @ViewChild('questionsInput') questionsInput!: QuestionInputComponent;
     @ViewChild('collaborators') collaborators!: ElementRef;
     @ViewChild('questionToggle') questionToggle!: MatSlideToggle;
+    @ViewChild('rubricsToggle') rubricsToggle!: MatSlideToggle;
 
     // icons
     faTrashAlt = faTrashAlt;
-    isLoading: boolean = true;
-    assessment?: Assessment;
+    faTimesCircle = faTimesCircle;
 
+    // controls
+    isLoading: boolean = true;
+
+    // form groups
     assessmentDetailFormGroup!: FormGroup;
     subjectFormGroup!: FormGroup;
 
+    // objects
+    assessment?: Assessment;
+    questions!: QuestionInput[] | undefined;
+    rubrics!: RubricsInput | undefined;
     assessmentTypes = Object.values(AssessmentType);
     markingSettings = Object.values(MarkingSettings);
     subjects: any = [];
-    selectedSubjectName: string = '';
     collabUsers: UserCollabInfo[] = [];
     selectedCollabUser: UserCollabInfo[] = [];
-
-    questions!: QuestionInput[] | undefined;
-    rubrics!: RubricsInput;
-
-    faTimesCircle = faTimesCircle;
+    selectedSubjectName: string = '';
+    submitErrorMessage = '';
 
     constructor(
         router: Router,
@@ -104,7 +108,8 @@ export class AssessmentCreationFormComponent extends AppComponent {
         private _subjectService: SubjectService,
         private _assessmentService: AssessmentService,
         private _userService: UserService,
-        private _modalService: NgbModal
+        private _modalService: NgbModal,
+        private _snackBar: MatSnackBar
     ) {
         super(router, authenticationService);
         this._assessmentService.getApi();
@@ -138,10 +143,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
         });
     }
 
-    ngAfterViewInit() {
-        console.log(this.questionToggle);
-    }
-
     emitQuestionInputEvent() {
         if (this.questionToggle.checked) {
             // using reference component to trigger the event emit
@@ -151,30 +152,47 @@ export class AssessmentCreationFormComponent extends AppComponent {
         } else {
             this.questions = undefined;
         }
-        console.log(this.questions);
-
     }
 
     emitRubricsInputEvent() {
-        // using reference component to trigger the event emit
-        this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
-        console.log(this.rubrics);
+        if (this.rubricsToggle.checked) {
+            // using reference component to trigger the event emit
+            this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
+            console.log(this.rubrics);
+        } else {
+            this.rubrics = undefined;
+        }
     }
 
     onSubmit(): void {
-        delete this.rubrics.isEdit;
-        this.rubrics.criterion!.forEach((c) => {
-            delete c.isEdit;
-        });
+        this.submitErrorMessage = '';
 
+        // check if either question or rubrics is enabled
+        if (!this.rubricsToggle.checked && !this.questionToggle.checked) {
+            this.submitErrorMessage =
+                'You must enable either questions or rubrics marking!';
+            return;
+        }
+
+        // delete edit controls from rubrics object
+        if (this.rubrics) {
+            delete this.rubrics.isEdit;
+            this.rubrics.criterion!.forEach((c) => {
+                delete c.isEdit;
+            });
+        }
+
+        // create array storing the ids of the selected collab users
         let collaborators = this.selectedCollabUser.map((u) => {
             return u.id;
         });
 
+        // add the creator to the collab list
         if (!collaborators.includes(this.currentUser.id!)) {
             collaborators.push(this.currentUser.id!);
         }
 
+        // assign values into assessment object
         this.assessment = {
             name: this.assessmentDetailFormGroup.get('assessmentName')!.value,
             type: this.assessmentDetailFormGroup.get('assessmentType')!.value,
@@ -182,15 +200,27 @@ export class AssessmentCreationFormComponent extends AppComponent {
             marking_settings:
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
             questions: this.questions ? this.questions : null,
-            rubrics: this.rubrics,
+            rubrics: this.rubrics ? this.rubrics : null,
             markers: collaborators,
         };
 
-        console.log(this.assessment);
-
-        // this._assessmentService.create(this.assessment).then(() => {
-        //     this.router.navigate(['/assessment-list']);
-        // });
+        this._assessmentService
+            .create(this.assessment)
+            .then(() => {
+                this._snackBar.open(
+                    `The assessment ${
+                        this.assessment!.name
+                    } is successfully created!`,
+                    'Dismiss',
+                    {
+                        duration: 3000,
+                    }
+                );
+                this.router.navigate(['/assessment-list']);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     // To mark the invalid fields dirty for triggering error messages
@@ -261,7 +291,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
         });
     }
 
-    onEnterPressed(event: Event) {
+    onEnterPressed() {
         let inputValue = this.collaborators.nativeElement.value;
         let msgElement = document.querySelector('#collaborationMsg')!;
         let user = this.collabUsers.find((user) => {

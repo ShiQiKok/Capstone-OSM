@@ -169,8 +169,24 @@
 
             <!-- Step 3: Rubrics -->
             <mat-step label="Rubrics">
+                <div class="my-4">
+                    <mat-slide-toggle
+                        #rubricsToggle
+                        [checked]="assessmentType.value == 'essay_based'"
+                        [color]="primary"
+                        >Enable Rubrics
+                    </mat-slide-toggle>
+                    <small
+                        *ngIf="
+                            !rubricsToggle.checked && !questionToggle.checked
+                        "
+                        class="text-danger d-block"
+                        >You must enable either question or rubrics!</small
+                    >
+                </div>
                 <app-rubrics-input
                     #rubricsInput
+                    *ngIf="rubricsToggle.checked"
                     [(rubrics)]="rubrics"
                     [isEditingMode]="true"
                 ></app-rubrics-input>
@@ -178,6 +194,9 @@
                     Back
                 </button>
                 <button
+                    [disabled]="
+                        !rubricsToggle.checked && !questionToggle.checked
+                    "
                     matStepperNext
                     (click)="emitRubricsInputEvent()"
                     class="btn btn-primary"
@@ -194,7 +213,7 @@
                         <small class="text-secondary">(optional)</small>
                     </label>
                     <input
-                        (keydown.enter)="onEnterPressed($event)"
+                        (keydown.enter)="onEnterPressed()"
                         id="collaborators"
                         type="text"
                         class="form-control"
@@ -225,6 +244,9 @@
 
             <!-- Step 4: Review -->
             <mat-step label="Review">
+                <div *ngIf="submitErrorMessage.length > 0" class="alert alert-danger" role="alert">
+                    {{ submitErrorMessage }}
+                </div>
                 <table class="table">
                     <tbody>
                         <tr>
@@ -240,8 +262,10 @@
                             <th>Assessment Type</th>
                             <td>
                                 {{
-                                    assessmentDetailFormGroup.value
-                                        .assessmentType
+                                    assessmentDetailFormGroup.value.assessmentType.replaceAll(
+                                        "_",
+                                        " "
+                                    ) | titlecase
                                 }}
                             </td>
                         </tr>
@@ -255,8 +279,10 @@
                             <th>Default Marking Setting</th>
                             <td>
                                 {{
-                                    assessmentDetailFormGroup.value
-                                        .defaultSetting
+                                    assessmentDetailFormGroup.value.defaultSetting.replaceAll(
+                                        "_",
+                                        " "
+                                    ) | titlecase
                                 }}
                             </td>
                         </tr>
@@ -264,6 +290,7 @@
                             <td colspan="2">
                                 <strong> Questions </strong>
                                 <app-question-input
+                                    *ngIf="questionToggle.checked"
                                     [(questions)]="questions"
                                     [isEditingMode]="false"
                                 ></app-question-input>
@@ -273,9 +300,37 @@
                             <td colspan="2">
                                 <strong>Rubrics</strong>
                                 <app-rubrics-input
+                                    *ngIf="rubricsToggle.checked"
                                     [isEditingMode]="false"
                                     [(rubrics)]="rubrics"
                                 ></app-rubrics-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                [colspan]="
+                                    selectedCollabUser.length > 0 ? 2 : 1
+                                "
+                            >
+                                <strong>Collaborators</strong>
+                                <div
+                                    *ngIf="selectedCollabUser.length > 0"
+                                    class="my-4"
+                                >
+                                    <mat-chip-list [selectable]="false">
+                                        <mat-chip
+                                            *ngFor="
+                                                let user of selectedCollabUser
+                                            "
+                                        >
+                                            {{ user.username }}:
+                                            {{ user.email }}
+                                        </mat-chip>
+                                    </mat-chip-list>
+                                </div>
+                            </td>
+                            <td *ngIf="selectedCollabUser.length == 0">
+                                <p>None</p>
                             </td>
                         </tr>
                     </tbody>
