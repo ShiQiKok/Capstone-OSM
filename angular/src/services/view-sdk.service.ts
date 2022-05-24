@@ -110,8 +110,7 @@ export class ViewSDKClient {
         /* Define Save API Handler */
         const saveApiHandler = (metaData: any, content: any, options: any) => {
             return new Promise((resolve) => {
-                /* Dummy implementation of Save API, replace with your business logic */
-                // this._answerScriptService.create()
+
                 let uint8Array = new Uint8Array(content);
                 let blob = new Blob([uint8Array], { type: 'application/pdf' });
                 let formData = new FormData();

@@ -54,6 +54,7 @@ export class MarkingComponent
     extends AppComponent
     implements OnInit, ComponentCanDeactivate
 {
+    // view references
     @ViewChild('generalCriteriaList') generalCriteriaList!: any;
     @ViewChild('detailCriteriaList') detailCriteriaList!: any;
     @ViewChild('floatingBar') floatToolbar!: any;
@@ -149,6 +150,7 @@ export class MarkingComponent
                 ) {
                     this.selectedDetailedCriterion =
                         this.selectedCriterion.columns[i];
+                        break;
                 }
             }
         }
@@ -194,7 +196,6 @@ export class MarkingComponent
             this.viewSDKClient.previewFile(
                 'pdf-div',
                 this.answerScript.script,
-                // {enableAnnotationAPIs: true, includePDFAnnotations: false}
                 // * set the Adobe Acrobat configuration
                 // * check the API at https://developer.adobe.com/document-services/docs/overview/pdf-embed-api/howtos_ui/
                 {},
