@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from 'src/app/app.component';
 import { Assessment } from 'src/models/assessment';
 import { Subject } from 'src/models/subject';
@@ -62,26 +61,22 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
 
     /** To create a object for front-end presentation, which maps the assessments with their subject ids */
     private mapAssessment(): void {
-        this.assessmentList.forEach(async (assessment: any) => {
-            let answers: AnswerScript[] =
-                (await this._answerScriptService.getAll(
-                    assessment.id!
-                )) as AnswerScript[];
-
-            let finish = answers.filter(
-                (a: AnswerScript) => a.status === 'Finished'
-            );
-            let total = answers.length;
-            assessment.progress = Math.floor((finish.length / total) * 100);
-
+        this.assessmentList.forEach((assessment: any) => {
+            this._answerScriptService.getAll(assessment.id!).then((obj) => {
+                let answers = obj as AnswerScript[];
+                let finish = answers.filter(
+                    (a: AnswerScript) => a.status === 'Finished'
+                );
+                let total = answers.length;
+                assessment.progress = Math.floor((finish.length / total) * 100);
+            });
             if (this.assessments[assessment.subject] != undefined) {
                 this.assessments[assessment.subject].push(assessment);
             } else {
                 this.assessments[assessment.subject] = [assessment];
-                let subject = await this._subjectService.get(
-                    assessment.subject
-                );
-                this.subjects.push(subject);
+                this._subjectService.get(assessment.subject).then((subject) => {
+                    this.subjects.push(subject);
+                });
             }
         });
     }
