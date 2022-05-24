@@ -17,12 +17,15 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
     styleUrls: ['./assessment-list.component.scss'],
 })
 export class AssessmentListComponent extends AppComponent implements OnInit {
+    // controls
     isLoading: boolean = true;
-    isCreatingAssessment: boolean = false;
+
+    // object
     subjects: Subject[] = [];
     assessmentList: Assessment[] = [];
-
     assessments: any = {};
+
+    // icon
     faPlus = faPlus;
 
     constructor(
@@ -30,8 +33,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         authenticationService: AuthenticationService,
         private _assessmentService: AssessmentService,
         private _answerScriptService: AnswerScriptService,
-        private _subjectService: SubjectService,
-        private modalService: NgbModal
+        private _subjectService: SubjectService
     ) {
         super(router, authenticationService);
     }
@@ -39,68 +41,55 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     async ngOnInit() {
         this.isLoading = true;
         await this.getApi();
-        await this.getAll();
+        await this.getAssessments();
         this.mapAssessment();
         this.isLoading = false;
     }
 
+    /** To get all APIs for each service */
     private async getApi() {
         await this._subjectService.getApi();
         await this._assessmentService.getApi();
         await this._answerScriptService.getApi();
     }
 
-    private async getAll() {
-        this.subjects = (await this._subjectService.getAll(
-            this.currentUser.id!
-        )) as Subject[];
+    /** To load the assessments that is under the current user */
+    private async getAssessments() {
         this.assessmentList = (await this._assessmentService.getAll(
             this.currentUser.id!
         )) as Assessment[];
     }
 
-    async calculateProgress(assessmentId: any) {
-        //     let total = answerScripts.length;
-        //     let finished = answerScripts.filter(
-        //         (x: any) => x.status === 'Finished'
-        //     ).length;
-        //     return Math.floor(finished / total * 100);
-        // });
-        // console.log(list);
-        return 75;
-    }
+    /** To create a object for front-end presentation, which maps the assessments with their subject ids */
+    private mapAssessment(): void {
+        this.assessmentList.forEach(async (assessment: any) => {
+            let answers: AnswerScript[] =
+                (await this._answerScriptService.getAll(
+                    assessment.id!
+                )) as AnswerScript[];
 
-    private async mapAssessment() {
-        this.subjects.forEach((subject) => {
-            let list: any = this.assessmentList.filter(
-                (assessment) => assessment.subject == subject.id
+            let finish = answers.filter(
+                (a: AnswerScript) => a.status === 'Finished'
             );
-            list.forEach(async (a: any) => {
-                let answers: any = await this._answerScriptService.getAll(a.id);
-                let finish = answers.filter(
-                    (a: AnswerScript) => a.status === 'Finished'
+            let total = answers.length;
+            assessment.progress = Math.floor((finish.length / total) * 100);
+
+            if (this.assessments[assessment.subject] != undefined) {
+                this.assessments[assessment.subject].push(assessment);
+            } else {
+                this.assessments[assessment.subject] = [assessment];
+                let subject = await this._subjectService.get(
+                    assessment.subject
                 );
-                let total = answers.length;
-                a.progress = Math.floor((finish.length / total) * 100);
-            });
-
-            this.assessments[subject.id] = list;
+                this.subjects.push(subject);
+            }
         });
     }
 
-    getSubjectName(id: number) {
-        return this.subjects.find((subject) => subject.id == id)?.name;
-    }
-
-    createAssessment() {
-        this.isCreatingAssessment = true;
-    }
-
-    open(content: any) {
-        this.modalService.open(content, {
-            backdrop: 'static',
-            size: 'lg',
-            scrollable: true,
-        });
+    /**  Returns subject name by subject id
+     * @param {number} subjectId the subject id
+     */
+    getSubjectName(id: number): string {
+        return this.subjects.find((subject) => subject.id == id)?.name!;
     }
 }
