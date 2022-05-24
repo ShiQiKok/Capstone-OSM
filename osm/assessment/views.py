@@ -27,7 +27,6 @@ def overview(request):
 @permission_classes([IsAuthenticated])
 def assessments(request, user_id):
     assessments = Assessment.objects.filter(markers=user_id).order_by('id')
-    print(assessments)
     serializer = AssessmentSerializer(assessments, many=True)
 
     return Response(serializer.data)

@@ -74,12 +74,10 @@ def createUser(request):
 @permission_classes([IsAuthenticated])
 def updateUser(request, id):
     user = User.objects.get(id=id)
-    print(request.data)
     serializer = UserSerializer(instance=user, data=request.data)
 
     if serializer.is_valid():
         serializer.save()
-        print(serializer.data)
         return Response(serializer.data)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

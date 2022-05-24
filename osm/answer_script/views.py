@@ -5,6 +5,7 @@ import zipfile
 from itertools import islice
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from rest_framework import status
 from rest_framework.authentication import (BasicAuthentication, SessionAuthentication)
 from rest_framework.decorators import (api_view, authentication_classes, permission_classes)
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -231,7 +232,6 @@ def bulk_create(request):
             create_request = request._request
             create_request.POST = d
             response = create_answer(create_request)
-            print(response.data)
 
         return Response("CSV file uploaded")
 
@@ -242,44 +242,43 @@ def bulk_create(request):
         zip_file.extractall()
 
         # get all files except the self directory
-        for filename in zip_file.namelist()[1:]:
-            zip_ext_file = zip_file.open(filename)
+        for path in zip_file.namelist():
+            folder_name, filename = path.split('/')
+            zip_ext_file = zip_file.open(path)
+            print(zip_ext_file)
             in_memory_file = InMemoryUploadedFile(
-                zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(filename)), None)
-            filename = filename.split('/')[-1]
+                zip_ext_file, None, path, 'application/pdf', len(zip_file.read(path)), None)
             assessment = Assessment.objects.get(id=assessment_id)
             criteria_num = len(assessment.rubrics['criterion'])
-            data = process_data(filename, assessment_id, in_memory_file, criteria_num)
+            data = process_data(folder_name, assessment_id, in_memory_file, criteria_num)
 
             create_request = request._request
             create_request.POST = data
             create_answer(create_request)
 
+            # remove the locally extracted files
+            file_path = settings.BASE_DIR / folder_name
+            shutil.rmtree(file_path)
+
         # close the zip_file
         zip_file.close()
-        # remove the locally extracted files
-        file_path = settings.BASE_DIR / zip_file.namelist()[0]
-        shutil.rmtree(file_path)
+        return Response("Bulk upload successful!")
 
-        return Response("Bulk upload successfully")
-    return Response("Upload?")
+    return Response({"error": "File extension does not match."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
 # TODO: change student ID
 # process PDF file's data
-def process_data(filename, assessment_id, file, criteria_num):
-    student_fname, student_lname, student_id, _ = filename.split('_')
-    student_id = str(uuid.uuid4())
+def process_data(folder_name, assessment_id, file, criteria_num):
+    [student_name, student_id] = folder_name.split('_')[0:2]
     assessment = Assessment.objects.get(id=assessment_id)
     markers = assessment.markers.all()
-
     temp = [ {"marksAwarded": None} for i in range(criteria_num)]
-
     marks = [{"markerId": marker.id, "totalMark": 0, "distribution": temp} for marker in markers]
 
     return {
-        "student_name": student_fname + ' ' + student_lname,
+        "student_name": student_name,
         "student_id": student_id,
         "marks": marks,
         "answers": None,

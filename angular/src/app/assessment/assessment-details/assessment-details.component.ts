@@ -16,6 +16,7 @@ import { AppComponent } from 'src/app/app.component';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
+import { faArrowAltCircleLeft } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
     selector: 'app-assessment-details',
@@ -37,6 +38,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     // icons
     faUpload = faUpload;
     faCog = faCog;
+    faArrowAltCircleLeft = faArrowAltCircleLeft;
 
     // controls
     isLoading: boolean = true;

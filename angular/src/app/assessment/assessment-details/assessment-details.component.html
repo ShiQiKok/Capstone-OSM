@@ -116,6 +116,9 @@
         </div>
     </div>
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
+        <span routerLink="/assessment-list/" style="cursor: pointer">
+            <fa-icon  [icon]="faArrowAltCircleLeft" style="font-size: 1.75em" class="text-primary"></fa-icon>
+        </span>
         <div id="assessmentBriefInfo">
             <h4>Your Progress</h4>
             <p>
@@ -159,20 +162,18 @@
                     <!-- {{assessment.questions | json}} -->
                     <div *ngFor="let q of assessment.questions; let i = index">
                         <div class="row my-2">
-                            <div class="col-8">
-                                Question {{ i + 1 }}
-                            </div>
+                            <div class="col-8">Question {{ i + 1 }}</div>
                             <div class="col">
                                 {{
                                     selection.selected[0].marks[markerIndex]
                                         .distribution[i].marksAwarded
-                                        ? selection.selected[0].marks[markerIndex]
-                                        .distribution[i].marksAwarded
+                                        ? selection.selected[0].marks[
+                                              markerIndex
+                                          ].distribution[i].marksAwarded
                                         : "-"
                                 }}
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -202,12 +203,14 @@
                     >Gradebook Export</a
                 >
             </div>
-            <a
+            <button
                 *ngIf="selection.selected.length > 0"
                 routerLink="/marking/{{ selection.selected[0].id }}"
-                class="btn btn-primary d-block"
-                >Start Marking</a
+                class="btn btn-primary d-block w-100"
+                style="height: 3rem"
             >
+                Start Marking
+            </button>
         </div>
     </div>
 </div>
