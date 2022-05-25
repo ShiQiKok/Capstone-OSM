@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { faQuestionCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { faEllipsisV, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AssessmentService } from 'src/services/assessment.service';
@@ -73,6 +73,7 @@ export class QuestionInputComponent implements OnInit {
     faTrashAlt = faTrashAlt;
     faEllipsisV = faEllipsisV;
     faUpload = faUpload;
+    faQuestionCircle = faQuestionCircle;
 
     uploadedFile!: File | null;
     isSubmitDisabled: boolean = true;
@@ -120,6 +121,7 @@ export class QuestionInputComponent implements OnInit {
             .then((obj ) => {
                 this.questions = obj as QuestionInput[];
                 this.totalMarks = this.getTotalMark();
+                this._modalService.dismissAll()
             });
     }
 

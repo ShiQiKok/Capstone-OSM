@@ -156,6 +156,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
 
     emitRubricsInputEvent() {
         if (this.rubricsToggle.checked) {
+            this.rubricsInput.setUneditable();
             // using reference component to trigger the event emit
             this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
             console.log(this.rubrics);
@@ -226,7 +227,8 @@ export class AssessmentCreationFormComponent extends AppComponent {
                 this.router.navigate(['/assessment-list']);
             })
             .catch((error) => {
-                console.log(error);
+                let errorField = Object.keys(error.error)[0]
+                this.submitErrorMessage = `${errorField}: ${error.error[errorField]}`
             });
     }
 

@@ -1,5 +1,11 @@
 <div class="row">
     <div class="col" *ngIf="isEditingMode">
+        <a target="_blank" routerLink="/creation-rubrics-questions">
+            <fa-icon
+                [icon]="faQuestionCircle"
+                class="text-secondary mr-2"
+            ></fa-icon>
+        </a>
         <button
             class="btn btn-outline-primary"
             (click)="openModal(uploadQuestionsModal)"
@@ -7,8 +13,8 @@
             Upload Questions
         </button>
     </div>
-    <div class="col-8 text-end">
-        <label for="totalMark" class="my-1">Total Mark</label>
+    <div class="text-end" [class]="{'col-7': isEditingMode, 'col-9': !isEditingMode}">
+        <label for="totalMark" class="my-1">Total Marks</label>
     </div>
     <div class="col">
         <input
