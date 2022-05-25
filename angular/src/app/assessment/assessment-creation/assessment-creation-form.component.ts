@@ -182,6 +182,13 @@ export class AssessmentCreationFormComponent extends AppComponent {
             });
         }
 
+        // delete edit controls from question object
+        if (this.questions){
+            this.questions.forEach((q) => {
+                delete q.isEdit;
+            });
+        }
+
         // create array storing the ids of the selected collab users
         let collaborators = this.selectedCollabUser.map((u) => {
             return u.id;
