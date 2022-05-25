@@ -9,4 +9,5 @@ urlpatterns = [
    path('assessment-update/<int:id>/', views.update_assessment, name='assessment-update'),
    path('assessment-delete/<int:id>/', views.delete_assessment, name='assessment-delete'),
    path('rubrics-upload/', views.upload_rubrics, name='rubrics-upload'),
+   path('questions-upload/', views.upload_questions, name='questions-upload')
 ]

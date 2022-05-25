@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import AssessmentSerializer
 from .models import Assessment
+import xml.etree.ElementTree as ET
 import pandas as pd
 import re
 
@@ -21,6 +22,7 @@ def overview(request):
         'update': 'assessment-update/',
         'delete': 'assessment-delete/',
         'uploadRubrics': 'rubrics-upload/',
+        'uploadQuestions': 'questions-upload/',
     }
 
     return Response(api_urls)
@@ -128,3 +130,57 @@ def upload_rubrics(request):
 
     else:
         return Response("The file must be a .xlsx file", status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def upload_questions(request):
+    file = request.FILES['file']
+    file_name = file.name
+    content_type = file.content_type
+
+    if content_type == 'text/xml':
+        tree = ET.parse(file)
+        root = tree.getroot()
+        questions = root.findall('question')
+
+        question_obj = []
+
+        for question in questions:
+            if type(question.find('questiontext')) != type(None):
+                unformatted = question.find('questiontext').find('text').text
+                text = re.search(r'<p(.*?)>(.*?)</p>', unformatted).group(2)
+
+                if type(question.find('defaultgrade')) != type(None):
+                    marks = int(float(question.find('defaultgrade').text))
+
+                    obj = {
+                        "no": len(question_obj) + 1,
+                        "value": {
+                            "question": text,
+                            "marks": marks
+                        }
+                    }
+                    question_obj.append(obj)
+
+        return Response(question_obj)
+
+    elif content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        df = pd.read_excel(file)
+
+        questions = []
+
+        for i in range(len(df)):
+            obj = {
+                "no": df.loc[i]['Question'],
+                "value": {
+                    "question": df.loc[i]['Description'],
+                    "marks": df.loc[i]['Total']
+                }
+            }
+            questions.append(obj)
+
+        return Response(questions)
+
+    return Response("The file must be either a .xlsx or .xml file", status=status.HTTP_400_BAD_REQUEST)

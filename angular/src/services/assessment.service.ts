@@ -23,4 +23,17 @@ export class AssessmentService extends BaseService {
                 );
         });
     }
+
+    uploadQuestions(file: File) {
+        return new Promise<Object>((resolve, reject) => {
+            const formData: FormData = new FormData();
+            formData.append('file', file, file.name);
+            this.http
+                .post(`${this.ROOT}${this.ALL_API.uploadQuestions}/`, formData, {})
+                .subscribe(
+                    (obj) => resolve(obj),
+                    (err) => reject(err)
+                );
+        });
+    }
 }

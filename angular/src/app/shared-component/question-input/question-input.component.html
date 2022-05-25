@@ -11,7 +11,9 @@
         />
     </div>
 </form>
-
+<button *ngIf="isEditingMode" class="btn btn-primary d-block ml-auto" (click)="openModal(uploadQuestionsModal)">
+    Upload Questions
+</button>
 <button *ngIf="isEditingMode" class="btn btn-primary d-block ml-auto" (click)="addQuestion()">
     + Add Question
 </button>
@@ -100,3 +102,53 @@
     <tr mat-header-row *matHeaderRowDef="isEditingMode ? questionDisplayedColumns : questionReviewColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: isEditingMode ? questionDisplayedColumns : questionReviewColumns"></tr>
 </table>
+
+<ng-template #uploadQuestionsModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Use template to create your question!</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <small>File type accepted: .xml or .xlxs file.</small>
+        <div
+            style="height: 250px; border: 2px dashed #4277ff"
+            class="d-flex flex-column align-items-center justify-content-center my-4"
+        >
+            <fa-icon
+                [icon]="faUpload"
+                class="text-primary"
+                style="font-size: xxx-large"
+            ></fa-icon>
+            <input
+                type="file"
+                id="fileInput"
+                class="d-none"
+                accept=".xlsx, .xml"
+                (change)="onFileChange($event.target.files)"
+            />
+            <button
+                class="btn btn-outline-primary my-2"
+                onclick="document.getElementById('fileInput').click()"
+            >
+                Choose file
+            </button>
+            <p *ngIf="!isSubmitDisabled">{{ uploadedFile.name }}</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button
+            [disabled]="isSubmitDisabled"
+            type="submit"
+            class="btn btn-primary"
+            (click)="uploadQuestions()"
+        >
+            Submit
+        </button>
+    </div>
+</ng-template>
+

@@ -52,7 +52,6 @@ export class RubricsInputComponent implements OnInit {
     faTrashAlt = faTrashAlt;
     faUpload = faUpload;
     faQuestionCircle = faQuestionCircle;
-    // <i class="far fa-question-circle"></i>
 
     // objects
     uploadedFile: File | null = null;
