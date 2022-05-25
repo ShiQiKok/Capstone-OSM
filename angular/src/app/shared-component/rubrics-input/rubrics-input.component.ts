@@ -8,6 +8,9 @@ import {
 } from '@angular/core';
 import { MatTable } from '@angular/material/table';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import { AssessmentService } from 'src/services/assessment.service';
 
 class RubricsInput {
     marksRange?: RubricMarkRangeInput[] | undefined;
@@ -44,7 +47,13 @@ export class RubricsInputComponent implements OnInit {
 
     @ViewChild(MatTable) table!: MatTable<any>;
 
+    // icons
     faTrashAlt = faTrashAlt;
+    faUpload = faUpload;
+
+    // objects
+    uploadedFile: File | null = null;
+    isSubmitDisabled: boolean = true;
 
     template: RubricsInput = {
         marksRange: [
@@ -151,11 +160,17 @@ export class RubricsInputComponent implements OnInit {
         ],
     };
 
-    constructor() {}
+    constructor(
+        private _modalService: NgbModal,
+        private _assessmentService: AssessmentService
+    ) {
+        this._assessmentService.getApi();
+    }
 
     ngOnInit(): void {
         if (!this.rubrics) {
             this.rubrics = this.template;
+            console.log(this.rubrics);
         }
     }
 
@@ -278,6 +293,24 @@ export class RubricsInputComponent implements OnInit {
         this.rubrics.isEdit = false;
         this.rubrics.criterion!.forEach((criteria: any) => {
             criteria.isEdit = false;
+        });
+    }
+
+    openModal(modal: any) {
+        this._modalService.open(modal);
+    }
+
+    onFileChange(file: FileList) {
+        this.uploadedFile = file.item(0);
+        this.isSubmitDisabled = false;
+    }
+
+    uploadRubrics(){
+        this._assessmentService.uploadRubrics(this.uploadedFile!).then((obj) => {
+            this.rubrics = obj;
+            this.rubrics.isEdit = false;
+            console.log(this.rubrics);
+            this.table.renderRows();
         });
     }
 }
