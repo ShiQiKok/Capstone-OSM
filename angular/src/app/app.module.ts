@@ -35,6 +35,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { QuestionInputComponent } from './shared-component/question-input/question-input.component';
 import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
+import { CreationRubricsQuestionsComponent } from './information/creation-rubrics-questions/creation-rubrics-questions.component';
 
 @NgModule({
     declarations: [
@@ -52,6 +53,7 @@ import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
         HighlightTextComponent,
         RubricsInputComponent,
         QuestionInputComponent,
+        CreationRubricsQuestionsComponent,
     ],
     imports: [
         BrowserModule,

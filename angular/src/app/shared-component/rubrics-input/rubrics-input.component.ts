@@ -11,6 +11,7 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
+import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 
 class RubricsInput {
     marksRange?: RubricMarkRangeInput[] | undefined;
@@ -50,6 +51,8 @@ export class RubricsInputComponent implements OnInit {
     // icons
     faTrashAlt = faTrashAlt;
     faUpload = faUpload;
+    faQuestionCircle = faQuestionCircle;
+    // <i class="far fa-question-circle"></i>
 
     // objects
     uploadedFile: File | null = null;

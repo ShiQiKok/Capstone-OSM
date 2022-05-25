@@ -7,12 +7,17 @@ import { AssessmentDetailsComponent } from './assessment/assessment-details/asse
 import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
 import { LoginComponent } from './authentication/login/login.component';
 import { SignupComponent } from './authentication/signup/signup.component';
+import { CreationRubricsQuestionsComponent } from './information/creation-rubrics-questions/creation-rubrics-questions.component';
 import { MarkingComponent } from './marking/marking.component';
 import { UserDetailsComponent } from './user/user-details/user-details.component';
 
 const routes: Routes = [
     { path: 'signup', component: SignupComponent },
     { path: 'login', component: LoginComponent },
+    {
+        path: 'creation-rubrics-questions',
+        component: CreationRubricsQuestionsComponent,
+    },
     {
         path: 'user-details',
         component: UserDetailsComponent,
@@ -37,9 +42,8 @@ const routes: Routes = [
         path: 'marking/:id',
         component: MarkingComponent,
         canActivate: [AuthGuard],
-        canDeactivate: [PendingChangesGuard]
-    }
-
+        canDeactivate: [PendingChangesGuard],
+    },
 ];
 
 @NgModule({

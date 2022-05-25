@@ -91,36 +91,40 @@ def upload_rubrics(request):
     content_type = file.content_type
 
     if content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-        df = pd.read_excel(file)
-        df = df.fillna('')
-        marksRange = [c for c in df.columns if re.match(
-            r"[0-9]?[0-9]-[0-9]?[0-9]", c)]
-        criteria = []
+        try:
+            df = pd.read_excel(file)
+            df = df.fillna('')
+            marksRange = [c for c in df.columns if re.match(
+                r"[0-9]?[0-9]-[0-9]?[0-9]", c)]
+            criteria = []
 
-        for i in range(len(df)):
-            columns = [{"description": df.iloc[i][r]} for r in marksRange]
-            obj = {
-                "title": df.iloc[i]["Criteria"],
-                "description": df.iloc[i]["Description"],
-                "totalMarks": df.iloc[i]["Scale"],
-                "columns": columns
+            for i in range(len(df)):
+                columns = [{"description": df.iloc[i][r]} for r in marksRange]
+                obj = {
+                    "title": df.iloc[i]["Criteria"],
+                    "description": df.iloc[i]["Description"],
+                    "totalMarks": df.iloc[i]["Total"],
+                    "columns": columns
+                }
+                criteria.append(obj)
+
+            # to process keys
+            for i in range(len(marksRange)):
+                min_range, max_range = marksRange[i].replace(
+                    ' ', '').split('-')
+                obj = {
+                    "min": min_range,
+                    "max": max_range
+                }
+                marksRange[i] = obj
+
+            rubrics = {
+                "marksRange": marksRange,
+                "criterion": criteria
             }
-            criteria.append(obj)
+            return Response(rubrics)
+        except:
+            return Response("Make sure the template uploaded follows the template rules.", status=status.HTTP_400_BAD_REQUEST)
 
-        # to process keys
-        for i in range(len(marksRange)):
-            min_range, max_range = marksRange[i].replace(' ', '').split('-')
-            obj = {
-                "min": min_range,
-                "max": max_range
-            }
-            marksRange[i] = obj
-
-        rubrics = {
-            "marksRange": marksRange,
-            "criterion": criteria
-        }
-
-        return Response(rubrics)
     else:
         return Response("The file must be a .xlsx file", status=status.HTTP_400_BAD_REQUEST)
