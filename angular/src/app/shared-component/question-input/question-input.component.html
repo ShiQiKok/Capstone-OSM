@@ -1,23 +1,34 @@
-<form id="questionForm">
-    <div class="form-group d-flex align-items-center mt-2">
-        <label for="totalMark" class="mr-4">Total Mark</label>
+<div class="row">
+    <div class="col" *ngIf="isEditingMode">
+        <button
+            class="btn btn-outline-primary"
+            (click)="openModal(uploadQuestionsModal)"
+        >
+            Upload Questions
+        </button>
+    </div>
+    <div class="col-8 text-end">
+        <label for="totalMark" class="my-1">Total Mark</label>
+    </div>
+    <div class="col">
         <input
             type="text"
-            class="form-control w-25 d-block ml-auto"
+            class="form-control"
             id="totalMark"
             name="totalMark"
             [(ngModel)]="totalMarks"
             disabled
         />
     </div>
-</form>
-<button *ngIf="isEditingMode" class="btn btn-primary d-block ml-auto" (click)="openModal(uploadQuestionsModal)">
-    Upload Questions
-</button>
-<button *ngIf="isEditingMode" class="btn btn-primary d-block ml-auto" (click)="addQuestion()">
+</div>
+
+<button
+    *ngIf="isEditingMode"
+    class="btn btn-primary d-block ml-auto my-4"
+    (click)="addQuestion()"
+>
     + Add Question
 </button>
-
 
 <table mat-table [dataSource]="questions" class="mat-elevation-z8 w-100 my-4">
     <ng-container matColumnDef="drag">
@@ -99,8 +110,21 @@
         </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="isEditingMode ? questionDisplayedColumns : questionReviewColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: isEditingMode ? questionDisplayedColumns : questionReviewColumns"></tr>
+    <tr
+        mat-header-row
+        *matHeaderRowDef="
+            isEditingMode ? questionDisplayedColumns : questionReviewColumns
+        "
+    ></tr>
+    <tr
+        mat-row
+        *matRowDef="
+            let row;
+            columns: isEditingMode
+                ? questionDisplayedColumns
+                : questionReviewColumns
+        "
+    ></tr>
 </table>
 
 <ng-template #uploadQuestionsModal let-modal>
@@ -151,4 +175,3 @@
         </button>
     </div>
 </ng-template>
-

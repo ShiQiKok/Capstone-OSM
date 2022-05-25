@@ -98,18 +98,11 @@ export class QuestionInputComponent implements OnInit {
 
     updateQuestion(element: QuestionInput) {
         element.isEdit = !element.isEdit;
-
         this.totalMarks = this.getTotalMark();
     }
 
     deleteQuestion(element: QuestionInput) {
         this.questions = this.questions.filter((e) => e !== element);
-    }
-
-    private getTotalMark() {
-        return this.questions
-            .map((q) => q.value?.marks)
-            .reduce((a, b) => a! + b!)!;
     }
 
     openModal(modal: any) {
@@ -126,7 +119,13 @@ export class QuestionInputComponent implements OnInit {
             .uploadQuestions(this.uploadedFile!)
             .then((obj ) => {
                 this.questions = obj as QuestionInput[];
-                console.log(this.questions)
+                this.totalMarks = this.getTotalMark();
             });
+    }
+
+    private getTotalMark() {
+        return this.questions
+            .map((q) => q.value?.marks)
+            .reduce((a, b) => a! + b!)!;
     }
 }
