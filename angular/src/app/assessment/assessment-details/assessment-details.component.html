@@ -117,7 +117,11 @@
     </div>
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
         <span routerLink="/assessment-list/" style="cursor: pointer">
-            <fa-icon  [icon]="faArrowAltCircleLeft" style="font-size: 1.75em" class="text-primary"></fa-icon>
+            <fa-icon
+                [icon]="faArrowAltCircleLeft"
+                style="font-size: 1.75em"
+                class="text-primary"
+            ></fa-icon>
         </span>
         <div id="assessmentBriefInfo">
             <h4>Your Progress</h4>
@@ -186,7 +190,8 @@
                             {{
                                 selection.selected[0].marks[markerIndex]
                                     .totalMark
-                            }}
+                            }}/
+                            <span class="text-secondary">{{ assessment.rubrics.totalMarks }}</span>
                         </p>
                     </div>
                 </div>
@@ -292,13 +297,14 @@
                 class="form-select"
                 name="assessmentTypes"
                 id="assessmentTypes"
+                [(ngModel)]="assessment.type"
             >
                 <option
                     *ngFor="let type of assessmentTypes"
                     [value]="type"
-                    [selected]="type === assessment.type ? true : false"
+
                 >
-                    {{ type }}
+                    {{ type.replaceAll("_", " ") | titlecase }}
                 </option>
             </select>
         </div>
@@ -308,15 +314,13 @@
                 class="form-select"
                 name="markingSetting"
                 id="markingSetting"
+                [(ngModel)]="assessment.marking_setting"
             >
                 <option
                     *ngFor="let setting of markingSettings"
                     [value]="setting"
-                    [selected]="
-                        setting == assessment.marking_settings ? true : false
-                    "
                 >
-                    {{ setting }}
+                    {{ setting.replaceAll("_", " ") | titlecase }}
                 </option>
             </select>
         </div>

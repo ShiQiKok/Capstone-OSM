@@ -205,7 +205,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
             name: this.assessmentDetailFormGroup.get('assessmentName')!.value,
             type: this.assessmentDetailFormGroup.get('assessmentType')!.value,
             subject: this.assessmentDetailFormGroup.get('subject')!.value,
-            marking_settings:
+            marking_setting:
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
             questions: this.questions ? this.questions : null,
             rubrics: this.rubrics ? this.rubrics : null,

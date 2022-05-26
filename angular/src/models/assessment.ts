@@ -16,7 +16,7 @@ export class Assessment {
     name?: string | undefined;
     subject?: number | undefined;
     type?: AssessmentType | undefined;
-    marking_settings?: MarkingSettings | undefined;
+    marking_setting?: MarkingSettings | undefined;
     rubrics?: any | undefined;
     questions?: any | undefined;
     markers?: number[] | undefined;
