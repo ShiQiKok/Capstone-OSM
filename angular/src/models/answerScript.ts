@@ -1,14 +1,22 @@
+
+
 export enum AnswerScriptStatus{
     IN_PROGRESS = 'In Progress',
     FINISHED = 'Finished',
     NOT_STARTED = 'Not Started'
 }
 
+export class AnswerScriptStatusObj{
+    marker!: number;
+    status!: AnswerScriptStatus;
+
+}
+
 export class AnswerScript{
     id?: number | undefined;
     studentName?: string | undefined;
     studentId?: string | undefined;
-    status?: AnswerScriptStatus | undefined;
+    status?: AnswerScriptStatusObj[] | undefined;
     dateCreated?: Date | undefined;
     dateUpdated?: Date | undefined;
     marks?: any | undefined;

@@ -17,6 +17,7 @@ import { ComponentCanDeactivate } from 'src/helper/pending-changes.guard';
 import {
     AnswerScript,
     AnswerScriptStatus,
+    AnswerScriptStatusObj,
     HighlightText,
 } from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
@@ -178,8 +179,12 @@ export class MarkingComponent
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
 
-            if (this.answerScript.status === AnswerScriptStatus.NOT_STARTED) {
-                this.answerScript.status = AnswerScriptStatus.IN_PROGRESS;
+            let j = this.answerScript.status!.findIndex((s: AnswerScriptStatusObj) => {
+                return s.marker === this.currentUser.id;
+            });
+
+            if (this.answerScript.status![j].status == AnswerScriptStatus.NOT_STARTED) {
+                this.answerScript.status![j].status = AnswerScriptStatus.IN_PROGRESS;
             }
 
             this.marks = data.marks.filter((obj: Marks) => {
@@ -246,10 +251,6 @@ export class MarkingComponent
 
     private selection(): Selection {
         return window.getSelection()!;
-    }
-
-    private selectedText(): string {
-        return window.getSelection()!.toString();
     }
 
     private checkSelection(selection: Selection) {
@@ -467,8 +468,11 @@ export class MarkingComponent
     }
 
     onSubmit() {
+        let j = this.answerScript.status!.findIndex((s: AnswerScriptStatusObj) => {
+            return s.marker === this.currentUser.id;
+        });
         this.checkIsMarkingFinished()
-            ? (this.answerScript.status = AnswerScriptStatus.FINISHED)
+            ? (this.answerScript.status![j].status = AnswerScriptStatus.FINISHED)
             : null;
 
         let i = this.answerScript.marks.findIndex((obj: Marks) => {

@@ -5,12 +5,9 @@ import { Assessment, AssessmentType } from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import {
-    faFileDownload,
-    faUpload,
-} from '@fortawesome/free-solid-svg-icons';
+import { faFileDownload, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
-import { AnswerScript } from 'src/models/answerScript';
+import { AnswerScript, AnswerScriptStatusObj } from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
@@ -100,7 +97,12 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     calculateProgress() {
         this.finished = this.answerScripts.data.filter(
-            (x: any) => x.status === 'Finished'
+            (answer: AnswerScript) => {
+                let j = answer.status!.findIndex((s: AnswerScriptStatusObj) => {
+                    return s.marker === this.currentUser.id;
+                });
+                return answer.status![j].status == 'Finished';
+            }
         ).length;
         return Math.floor(
             (this.finished / this.answerScripts.data.length) * 100
@@ -145,11 +147,12 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                         this.answerScripts = new MatTableDataSource(
                             obj as AnswerScript[]
                         );
+                        console.log(this.answerScripts);
                         this.updateMatchedMarkerIndex();
                         this.modalService.dismissAll();
                     })
                     .catch((err) => {
-                        console.log('something wrong');
+                        console.log(err);
                     });
             });
     }

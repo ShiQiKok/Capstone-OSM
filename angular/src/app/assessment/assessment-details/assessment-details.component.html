@@ -81,12 +81,12 @@
                         <span
                             class="rounded-pill py-1 px-2 text-white"
                             [class]="{
-                                'bg-primary': answer.status === 'In Progress',
-                                'bg-secondary': answer.status === 'Not Started',
-                                'bg-success': answer.status === 'Finished'
+                                'bg-primary': answer.status[markerIndex].status === 'In Progress',
+                                'bg-secondary': answer.status[markerIndex].status === 'Not Started',
+                                'bg-success': answer.status[markerIndex].status === 'Finished'
                             }"
                         >
-                            {{ answer.status }}
+                            {{ answer.status[markerIndex].status }}
                         </span>
                     </td>
                 </ng-container>

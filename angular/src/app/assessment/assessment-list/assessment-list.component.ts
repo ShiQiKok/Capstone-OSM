@@ -7,7 +7,7 @@ import { AssessmentService } from 'src/services/assessment.service';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
 import { AnswerScriptService } from 'src/services/answer-script.service';
-import { AnswerScript } from 'src/models/answerScript';
+import { AnswerScript, AnswerScriptStatusObj } from 'src/models/answerScript';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -41,7 +41,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         this.isLoading = true;
         await this.getApi();
         await this.getAssessments();
-        this.mapAssessment()
+        this.mapAssessment();
         setTimeout(() => {
             this.isLoading = false;
         }, 1000);
@@ -66,9 +66,15 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         this.assessmentList.forEach(async (assessment: any) => {
             this._answerScriptService.getAll(assessment.id!).then((obj) => {
                 let answers = obj as AnswerScript[];
-                let finish = answers.filter(
-                    (a: AnswerScript) => a.status === 'Finished'
-                );
+
+                let finish = answers.filter((a: AnswerScript) => {
+                    let j = a.status!.findIndex(
+                        (s: AnswerScriptStatusObj) => {
+                            return s.marker === this.currentUser.id;
+                        }
+                    );
+                    a.status![j].status == 'Finished';
+                });
                 let total = answers.length;
                 assessment.progress = Math.floor((finish.length / total) * 100);
             });
