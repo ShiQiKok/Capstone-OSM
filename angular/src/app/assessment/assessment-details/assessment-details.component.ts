@@ -5,7 +5,10 @@ import { Assessment, AssessmentType } from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import {
+    faFileDownload,
+    faUpload,
+} from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript } from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
@@ -39,6 +42,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     faUpload = faUpload;
     faCog = faCog;
     faArrowAltCircleLeft = faArrowAltCircleLeft;
+    faFileDownload = faFileDownload;
 
     // controls
     isLoading: boolean = true;
