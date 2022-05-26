@@ -1,6 +1,17 @@
-import { Component, HostListener, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    HostListener,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faAngleLeft, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faArrowAltCircleLeft } from '@fortawesome/free-regular-svg-icons';
+import {
+    faAngleLeft,
+    faCheck,
+    faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { ComponentCanDeactivate } from 'src/helper/pending-changes.guard';
 import {
@@ -79,6 +90,7 @@ export class MarkingComponent
     faCheck = faCheck;
     faTimes = faTimes;
     faAngleLeft = faAngleLeft;
+    faArrowAltCircleLeft = faArrowAltCircleLeft;
 
     @HostListener('window:beforeunload')
     canDeactivate(): Observable<boolean> | boolean {
@@ -150,7 +162,7 @@ export class MarkingComponent
                 ) {
                     this.selectedDetailedCriterion =
                         this.selectedCriterion.columns[i];
-                        break;
+                    break;
                 }
             }
         }
@@ -186,7 +198,6 @@ export class MarkingComponent
                 });
 
             if (this.answerScript.script) this.loadScript();
-
         });
     }
 
@@ -476,5 +487,14 @@ export class MarkingComponent
                     `/assessment-details/${this.assessment.id}`,
                 ]);
             });
+    }
+
+    onGoBackClicked(){
+        if (this.assessment.type === AssessmentType.ESSAY_BASED && this.isRubricsDetailsShowed){
+            this.isRubricsDetailsShowed = false;
+        }else {
+            this.router.navigate([`/assessment-details/${this.assessment.id}`]);
+        }
+
     }
 }

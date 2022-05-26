@@ -49,8 +49,27 @@
         </div>
     </div>
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
-        <div *ngIf="assessment" style="overflow: auto; height: 87%">
-            <div id="marksPanel" class="text-justify">
+        <div
+            id="sideNavBar"
+            class="position-absolute top-0 start-0 end-0 bg-primary shadow rounded py-2 px-3"
+        >
+            <span
+                *ngIf="assessment"
+                style="cursor: pointer"
+                (click)="onGoBackClicked()"
+            >
+                <fa-icon
+                    [icon]="faArrowAltCircleLeft"
+                    style="font-size: 1.75em"
+                    class="text-white"
+                ></fa-icon>
+            </span>
+        </div>
+        <div
+            *ngIf="assessment"
+            style="overflow: auto; height: 87%; margin-top: 3.5rem"
+        >
+            <div id="marksPanel" style="margin-bottom: 4rem">
                 <div *ngIf="isEssayBased">
                     <div *ngIf="!isRubricsDetailsShowed">
                         <mat-selection-list
@@ -92,16 +111,6 @@
                     </div>
                     <div *ngIf="isRubricsDetailsShowed">
                         <div>
-                            <a
-                                (click)="
-                                    isRubricsDetailsShowed =
-                                        !isRubricsDetailsShowed
-                                "
-                                class="btn btn-outline-primary btn-sm"
-                            >
-                                <fa-icon [icon]="faAngleLeft"> </fa-icon>
-                                <!-- <i class="fas fa-angle-left"></i> -->
-                            </a>
                             <h3 class="">
                                 {{ selectedCriterion.title }}
                             </h3>
