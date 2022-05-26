@@ -32,7 +32,7 @@ def overview(request):
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def assessments(request, user_id):
-    assessments = Assessment.objects.filter(markers=user_id).order_by('id')
+    assessments = Assessment.objects.filter(markers=user_id).order_by('-id')
     serializer = AssessmentSerializer(assessments, many=True)
 
     return Response(serializer.data)

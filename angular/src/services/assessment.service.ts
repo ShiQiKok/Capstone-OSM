@@ -16,7 +16,7 @@ export class AssessmentService extends BaseService {
             const formData: FormData = new FormData();
             formData.append('file', file, file.name);
             this.http
-                .post(`${this.ROOT}${this.ALL_API.uploadRubrics}/`, formData, {})
+                .post(`${this.ROOT}${this.ALL_API.uploadRubrics}`, formData, {})
                 .subscribe(
                     (obj) => resolve(obj),
                     (err) => reject(err)
@@ -29,7 +29,7 @@ export class AssessmentService extends BaseService {
             const formData: FormData = new FormData();
             formData.append('file', file, file.name);
             this.http
-                .post(`${this.ROOT}${this.ALL_API.uploadQuestions}/`, formData, {})
+                .post(`${this.ROOT}${this.ALL_API.uploadQuestions}`, formData, {})
                 .subscribe(
                     (obj) => resolve(obj),
                     (err) => reject(err)

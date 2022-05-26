@@ -20,7 +20,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     isLoading: boolean = true;
 
     // object
-    subjects: Subject[] = [];
+    subjects: any = {};
     assessmentList: Assessment[] = [];
     assessments: any = {};
 
@@ -41,8 +41,10 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         this.isLoading = true;
         await this.getApi();
         await this.getAssessments();
-        this.mapAssessment();
-        this.isLoading = false;
+        this.mapAssessment()
+        setTimeout(() => {
+            this.isLoading = false;
+        }, 1000);
     }
 
     /** To get all APIs for each service */
@@ -61,7 +63,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
 
     /** To create a object for front-end presentation, which maps the assessments with their subject ids */
     private mapAssessment(): void {
-        this.assessmentList.forEach((assessment: any) => {
+        this.assessmentList.forEach(async (assessment: any) => {
             this._answerScriptService.getAll(assessment.id!).then((obj) => {
                 let answers = obj as AnswerScript[];
                 let finish = answers.filter(
@@ -70,13 +72,13 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
                 let total = answers.length;
                 assessment.progress = Math.floor((finish.length / total) * 100);
             });
+
             if (this.assessments[assessment.subject] != undefined) {
                 this.assessments[assessment.subject].push(assessment);
             } else {
                 this.assessments[assessment.subject] = [assessment];
-                this._subjectService.get(assessment.subject).then((subject) => {
-                    this.subjects.push(subject);
-                });
+                let s = await this._subjectService.get(assessment.subject);
+                this.subjects[assessment.subject] = s.name;
             }
         });
     }
@@ -84,7 +86,8 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     /**  Returns subject name by subject id
      * @param {number} subjectId the subject id
      */
-    getSubjectName(id: number): string {
-        return this.subjects.find((subject) => subject.id == id)?.name!;
-    }
+    // getSubjectName(id: number): string {
+    //     console.log(this.subjects)
+    //     return this.subjects.find((subject) => subject.id == id)?.name!;
+    // }
 }

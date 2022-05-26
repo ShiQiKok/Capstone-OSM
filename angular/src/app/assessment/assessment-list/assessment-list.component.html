@@ -10,7 +10,7 @@
         <div class="card shadow-sm" *ngIf="obj.value.length > 0">
             <div class="card-body">
                 <h4 class="card-title">
-                    {{ getSubjectName(obj.value[0].subject) }}
+                    {{ subjects[obj.key] | titlecase }}
                 </h4>
                 <div class="mt-4 rounded">
                     <div *ngFor="let a of obj.value" class="my-3 ">
