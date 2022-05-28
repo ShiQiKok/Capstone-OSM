@@ -22,7 +22,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     // object
     subjects: any = {};
     assessmentList: Assessment[] = [];
-    assessments: any = {};
+    assessments?: any;
 
     // icon
     faPlus = faPlus;
@@ -59,6 +59,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         this.assessmentList = (await this._assessmentService.getAll(
             this.currentUser.id!
         )) as Assessment[];
+        console.log(this.assessmentList)
     }
 
     /** To create a object for front-end presentation, which maps the assessments with their subject ids */
@@ -73,12 +74,12 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
                             return s.marker === this.currentUser.id;
                         }
                     );
-                    a.status![j].status == 'Finished';
+                    return a.status![j].status == 'Finished';
                 });
                 let total = answers.length;
                 assessment.progress = Math.floor((finish.length / total) * 100);
             });
-
+            this.assessments = {}
             if (this.assessments[assessment.subject] != undefined) {
                 this.assessments[assessment.subject].push(assessment);
             } else {

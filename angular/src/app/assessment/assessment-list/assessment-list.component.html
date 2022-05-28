@@ -6,6 +6,11 @@
         <fa-icon [icon]="faPlus" class="mr-1"></fa-icon>
         Create Assessment
     </button>
+    <div *ngIf="!assessments" class="card my-4 shadow">
+        <div class="card-body">
+            <h4 class="card-title text-center">Seems like you have no assessments. Create one now!</h4>
+        </div>
+    </div>
     <div *ngFor="let obj of assessments | keyvalue" class="my-4">
         <div class="card shadow-sm" *ngIf="obj.value.length > 0">
             <div class="card-body">
@@ -17,7 +22,7 @@
                         <div class="card d-flex flex-row hoverable-card">
                             <div class="card-body">
                                 <div>
-                                    <span>{{ a.name }}</span>
+                                    <span>{{ a.name }} {{a.progress}}</span>
                                     <span class="float-right">
                                         {{
                                             a.data_created | date: "dd/MM/yyyy"

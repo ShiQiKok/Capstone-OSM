@@ -17,6 +17,7 @@ import { AuthenticationService } from 'src/services/authentication.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { faArrowAltCircleLeft } from '@fortawesome/free-regular-svg-icons';
+import { User } from 'src/models/user';
 
 @Component({
     selector: 'app-assessment-details',
@@ -34,6 +35,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     finished: number = 0;
     newAssessmentName!: string;
     markerIndex!: number;
+    collaborators!: User[];
 
     // icons
     faUpload = faUpload;

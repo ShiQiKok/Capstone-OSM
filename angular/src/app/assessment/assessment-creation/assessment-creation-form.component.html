@@ -36,7 +36,7 @@
         </button>
     </div>
 </ng-template>
-<!-- (click)="setUneditable($event)" -->
+
 <div>
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
@@ -89,6 +89,7 @@
                             id="subject"
                             formControlName="subject"
                         >
+                            <option disabled>Please select a subject</option>
                             <option
                                 *ngFor="let subject of subjects"
                                 [value]="subject.id"
