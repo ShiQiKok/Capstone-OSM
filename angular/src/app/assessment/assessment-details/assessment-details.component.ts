@@ -143,7 +143,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     }
 
     openModal(content: any, config: any) {
-        console.log(content);
         if (config) this.modalService.open(content, config);
         else this.modalService.open(content, { size: 'lg' });
     }
