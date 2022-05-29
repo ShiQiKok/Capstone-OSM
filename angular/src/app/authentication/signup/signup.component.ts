@@ -74,6 +74,11 @@ export class SignupComponent implements OnInit {
                                     this.errorMessage = `Email: ${error[e]}`;
                                     this.signupFormGroup.controls['email'].setValue('');
                                     break;
+                                case 'password':
+                                    this.errorMessage = `Password: ${error[e]}`;
+                                    this.signupFormGroup.controls['password'].setValue('');
+                                    this.signupFormGroup.controls['confirmPassword'].setValue('');
+                                    break;
                             }
                         })
                     });

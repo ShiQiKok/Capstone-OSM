@@ -8,7 +8,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
         fields = list(attr.keys())
 
         # either one (question and rubrics must be provided)
-        if 'questions' not in fields and 'rubrics' not in field:
+        if 'questions' not in fields and 'rubrics' not in fields:
             raise serializers.ValidationError("Either questions or rubrics must be provided.")
 
         # while both are provided, they can't be null at the same time (front-end creation case)
