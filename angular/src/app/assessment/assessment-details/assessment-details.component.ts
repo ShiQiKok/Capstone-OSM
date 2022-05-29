@@ -16,8 +16,13 @@ import { AppComponent } from 'src/app/app.component';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
-import { faArrowAltCircleLeft } from '@fortawesome/free-regular-svg-icons';
-import { User } from 'src/models/user';
+import {
+    faArrowAltCircleLeft,
+    faTimesCircle,
+} from '@fortawesome/free-regular-svg-icons';
+import { UserService } from 'src/services/user.service';
+import { UserCollabInfo } from 'src/models/user';
+
 
 @Component({
     selector: 'app-assessment-details',
@@ -35,13 +40,14 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     finished: number = 0;
     newAssessmentName!: string;
     markerIndex!: number;
-    collaborators!: User[];
+    collaborators!: UserCollabInfo[];
 
     // icons
     faUpload = faUpload;
     faCog = faCog;
     faArrowAltCircleLeft = faArrowAltCircleLeft;
     faFileDownload = faFileDownload;
+    faTimesCircle = faTimesCircle;
 
     // controls
     isLoading: boolean = true;
@@ -62,6 +68,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         private _assessmentService: AssessmentService,
         private _answerScriptService: AnswerScriptService,
         private _gradebookService: GradebookService,
+        private _userService: UserService,
         private route: ActivatedRoute,
         private modalService: NgbModal,
         private _snackBar: MatSnackBar
@@ -73,6 +80,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         this.isLoading = true;
         await this._assessmentService.getApi();
         await this._answerScriptService.getApi();
+        await this._userService.getApi();
         await this.getAssessmentDetails();
         this.answerScripts = new MatTableDataSource(
             (await this._answerScriptService.getAll(
@@ -91,6 +99,19 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
         this.newAssessmentName = this.assessment.name!;
+        this.loadCollaborators();
+    }
+
+    loadCollaborators() {
+        this._userService
+            .getList(this.assessment.markers)
+            .then((arr) => {
+                arr = arr.filter((m: any) => m.id !== this.currentUser.id);
+                this.collaborators = arr;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     printObject() {
@@ -111,14 +132,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         );
     }
 
-    updateAssessment(id: any) {
-        this._assessmentService
-            .update(id, this.assessment)
-            .then((assessment: any) => {
-                this.assessment = assessment;
-            });
-    }
-
     deleteAssessment(id: any) {
         this._assessmentService.delete(id).then(() => {
             this.modalService.dismissAll();
@@ -130,6 +143,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     }
 
     openModal(content: any, config: any) {
+        console.log(content);
         if (config) this.modalService.open(content, config);
         else this.modalService.open(content, { size: 'lg' });
     }
@@ -204,6 +218,10 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     onSave() {
         this.assessment.name = this.newAssessmentName;
+        this.assessment.markers = this.collaborators.map((c: any) => {
+            return c.id;
+        });
+        this.assessment.markers.push(this.currentUser.id!);
         this._assessmentService
             .update(this.assessment.id!, this.assessment)
             .then(() => {
@@ -214,5 +232,35 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     filterValue(event: Event) {
         let value = (event.target as HTMLInputElement).value;
         this.answerScripts.filter = value.trim().toLowerCase();
+    }
+
+    removeCollaborator(user: UserCollabInfo) {
+        this.collaborators = this.collaborators.filter((c) => c != user);
+    }
+
+    onEnterPressed(inputElement: any) {
+        let inputValue = inputElement.value;
+        let msgElement = document.querySelector('#collaborationMsg')!;
+        msgElement.innerHTML = '';
+        inputElement.value = '';
+
+        this._userService
+            .getBy(inputValue)
+            .then((obj: UserCollabInfo) => {
+                if (
+                    !this.collaborators.some(
+                        (c) => JSON.stringify(c) == JSON.stringify(obj)
+                    ) &&
+                    obj.id != this.currentUser.id
+                ) {
+                    this.collaborators.push(obj);
+                } else {
+                    msgElement.innerHTML = 'This user is already added!';
+                }
+            })
+            .catch(() => {
+                msgElement.innerHTML =
+                    'User not found! Please make sure you have entered the correct email or username.';
+            });
     }
 }

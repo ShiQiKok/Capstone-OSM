@@ -16,6 +16,8 @@ def apiOverview(request):
     api_urls = {
         'getAll': 'users/',
         'get': 'user-detail/',
+        'getBy': 'user-get-by/',
+        'getList': 'user-get-list/',
         'create': 'user-create/',
         'update': 'user-update/',
         'delete': 'user-delete/',
@@ -44,6 +46,43 @@ def usersCollab(request):
 
     return Response(serializer.data)
 
+@api_view(['GET', 'POST'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def usersGetBy(request):
+    if ('data' in request.data.keys()):
+        data = request.data['data']
+
+        try:
+            user = User.objects.get(username=data)
+            serializer = UserCollabSerializer(user, many=False)
+            return Response(serializer.data)
+        except:
+            try:
+                user = User.objects.get(email=data)
+                serializer = UserCollabSerializer(user, many=False)
+                return Response(serializer.data)
+            except:
+                return Response('Please post valid data', status=status.HTTP_400_BAD_REQUEST)
+
+    return Response('No data found', status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'POST'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def usersGetList(request):
+    if ('list' in request.data.keys()):
+        data = request.data['list']
+
+        if (type(data) != list):
+            return Response('Please post a list', status=status.HTTP_400_BAD_REQUEST)
+
+        users = [User.objects.get(id=d) for d in data]
+        serializer = UserCollabSerializer(users, many=True)
+        return Response(serializer.data)
+
+
+    return Response('No data found', status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])

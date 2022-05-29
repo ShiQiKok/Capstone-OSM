@@ -36,4 +36,26 @@ export class UserService extends BaseService {
                 );
         });
     }
+
+    getBy(obj: any){
+        return new Promise<any>((resolve, reject) => {
+            this.http
+                .post(this.ROOT + this.ALL_API.getBy, {data: obj})
+                .subscribe(
+                    (obj) => resolve(obj),
+                    (err) => reject(err)
+                );
+        });
+    }
+
+    getList(obj: any){
+        return new Promise<any>((resolve, reject) => {
+            this.http
+                .post(this.ROOT + this.ALL_API.getList, {list: obj})
+                .subscribe(
+                    (obj) => resolve(obj),
+                    (err) => reject(err)
+                );
+        });
+    }
 }

@@ -6,7 +6,7 @@
                     {{ assessment.name }}
                 </h1>
                 <fa-icon
-                    (click)="openModal(assessmentSetting)"
+                    (click)="loadCollaborators(); openModal(assessmentSetting)"
                     style="font-size: 1.75em; cursor: pointer"
                     class="text-secondary"
                     [icon]="faCog"
@@ -81,9 +81,15 @@
                         <span
                             class="rounded-pill py-1 px-2 text-white"
                             [class]="{
-                                'bg-primary': answer.status[markerIndex].status === 'In Progress',
-                                'bg-secondary': answer.status[markerIndex].status === 'Not Started',
-                                'bg-success': answer.status[markerIndex].status === 'Finished'
+                                'bg-primary':
+                                    answer.status[markerIndex].status ===
+                                    'In Progress',
+                                'bg-secondary':
+                                    answer.status[markerIndex].status ===
+                                    'Not Started',
+                                'bg-success':
+                                    answer.status[markerIndex].status ===
+                                    'Finished'
                             }"
                         >
                             {{ answer.status[markerIndex].status }}
@@ -116,7 +122,8 @@
         </div>
     </div>
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
-        <div id="sideNavBar"
+        <div
+            id="sideNavBar"
             class="position-absolute top-0 start-0 end-0 bg-primary shadow rounded py-2 px-3"
             style="z-index: 10"
         >
@@ -127,7 +134,13 @@
                     class="text-white"
                 ></fa-icon>
             </span>
-            <span style="cursor: pointer" (click)="downloadGradebook()" class="float-right" ngbTooltip="download gradebook" [openDelay]="800">
+            <span
+                style="cursor: pointer"
+                (click)="downloadGradebook()"
+                class="float-right"
+                ngbTooltip="download gradebook"
+                [openDelay]="800"
+            >
                 <fa-icon
                     [icon]="faFileDownload"
                     style="font-size: 1.7em"
@@ -217,7 +230,6 @@
                             </p>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -355,17 +367,36 @@
                 </button>
             </div>
         </div>
-        <div class="form-group">
-            <label for="markingSetting">Collaborators</label>
-            <mat-chip-list [selectable]="false">
-                <mat-chip
-                    *ngFor="
-                        let m of assessment.markers
-                    "
-                >
-                    {{ m }}:
-                </mat-chip>
-            </mat-chip-list>
+        <hr class="dropdown-divider" />
+        <div class="form-group my-4">
+            <h4>Collaboration</h4>
+            <div class="input-group">
+                <span class="input-group-text">Collaborators</span>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter email or username"
+                    #collaboratorInput
+                    (keydown.enter)="onEnterPressed(collaboratorInput)"
+                />
+            </div>
+            <div class="mb-2">
+                <small class="text-danger" id="collaborationMsg"></small>
+            </div>
+            <div class="mt-4" *ngIf="collaborators.length > 0">
+                <label for="markingSetting">Current Collaborators</label>
+                <mat-chip-list [selectable]="false">
+                    <mat-chip
+                        *ngFor="let marker of collaborators"
+                        (removed)="removeCollaborator(marker)"
+                    >
+                        {{ marker.username }}: {{ marker.email }}
+                        <button matChipRemove>
+                            <fa-icon [icon]="faTimesCircle"></fa-icon>
+                        </button>
+                    </mat-chip>
+                </mat-chip-list>
+            </div>
         </div>
     </div>
     <div class="modal-footer">

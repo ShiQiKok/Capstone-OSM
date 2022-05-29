@@ -6,7 +6,6 @@ import {
     Assessment,
     AssessmentType,
     MarkingSettings,
-    Rubrics,
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
@@ -19,6 +18,7 @@ import { QuestionInputComponent } from 'src/app/shared-component/question-input/
 import { UserService } from 'src/services/user.service';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UserCollabInfo } from 'src/models/user';
 
 class QuestionInput {
     no?: string | undefined;
@@ -58,12 +58,6 @@ class RubricColumnInput {
 class RubricMarkRangeInput {
     min?: number | undefined;
     max?: number | undefined;
-}
-
-class UserCollabInfo {
-    id!: number;
-    username!: string;
-    email!: string;
 }
 
 @Component({
