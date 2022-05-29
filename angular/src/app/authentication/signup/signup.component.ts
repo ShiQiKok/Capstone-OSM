@@ -58,29 +58,38 @@ export class SignupComponent implements OnInit {
                 this._userService
                     .create(user)
                     .then((user) => {
-                        console.log(user);
                         this.onSuccessCallback();
                     })
                     .catch((err) => {
                         let error = err.error
-                        console.log(error)
-                        Object.keys(error).forEach((e) => {
-                            switch (e) {
-                                case 'username':
-                                    this.errorMessage = `Username: ${error[e]}`;
-                                    this.signupFormGroup.controls['username'].setValue('');
-                                    break;
-                                case 'email':
-                                    this.errorMessage = `Email: ${error[e]}`;
-                                    this.signupFormGroup.controls['email'].setValue('');
-                                    break;
-                                case 'password':
-                                    this.errorMessage = `Password: ${error[e]}`;
-                                    this.signupFormGroup.controls['password'].setValue('');
-                                    this.signupFormGroup.controls['confirmPassword'].setValue('');
-                                    break;
+                        for (let key in error) {
+                            if (key == 'username'){
+                                this.errorMessage += `Username: ${error[key]}`;
+                                this.signupFormGroup.controls['username'].setValue('');
+                                break;
                             }
-                        })
+                            if (key == 'email'){
+                                this.errorMessage += `Email: ${error[key]}`;
+                                this.signupFormGroup.controls['email'].setValue('');
+                                break;
+                            }
+                            if (key == 'password'){
+                                this.errorMessage += `Password: ${error[key]}`;
+                                this.signupFormGroup.controls['password'].setValue('');
+                                this.signupFormGroup.controls['confirmPassword'].setValue('');
+                                break;
+                            }
+                            if (key == 'first_name'){
+                                this.errorMessage += `First Name: ${error[key]}`;
+                                this.signupFormGroup.controls['firstName'].setValue('');
+                                break;
+                            }
+                            if (key == 'last_name'){
+                                this.errorMessage += `Last Name: ${error[key]}`;
+                                this.signupFormGroup.controls['lastName'].setValue('');
+                                break;
+                            }
+                        }
                     });
             } else {
                 this.errorMessage = "Passwords don't match!";
