@@ -200,17 +200,18 @@
                             role="listitem"
                         >
                             Question {{ question.no }}
+                            <p class="ml-auto text-secondary">
+                                <small>total: {{ question.value.marks }}</small>
+                            </p>
                             <input
                                 type="number"
-                                class="form-control text-center ml-auto"
+                                class="form-control text-center w-100"
                                 style="width: 30%"
                                 min="0"
                                 max="{{ question.value.marks }}"
                                 [(ngModel)]="marks.distribution[i].marksAwarded"
                                 (change)="onMarkAwardedChanged($event)"
                             />
-                            /
-                            {{ question.value.marks }}
                         </mat-list-item>
                     </mat-list>
                 </div>

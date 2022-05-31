@@ -15,19 +15,28 @@ div#sideNav {
     height: auto !important;
 }
 
+
 #detailCriteriaList mat-list-option,
 #generalCriteriaList mat-list-option {
     height: auto;
-    padding: 0.5rem auto !important;
     transition: 300ms;
 }
 
+#questionMarksPanel .mat-list-item-content{
+    align-items: start !important;
+    flex-direction: column !important;
+}
+
+#questionMarksPanel mat-list-item {
+    padding: 0.80rem 0 !important;
+}
+
+#questionMarksPanel mat-list-item:not(:first-child),
 mat-list-option:not(:first-child) {
     margin: 1rem 0 !important;
-    padding: 0.5rem auto !important;
-    transition: 300ms;
 }
 
+#questionMarksPanel mat-list-item,
 mat-list-option{
     height: auto !important;
 }
