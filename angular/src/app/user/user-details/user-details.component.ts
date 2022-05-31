@@ -7,8 +7,7 @@ import { AuthenticationService } from 'src/services/authentication.service';
 import { UserService } from 'src/services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { User } from 'src/models/user';
 
 @Component({
     selector: 'app-user-details',
@@ -19,8 +18,8 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
     isEditing: boolean = false;
     isEditingPassword: boolean = false;
-    showErrorMessage: boolean = false;
     errorMessage: string = '';
+    errorMessageOnSave: string = '';
 
     passwordForm: FormGroup;
     userInfoForm: FormGroup;
@@ -69,18 +68,35 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
     onSave() {
         if (this.userInfoForm.valid) {
+            let tempUser: User = Object.assign({}, this.currentUser);
             // if the form is valid, replace the old value
-            this.currentUser.first_name = this.firstName!.value;
-            this.currentUser.last_name = this.lastName!.value;
-            this.currentUser.email = this.email!.value;
+            tempUser.first_name = this.firstName!.value;
+            tempUser.last_name = this.lastName!.value;
+            tempUser.email = this.email!.value;
 
             this._userService
-                .update(this.currentUser.id!, this.currentUser)
+                .update(tempUser.id!, tempUser)
                 .then(() => {
                     this._authenticationService.setUser(this.currentUser);
                     this._snackBar.open('Your information is updated!', '', {
                         duration: 3000,
                     });
+                }).catch((err) => {
+                    this.resetFormWithInitialValue();
+                    for (let key in err.error){
+                        if (key == 'first_name'){
+                            this.errorMessageOnSave = `First Name: ${err.error[key]}`;
+                            break;
+                        }
+                        if (key == 'last_name'){
+                            this.errorMessageOnSave = `Last Name: ${err.error[key]}`;
+                            break;
+                        }
+                        if (key == 'email'){
+                            this.errorMessageOnSave = `Email: ${err.error[key]}`;
+                            break;
+                        }
+                    }
                 });
             this.isEditing = false;
         }
@@ -102,18 +118,22 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
                     this.passwordForm.value.newPassword
                 )
                 .then((data) => {
-                    this.showErrorMessage = false;
+                    console.log(data)
+                    this.errorMessage= '';
                     this.modalService.dismissAll();
                     this._snackBar.open('Password changed successfully!', '', {
                         duration: 3000,
                     });
                 })
                 .catch((err) => {
-                    this.showErrorMessage = true;
-                    this.errorMessage = err.error.detail;
+                    for (let key in err.error){
+                        if (key == 'password'){
+                            this.errorMessage = `Password: ${err.error[key]}`;
+                            break;
+                        }
+                    }
                 });
         }else {
-            this.showErrorMessage = true;
             this.errorMessage = "Please make sure your new password and confirm password match!";
         }
         this.clearForm(this.passwordForm);
@@ -121,6 +141,10 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
     cancelEdit(){
         this.isEditing = false;
+        this.resetFormWithInitialValue();
+    }
+
+    private resetFormWithInitialValue(){
         this.userInfoForm.controls['firstName'].setValue(this.currentUser.first_name);
         this.userInfoForm.controls['lastName'].setValue(this.currentUser.last_name);
         this.userInfoForm.controls['email'].setValue(this.currentUser.email);

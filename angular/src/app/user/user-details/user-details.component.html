@@ -20,6 +20,9 @@
             </div>
             <hr class="dropdown-divider" />
             <div class="card-body">
+                <div *ngIf="errorMessageOnSave.length > 0" class="alert alert-danger" role="alert">
+                    {{ errorMessageOnSave }}
+                </div>
                 <form [formGroup]="userInfoForm">
                     <table class="table">
                         <h5 class="mb-4 text-primary">Information</h5>
@@ -166,7 +169,7 @@
         ></button>
     </div>
     <div class="modal-body">
-        <div *ngIf="showErrorMessage" class="alert alert-danger" role="alert">
+        <div *ngIf="errorMessage.length > 0" class="alert alert-danger" role="alert">
             {{ errorMessage }}
         </div>
         <form [formGroup]="passwordForm">

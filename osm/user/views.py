@@ -37,6 +37,7 @@ def users(request):
 
     return Response(serializer.data)
 
+
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -45,6 +46,7 @@ def usersCollab(request):
     serializer = UserCollabSerializer(users, many=True)
 
     return Response(serializer.data)
+
 
 @api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
@@ -67,6 +69,7 @@ def usersGetBy(request):
 
     return Response('No data found', status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -81,8 +84,8 @@ def usersGetList(request):
         serializer = UserCollabSerializer(users, many=True)
         return Response(serializer.data)
 
-
     return Response('No data found', status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
@@ -108,7 +111,7 @@ def createUser(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def updateUser(request, id):
@@ -117,6 +120,7 @@ def updateUser(request, id):
 
     if serializer.is_valid():
         serializer.save()
+        print(serializer.data)
         return Response(serializer.data)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -137,14 +141,21 @@ def deleteUser(request, id):
 @permission_classes([IsAuthenticated])
 def updatePassword(request, id):
     user = User.objects.get(id=id)
-    serializer = UserSerializer(instance=user)
 
     if (check_password(request.data['currentPassword'], user.password)):
-        updated_user = serializer.update_password(
-            id, request.data['newPassword'])
-        serializer = UserSerializer(instance=updated_user)
+        update_request = request._request
 
-        return Response(serializer.data)
+        update_request.POST = {
+            "username": user.username,
+            "email": user.email,
+            "password": request.data['newPassword'],
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+
+        return updateUser(update_request, id)
 
     else:
-        return Response({'detail': 'The password provided is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'password': ['The password provided is incorrect.']
+        }, status=status.HTTP_400_BAD_REQUEST)
