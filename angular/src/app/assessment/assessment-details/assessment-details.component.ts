@@ -23,7 +23,6 @@ import {
 import { UserService } from 'src/services/user.service';
 import { UserCollabInfo } from 'src/models/user';
 
-
 @Component({
     selector: 'app-assessment-details',
     templateUrl: './assessment-details.component.html',
@@ -82,6 +81,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         await this._answerScriptService.getApi();
         await this._userService.getApi();
         await this.getAssessmentDetails();
+        console.log(this.assessment);
         this.answerScripts = new MatTableDataSource(
             (await this._answerScriptService.getAll(
                 this.assessment.id!

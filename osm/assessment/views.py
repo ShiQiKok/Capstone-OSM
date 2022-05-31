@@ -6,9 +6,11 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import AssessmentSerializer
 from .models import Assessment
+from answer_script.models import AnswerScript
 import xml.etree.ElementTree as ET
 import pandas as pd
 import re
+from collections import Counter
 
 
 @api_view(['GET'])
@@ -69,9 +71,43 @@ def update_assessment(request, id):
     serializer = AssessmentSerializer(instance=assessment, data=request.data)
 
     if serializer.is_valid():
-        serializer.save()
+        if (Counter(assessment.markers.all()) != Counter(request.data['markers'])):
+            current_markers = list(
+                map(lambda m: m.id, assessment.markers.all()))
+            new_markers = list(
+                map(lambda m: m.id, serializer.validated_data['markers']))
+            answers = AnswerScript.objects.filter(assessment_id=id)
+            if (len(answers) > 0):
+                to_remove = list(set(current_markers) - set(new_markers))
+                to_add = list(set(new_markers) - set(current_markers))
+                temp = [{"marksAwarded": None}
+                        for i in range(len(answers[0].marks[0]['distribution']))]
+                status_temp = [{"marker": a, "status": "Not Started"}
+                               for a in to_add]
+                marks_temp = [{"markerId": a, "totalMark": 0,
+                               "distribution": temp} for a in to_add]
 
-    return Response(serializer.data)
+                for answer in answers:
+                    if (len(to_remove) > 0):
+                        m = []
+                        s = []
+                        for i in range(len(answer.status)):
+                            if answer.status[i]['marker'] not in to_remove:
+                                m.append(answer.marks[i])
+                                s.append(answer.status[i])
+                        answer.marks = m
+                        answer.status = s
+
+                    if (len(to_add) > 0):
+                        answer.status.extend(status_temp)
+                        answer.marks.extend(marks_temp)
+
+                    answer.save()
+
+        serializer.save()
+        return Response(serializer.data)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE'])

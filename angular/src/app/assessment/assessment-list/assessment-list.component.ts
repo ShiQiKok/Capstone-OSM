@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppComponent } from 'src/app/app.component';
 import { Assessment } from 'src/models/assessment';
-import { Subject } from 'src/models/subject';
 import { AssessmentService } from 'src/services/assessment.service';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
@@ -64,6 +63,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
 
     /** To create a object for front-end presentation, which maps the assessments with their subject ids */
     private mapAssessment(): void {
+        this.assessments = {}
         this.assessmentList.forEach(async (assessment: any) => {
             this._answerScriptService.getAll(assessment.id!).then((obj) => {
                 let answers = obj as AnswerScript[];
@@ -79,7 +79,6 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
                 let total = answers.length;
                 assessment.progress = Math.floor((finish.length / total) * 100);
             });
-            this.assessments = {}
             if (this.assessments[assessment.subject] != undefined) {
                 this.assessments[assessment.subject].push(assessment);
             } else {
