@@ -40,6 +40,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     newAssessmentName!: string;
     markerIndex!: number;
     collaborators!: UserCollabInfo[];
+    totalMarks: number = 0;
 
     // icons
     faUpload = faUpload;
@@ -81,7 +82,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         await this._answerScriptService.getApi();
         await this._userService.getApi();
         await this.getAssessmentDetails();
-        console.log(this.assessment);
+        this.calculateTotalMarks();
         this.answerScripts = new MatTableDataSource(
             (await this._answerScriptService.getAll(
                 this.assessment.id!
@@ -112,6 +113,16 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             .catch((err) => {
                 console.log(err);
             });
+    }
+
+    private calculateTotalMarks(){
+        if (this.assessment.type == AssessmentType.ESSAY_BASED){
+            this.totalMarks = this.assessment.rubrics.totalMarks;
+        }else{
+            this.assessment.questions!.forEach((q: any) => {
+                this.totalMarks += q.value.marks;
+            })
+        }
     }
 
     printObject() {
@@ -162,7 +173,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                         this.answerScripts = new MatTableDataSource(
                             obj as AnswerScript[]
                         );
-                        console.log(this.answerScripts);
                         this.updateMatchedMarkerIndex();
                         this.modalService.dismissAll();
                     })

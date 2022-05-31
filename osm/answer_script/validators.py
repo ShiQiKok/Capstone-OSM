@@ -1,6 +1,5 @@
 from django.core.exceptions import ValidationError
 
-
 def validate_answer_script_status(data):
     for status_obj in data:
         keys = status_obj.keys()

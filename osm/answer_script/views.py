@@ -193,20 +193,13 @@ def bulk_create(request):
                 })
 
             temp = [{"marksAwarded": None} for i in range(len(question_keys))]
-
-            marks = []
-            for marker in markers:
-                marks.append(
-                    {
-                        "markerId": marker.id,
-                        "totalMark": 0,
-                        "distribution": temp
-                    }
-                )
+            marks = [{"markerId": marker.id, "totalMark": 0, "distribution": temp} for marker in markers]
+            status = [{"marker": marker.id, "status": "Not Started"} for marker in markers]
 
             answers.append({
                 "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
                 "student_id": row['Email address'],
+                "status": status,
                 "marks": marks,
                 "answers": answer_list,
                 "assessment": assessment_id,
@@ -238,6 +231,7 @@ def bulk_create(request):
             create_request = request._request
             create_request.POST = d
             response = create_answer(create_request)
+            print(response.data)
 
         return Response("CSV file uploaded")
 
