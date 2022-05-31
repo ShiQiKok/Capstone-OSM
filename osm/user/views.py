@@ -120,7 +120,6 @@ def updateUser(request, id):
 
     if serializer.is_valid():
         serializer.save()
-        print(serializer.data)
         return Response(serializer.data)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -144,11 +143,12 @@ def updatePassword(request, id):
 
     if (check_password(request.data['currentPassword'], user.password)):
         update_request = request._request
+        user.set_password(request.data['newPassword'])
 
         update_request.POST = {
             "username": user.username,
             "email": user.email,
-            "password": request.data['newPassword'],
+            "password": user.password,
             "first_name": user.first_name,
             "last_name": user.last_name
         }
