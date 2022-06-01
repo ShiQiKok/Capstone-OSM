@@ -36,6 +36,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { QuestionInputComponent } from './shared-component/question-input/question-input.component';
 import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
 import { CreationRubricsQuestionsComponent } from './information/creation-rubrics-questions/creation-rubrics-questions.component';
+import { SubjectComponent } from './subject/subject.component';
+import { SubjectCreationModalComponent } from './subject/subject-creation-modal/subject-creation-modal.component';
 
 @NgModule({
     declarations: [
@@ -54,6 +56,8 @@ import { CreationRubricsQuestionsComponent } from './information/creation-rubric
         RubricsInputComponent,
         QuestionInputComponent,
         CreationRubricsQuestionsComponent,
+        SubjectComponent,
+        SubjectCreationModalComponent,
     ],
     imports: [
         BrowserModule,

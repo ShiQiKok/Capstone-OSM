@@ -81,7 +81,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
 
     // form groups
     assessmentDetailFormGroup!: FormGroup;
-    subjectFormGroup!: FormGroup;
 
     // objects
     assessment?: Assessment;
@@ -130,10 +129,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
                 MarkingSettings.MARK_BY_SCRIPT,
                 Validators.required,
             ],
-        });
-
-        this.subjectFormGroup = this._formBuilder.group({
-            newSubject: ['', Validators.required],
         });
     }
 
@@ -246,6 +241,14 @@ export class AssessmentCreationFormComponent extends AppComponent {
         }
     }
 
+    getSubjectService(): SubjectService{
+        return this._subjectService;
+    }
+
+    getUserId(): number{
+        return this.currentUser.id!;
+    }
+
     // REGION FormControls Getters
     get assessmentName() {
         return this.assessmentDetailFormGroup.get('assessmentName');
@@ -262,30 +265,12 @@ export class AssessmentCreationFormComponent extends AppComponent {
     get defaultSetting() {
         return this.assessmentDetailFormGroup.get('defaultSetting');
     }
-
-    get newSubject() {
-        return this.subjectFormGroup.get('newSubject');
-    }
     // END REGION FormControls Getters
 
     openModal(modal: any) {
         this._modalService.open(modal);
     }
 
-    onSubmitNewSubject(modal: any) {
-        let userId: number = this.currentUser.id!;
-        this._subjectService
-            .create({
-                name: this.subjectFormGroup.get('newSubject')!.value,
-                markers: [userId],
-            })
-            .then((subject) => {
-                console.log(subject);
-            });
-        this._modalService.dismissAll('Subject Submitted');
-        // to reload the page after creating a new subject
-        window.location.reload();
-    }
 
     setUneditable(event: any): void {
         this.rubricsInput.rubrics.isEdit = false;

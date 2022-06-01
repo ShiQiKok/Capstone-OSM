@@ -1,42 +1,3 @@
-<ng-template #subjectCreationModal let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Create a new subject</h4>
-        <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            (click)="modal.dismiss('Cross click')"
-        ></button>
-    </div>
-    <div class="modal-body">
-        <form [formGroup]="subjectFormGroup" id="subjectFormGroup">
-            <div class="form-group">
-                <label for="newSubject">Subject Name</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    formControlName="newSubject"
-                    id="newSubject"
-                    placeholder="Enter subject name"
-                />
-                <error-message
-                    ngDefaultControl
-                    [formControl]="newSubject"
-                ></error-message>
-            </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button
-            type="button"
-            class="btn btn-primary"
-            (click)="onSubmitNewSubject(modal)"
-        >
-            save
-        </button>
-    </div>
-</ng-template>
-
 <div>
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
@@ -98,7 +59,7 @@
                             </option>
                         </select>
                         <button
-                            (click)="openModal(subjectCreationModal)"
+                            (click)="subjectCreationModal.openModal()"
                             class="btn btn-link float-right"
                         >
                             + create a new subject
@@ -351,3 +312,9 @@
         </mat-stepper>
     </div>
 </div>
+
+<app-subject-creation-modal
+    #subjectCreationModal
+    [subjectService]="getSubjectService()"
+    [userId]="getUserId()"
+></app-subject-creation-modal>

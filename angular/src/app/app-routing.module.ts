@@ -9,6 +9,7 @@ import { LoginComponent } from './authentication/login/login.component';
 import { SignupComponent } from './authentication/signup/signup.component';
 import { CreationRubricsQuestionsComponent } from './information/creation-rubrics-questions/creation-rubrics-questions.component';
 import { MarkingComponent } from './marking/marking.component';
+import { SubjectComponent } from './subject/subject.component';
 import { UserDetailsComponent } from './user/user-details/user-details.component';
 
 const routes: Routes = [
@@ -43,6 +44,11 @@ const routes: Routes = [
         component: MarkingComponent,
         canActivate: [AuthGuard],
         canDeactivate: [PendingChangesGuard],
+    },
+    {
+        path: 'subjects',
+        component: SubjectComponent,
+        canActivate: [AuthGuard],
     },
 ];
 

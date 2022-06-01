@@ -52,7 +52,7 @@ def create_subject(request):
         serializer.save()
         return Response(serializer.data)
     else:
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
@@ -63,8 +63,8 @@ def update_subject(request, id):
 
     if serializer.is_valid():
         serializer.save()
-
-    return Response(serializer.data)
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])

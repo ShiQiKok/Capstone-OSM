@@ -1,0 +1,54 @@
+<div class="container w-50" *ngIf="!isLoading">
+    <div id="subject-title">
+        <h2>Subject</h2>
+        <p>You can manage your subject here.</p>
+    </div>
+    <div id="subject-container">
+        <div>
+            <button
+                class="btn btn-primary d-block ml-auto"
+                (click)="modal.openModal()"
+            >
+                + Add Subject
+            </button>
+        </div>
+        <div class="my-4 card" *ngFor="let subject of subjects">
+            <div class="card-body d-flex">
+                <div class="flex-grow-1">
+                    <h5 *ngIf="!subject.isEditing">{{ subject.name | titlecase}}</h5>
+                    <input
+                        *ngIf="subject.isEditing"
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="subject.name"
+                    />
+                </div>
+                <div>
+                    <button
+                        class="btn btn-outline-danger mx-2"
+                        (click)="onDeleteClicked(subject)"
+                    >
+                        Delete
+                    </button>
+                    <button
+                        class="btn btn-outline-primary"
+                        (click)="onEditClicked(subject)"
+                    >
+                        {{ subject.isEditing ? "Save" : "Edit" }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<app-subject-creation-modal
+    #modal
+    [subjectService]="getSubjectService()"
+    [userId]="getUserId()"
+></app-subject-creation-modal>
+<mat-spinner
+    *ngIf="isLoading"
+    [strokeWidth]="2"
+    [diameter]="150"
+    class="mx-auto mt-5"
+></mat-spinner>
