@@ -27,8 +27,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SpinnerComponent } from './shared-component/spinner/spinner.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MarkingComponent } from './marking/marking.component';
+import { MatSortModule } from '@angular/material/sort';
 import { MatListModule } from '@angular/material/list';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
 import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -79,7 +80,8 @@ import { SubjectCreationModalComponent } from './subject/subject-creation-modal/
         DragDropModule,
         MatSnackBarModule,
         MatChipsModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        MatSortModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

@@ -54,29 +54,30 @@
         >
             <table
                 mat-table
+                matSort
                 [dataSource]="answerScripts"
                 class="mat-table w-100"
             >
                 <ng-container matColumnDef="studentName">
-                    <th mat-header-cell *matHeaderCellDef>Student Name</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Student Name</th>
                     <td mat-cell *matCellDef="let answer">
                         {{ answer.student_name }}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="studentId">
-                    <th mat-header-cell *matHeaderCellDef>Student ID</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Student ID</th>
                     <td mat-cell *matCellDef="let answer">
                         {{ answer.student_id }}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
-                    <th mat-header-cell *matHeaderCellDef>Last Update</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Update</th>
                     <td mat-cell *matCellDef="let answer">
                         {{ answer.date_updated | date: "dd/MM/yyyy, hh:mm a" }}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
                     <td mat-cell *matCellDef="let answer">
                         <span
                             class="rounded-pill py-1 px-2 text-white"
@@ -97,7 +98,7 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="marks">
-                    <th mat-header-cell *matHeaderCellDef>Marks</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Marks</th>
                     <td mat-cell *matCellDef="let answer">
                         {{
                             answer.marks[markerIndex].totalMark
@@ -118,6 +119,11 @@
                     [ngClass]="{ selected: selection.selected[0] === row }"
                     (click)="onRowSelect(row)"
                 ></tr>
+
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row text-center" *matNoDataRow>
+                    <td class="mat-cell" colspan="5">No answer script found! :(</td>
+                  </tr>
             </table>
         </div>
     </div>

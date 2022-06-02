@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Assessment, AssessmentType } from 'src/models/assessment';
@@ -22,6 +22,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from 'src/services/user.service';
 import { UserCollabInfo } from 'src/models/user';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
     selector: 'app-assessment-details',
@@ -29,6 +30,15 @@ import { UserCollabInfo } from 'src/models/user';
     styleUrls: ['./assessment-details.component.scss'],
 })
 export class AssessmentDetailsComponent extends AppComponent implements OnInit {
+    private sort!: MatSort;
+
+    @ViewChild(MatSort) set setSort(sort: MatSort) {
+        if (sort) {
+            this.sort = sort;
+            this.answerScripts.sort = this.sort;
+        }
+    }
+
     // objects
     assessment!: Assessment;
     answerScripts!: MatTableDataSource<AnswerScript>;
@@ -89,7 +99,19 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             )) as AnswerScript[]
         );
 
-        // set the MatTableDataSource's filterPredicate to custom filter function
+        if (this.answerScripts.data.length > 0) {
+            this.updateMatchedMarkerIndex();
+        }
+        this.calculateProgress();
+        this.setFilteringProperties();
+        this.setSortingProperties();
+        this.isLoading = false;
+    }
+
+    /**
+     * set the MatTableDataSource's filterPredicate to custom filter function
+     */
+    private setFilteringProperties() {
         this.answerScripts.filterPredicate = (data: any, filter: string) => {
             // Transform the data into a lowercase string of all property values.
             const dataStr = Object.keys(data)
@@ -114,12 +136,90 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             const transformedFilter = filter.trim().toLowerCase();
             return dataStr.indexOf(transformedFilter) != -1;
         };
+    }
 
-        if (this.answerScripts.data.length > 0) {
-            this.updateMatchedMarkerIndex();
-        }
-        this.calculateProgress();
-        this.isLoading = false;
+    /**
+     * To update the custom sorting properties of the table
+     */
+    private setSortingProperties() {
+        this.answerScripts.sort = this.sort;
+
+        // set the sorting function to custom filter function
+        this.answerScripts.sortData = (data, sort) => {
+            const active = sort.active;
+            const direction = sort.direction;
+            if (!active || direction == '') {
+                return data;
+            }
+
+            let processedActive = active;
+
+            switch (active) {
+                case 'studentName':
+                    processedActive = 'student_name';
+                    break;
+                case 'studentId':
+                    processedActive = 'student_id';
+                    break;
+                case 'lastUpdate':
+                    processedActive = 'date_updated';
+                    break;
+            }
+
+            return data.sort((a, b) => {
+                let tempDataA: any = Object.assign({}, a);
+                let tempDataB: any = Object.assign({}, b);
+
+                if (processedActive == 'status' && a.status && b.status) {
+                    tempDataA.status = a.status[this.markerIndex].status;
+                    tempDataB.status = b.status[this.markerIndex].status;
+                } else if (processedActive == 'marks' && a.marks && b.marks) {
+                    tempDataA.marks = a.marks[this.markerIndex].totalMark;
+                    tempDataB.marks = b.marks[this.markerIndex].totalMark;
+                }
+
+                let valueA = this.answerScripts.sortingDataAccessor(
+                    tempDataA,
+                    processedActive
+                );
+                let valueB = this.answerScripts.sortingDataAccessor(
+                    tempDataB,
+                    processedActive
+                );
+
+                // If there are data in the column that can be converted to a number,
+                // it must be ensured that the rest of the data
+                // is of the same type so as not to order incorrectly.
+                const valueAType = typeof valueA;
+                const valueBType = typeof valueB;
+                if (valueAType !== valueBType) {
+                    if (valueAType === 'number') {
+                        valueA += '';
+                    }
+                    if (valueBType === 'number') {
+                        valueB += '';
+                    }
+                }
+                // If both valueA and valueB exist (truthy), then compare the two. Otherwise, check if
+                // one value exists while the other doesn't. In this case, existing value should come last.
+                // This avoids inconsistent results when comparing values to undefined/null.
+                // If neither value exists, return 0 (equal).
+                let comparatorResult = 0;
+                if (valueA != null && valueB != null) {
+                    // Check if one value is greater than the other; if equal, comparatorResult should remain 0.
+                    if (valueA > valueB) {
+                        comparatorResult = 1;
+                    } else if (valueA < valueB) {
+                        comparatorResult = -1;
+                    }
+                } else if (valueA != null) {
+                    comparatorResult = 1;
+                } else if (valueB != null) {
+                    comparatorResult = -1;
+                }
+                return comparatorResult * (direction == 'asc' ? 1 : -1);
+            });
+        };
     }
 
     async getAssessmentDetails() {

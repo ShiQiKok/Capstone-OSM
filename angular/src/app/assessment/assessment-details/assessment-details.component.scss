@@ -17,3 +17,7 @@ div#sideNav {
     bottom: 0;
     right: 1rem;
 }
+
+::ng-deep .mat-sort-header-arrow {
+    color: #fff;
+}
