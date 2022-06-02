@@ -89,6 +89,32 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             )) as AnswerScript[]
         );
 
+        // set the MatTableDataSource's filterPredicate to custom filter function
+        this.answerScripts.filterPredicate = (data: any, filter: string) => {
+            // Transform the data into a lowercase string of all property values.
+            const dataStr = Object.keys(data)
+                .reduce((currentTerm, key) => {
+                    let temp = data[key];
+
+                    if (key === 'status') {
+                        temp = temp[this.markerIndex].status;
+                    } else if (key === 'marks') {
+                        temp = temp[this.markerIndex].totalMark;
+                    }
+                    // Use an obscure Unicode character to delimit the words in the concatenated string.
+                    // This avoids matches where the values of two columns combined will match the user's query
+                    // (e.g. `Flute` and `Stop` will match `Test`). The character is intended to be something
+                    // that has a very low chance of being typed in by somebody in a text field. This one in
+                    // particular is "White up-pointing triangle with dot" from
+                    // https://en.wikipedia.org/wiki/List_of_Unicode_characters
+                    return currentTerm + temp + '◬';
+                }, '')
+                .toLowerCase();
+            // Transform the filter by converting it to lowercase and removing whitespace.
+            const transformedFilter = filter.trim().toLowerCase();
+            return dataStr.indexOf(transformedFilter) != -1;
+        };
+
         if (this.answerScripts.data.length > 0) {
             this.updateMatchedMarkerIndex();
         }
@@ -115,13 +141,13 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             });
     }
 
-    private calculateTotalMarks(){
-        if (this.assessment.type == AssessmentType.ESSAY_BASED){
+    private calculateTotalMarks() {
+        if (this.assessment.type == AssessmentType.ESSAY_BASED) {
             this.totalMarks = this.assessment.rubrics.totalMarks;
-        }else{
+        } else {
             this.assessment.questions!.forEach((q: any) => {
                 this.totalMarks += q.value.marks;
-            })
+            });
         }
     }
 
