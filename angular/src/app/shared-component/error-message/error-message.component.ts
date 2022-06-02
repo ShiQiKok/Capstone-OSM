@@ -27,6 +27,7 @@ export class ErrorMessageComponent implements OnInit {
     getFormValidationErrors() {
         let keys = this.formControl.errors;
         if (keys) {
+            console.log(keys);
             Object.keys(keys).forEach((key) => {
                 switch (key) {
                     case 'required': {
@@ -37,8 +38,14 @@ export class ErrorMessageComponent implements OnInit {
                         this.errorMessage = 'Please enter a valid email.';
                         break;
                     }
+                    case 'maxlength':{
+                        this.errorMessage = `Do not exceed ${keys![key].requiredLength} words.`;
+                        break;
+                    }
                 }
             });
         }
     }
 }
+
+

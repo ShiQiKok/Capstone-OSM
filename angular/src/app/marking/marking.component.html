@@ -1,10 +1,4 @@
 <div style="width: 80%" class="pl-4 pr-5">
-    <div *ngIf="assessment && answerScript">
-        <!-- {{ answerScript | json }} -->
-        <!-- <br />
-        {{ assessment | json }} -->
-    </div>
-    <!-- <div *ngIf="isFloatingBarShowed">SHOW BAR</div> -->
     <ng-template #floatToolbar>
         <button
             class="btn btn-sm btn-outline-primary d-inline-block"
@@ -51,15 +45,19 @@
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
         <div
             id="sideNavBar"
-            class="position-absolute top-0 start-0 end-0 bg-primary shadow rounded py-2 px-3"
+            class="position-absolute top-0 start-0 end-0 bg-primary shadow rounded py-2 px-3 d-flex justify-content-between"
         >
-            <span
-                *ngIf="assessment"
-                style="cursor: pointer"
-                (click)="onGoBackClicked()"
-            >
+            <span style="cursor: pointer" (click)="onGoBackClicked()">
                 <fa-icon
                     [icon]="faArrowAltCircleLeft"
+                    style="font-size: 1.75em"
+                    class="text-white"
+                ></fa-icon>
+            </span>
+            <span>
+                <fa-icon
+                    [icon]="faCommentAlt"
+                    (click)="openModal(commentModal)"
                     style="font-size: 1.75em"
                     class="text-white"
                 ></fa-icon>
@@ -234,3 +232,38 @@
         </div>
     </div>
 </div>
+
+<ng-template let-modal #commentModal style="height: 10rem;">
+    <div class="modal-header">
+        <h4 class="modal-title">Comment</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <textarea
+            class="form-control"
+            [formControl]="comment"
+            placeholder="enter your comment to the answer script"
+        ></textarea>
+        <error-message
+            ngDefaultControl
+            [formControl]="comment"
+        ></error-message>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-secondary text-white" (click)="modal.close()">
+            Cancel
+        </button>
+        <button
+            class="btn btn-primary"
+            (click)="updateComment()"
+        >
+            Confirm
+        </button>
+    </div>
+</ng-template>
+

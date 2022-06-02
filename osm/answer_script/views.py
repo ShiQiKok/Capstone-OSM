@@ -192,9 +192,15 @@ def bulk_create(request):
                     "answer": row[k]
                 })
 
-            temp = [{"marksAwarded": None} for i in range(len(question_keys))]
-            marks = [{"markerId": marker.id, "totalMark": 0, "distribution": temp} for marker in markers]
-            status = [{"marker": marker.id, "status": "Not Started"} for marker in markers]
+            temp = [{"marksAwarded": None} for i in range(criteria_num)]
+            marks = []
+            status = []
+            comments = []
+
+            for marker in markers:
+                marks.append({"markerId": marker.id, "totalMark": 0, "distribution": temp})
+                status.append({"marker": marker.id, "status": "Not Started"})
+                comments.append({"marker": marker.id, "comment": None})
 
             answers.append({
                 "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
@@ -203,7 +209,8 @@ def bulk_create(request):
                 "marks": marks,
                 "answers": answer_list,
                 "assessment": assessment_id,
-                "script": None
+                "script": None,
+                "comment": comments
             })
 
         return answers
@@ -274,8 +281,14 @@ def process_data(folder_name, assessment_id, file, criteria_num):
     assessment = Assessment.objects.get(id=assessment_id)
     markers = assessment.markers.all()
     temp = [{"marksAwarded": None} for i in range(criteria_num)]
-    marks = [{"markerId": marker.id, "totalMark": 0, "distribution": temp} for marker in markers]
-    status = [{"marker": marker.id, "status": "Not Started"} for marker in markers]
+    marks = []
+    status = []
+    comments = []
+
+    for marker in markers:
+        marks.append({"markerId": marker.id, "totalMark": 0, "distribution": temp})
+        status.append({"marker": marker.id, "status": "Not Started"})
+        comments.append({"marker": marker.id, "comment": None})
 
     return {
         "student_name": student_name,
@@ -284,5 +297,6 @@ def process_data(folder_name, assessment_id, file, criteria_num):
         "answers": None,
         "status": status,
         "assessment": assessment_id,
-        "script": file
+        "script": file,
+        "comment": comments
     }

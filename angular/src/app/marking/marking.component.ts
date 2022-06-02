@@ -5,13 +5,18 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faArrowAltCircleLeft } from '@fortawesome/free-regular-svg-icons';
+import {
+    faArrowAltCircleLeft,
+    faCommentAlt,
+} from '@fortawesome/free-regular-svg-icons';
 import {
     faAngleLeft,
     faCheck,
     faTimes,
 } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { ComponentCanDeactivate } from 'src/helper/pending-changes.guard';
 import {
@@ -80,6 +85,7 @@ export class MarkingComponent
     marks!: Marks;
     initialMarksDistribution!: MarkDistribution[];
     totalMarks: number = 0;
+    commentFormControl = new FormControl('', [Validators.maxLength(300)]);
 
     // controls
     isEssayBased?: boolean = true;
@@ -92,6 +98,7 @@ export class MarkingComponent
     faTimes = faTimes;
     faAngleLeft = faAngleLeft;
     faArrowAltCircleLeft = faArrowAltCircleLeft;
+    faCommentAlt = faCommentAlt;
 
     @HostListener('window:beforeunload')
     canDeactivate(): Observable<boolean> | boolean {
@@ -110,7 +117,8 @@ export class MarkingComponent
         private route: ActivatedRoute,
         private _answerScriptService: AnswerScriptService,
         private _assessmentService: AssessmentService,
-        private viewSDKClient: ViewSDKClient
+        private viewSDKClient: ViewSDKClient,
+        private _modalService: NgbModal
     ) {
         super(router, _authenticationService);
     }
@@ -179,12 +187,22 @@ export class MarkingComponent
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
 
-            let j = this.answerScript.status!.findIndex((s: AnswerScriptStatusObj) => {
-                return s.marker === this.currentUser.id;
-            });
 
-            if (this.answerScript.status![j].status == AnswerScriptStatus.NOT_STARTED) {
-                this.answerScript.status![j].status = AnswerScriptStatus.IN_PROGRESS;
+
+            let j = this.answerScript.status!.findIndex(
+                (s: AnswerScriptStatusObj) => {
+                    return s.marker === this.currentUser.id;
+                }
+            );
+
+            this.commentFormControl.setValue(this.answerScript.comment[j].comment);
+
+            if (
+                this.answerScript.status![j].status ==
+                AnswerScriptStatus.NOT_STARTED
+            ) {
+                this.answerScript.status![j].status =
+                    AnswerScriptStatus.IN_PROGRESS;
             }
 
             this.marks = data.marks.filter((obj: Marks) => {
@@ -468,11 +486,14 @@ export class MarkingComponent
     }
 
     onSubmit() {
-        let j = this.answerScript.status!.findIndex((s: AnswerScriptStatusObj) => {
-            return s.marker === this.currentUser.id;
-        });
+        let j = this.answerScript.status!.findIndex(
+            (s: AnswerScriptStatusObj) => {
+                return s.marker === this.currentUser.id;
+            }
+        );
         this.checkIsMarkingFinished()
-            ? (this.answerScript.status![j].status = AnswerScriptStatus.FINISHED)
+            ? (this.answerScript.status![j].status =
+                  AnswerScriptStatus.FINISHED)
             : null;
 
         let i = this.answerScript.marks.findIndex((obj: Marks) => {
@@ -493,12 +514,32 @@ export class MarkingComponent
             });
     }
 
-    onGoBackClicked(){
-        if (this.assessment.type === AssessmentType.ESSAY_BASED && this.isRubricsDetailsShowed){
+    onGoBackClicked() {
+        if (
+            this.assessment.type === AssessmentType.ESSAY_BASED &&
+            this.isRubricsDetailsShowed
+        ) {
             this.isRubricsDetailsShowed = false;
-        }else {
+        } else {
             this.router.navigate([`/assessment-details/${this.assessment.id}`]);
         }
+    }
 
+    get comment() {
+        return this.commentFormControl;
+    }
+
+    updateComment() {
+        if (this.commentFormControl.valid) {
+            let comment = this.answerScript.comment.find((c) => {
+                return c.marker == this.currentUser.id;
+            })
+            comment!.comment = this.commentFormControl.value;
+            this._modalService.dismissAll();
+        }
+    }
+
+    openModal(modal: any) {
+        this._modalService.open(modal);
     }
 }
