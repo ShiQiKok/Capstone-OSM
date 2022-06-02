@@ -192,7 +192,7 @@ def bulk_create(request):
                     "answer": row[k]
                 })
 
-            temp = [{"marksAwarded": None} for i in range(criteria_num)]
+            temp = [{"marksAwarded": None} for i in range(len(question_keys))]
             marks = []
             status = []
             comments = []

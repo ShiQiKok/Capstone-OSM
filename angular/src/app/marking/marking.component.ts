@@ -23,6 +23,7 @@ import {
     AnswerScript,
     AnswerScriptStatus,
     AnswerScriptStatusObj,
+    Comment,
     HighlightText,
 } from 'src/models/answerScript';
 import { Assessment, AssessmentType } from 'src/models/assessment';
@@ -84,6 +85,7 @@ export class MarkingComponent
     selectedDetailedCriterion!: any;
     marks!: Marks;
     initialMarksDistribution!: MarkDistribution[];
+    initialComment!: Comment[];
     totalMarks: number = 0;
     commentFormControl = new FormControl('', [Validators.maxLength(300)]);
 
@@ -104,8 +106,10 @@ export class MarkingComponent
     canDeactivate(): Observable<boolean> | boolean {
         if (!this.isSubmitted) {
             return (
-                JSON.stringify(this.marks.distribution) ===
-                JSON.stringify(this.initialMarksDistribution)
+                (JSON.stringify(this.marks.distribution) ===
+                JSON.stringify(this.initialMarksDistribution)) &&
+                (JSON.stringify(this.answerScript.comment)
+                    === JSON.stringify(this.initialComment))
             );
         }
         return true;
@@ -186,8 +190,7 @@ export class MarkingComponent
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
-
-
+            this.initialComment = Object.assign({}, this.answerScript.comment);
 
             let j = this.answerScript.status!.findIndex(
                 (s: AnswerScriptStatusObj) => {
