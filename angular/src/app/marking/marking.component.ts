@@ -242,7 +242,7 @@ export class MarkingComponent
     }
 
     // TODO: refine
-    onMarkAwardedChanged(event: any) {
+    onMarkAwardedChanged(event: any, index: number) {
         let inputElement = event.target;
         let min: number = +inputElement.min;
         let max: number = +inputElement.max;
@@ -250,8 +250,10 @@ export class MarkingComponent
 
         if (value < min) {
             inputElement.value = min;
+            this.marks.distribution[index].marksAwarded = min;
         } else if (value > max) {
             inputElement.value = max;
+            this.marks.distribution[index].marksAwarded = max;
         }
 
         this.marks.totalMark = 0;

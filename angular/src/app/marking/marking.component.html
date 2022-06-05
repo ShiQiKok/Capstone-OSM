@@ -180,7 +180,7 @@
                                                 selectedCriterionIndex
                                             ].marksAwarded
                                         "
-                                        (change)="onMarkAwardedChanged($event)"
+                                        (change)="onMarkAwardedChanged($event, selectedCriterionIndex)"
                                     />
                                 </div>
                             </mat-list-option>
@@ -208,7 +208,7 @@
                                 min="0"
                                 max="{{ question.value.marks }}"
                                 [(ngModel)]="marks.distribution[i].marksAwarded"
-                                (change)="onMarkAwardedChanged($event)"
+                                (change)="onMarkAwardedChanged($event, i)"
                             />
                         </mat-list-item>
                     </mat-list>
