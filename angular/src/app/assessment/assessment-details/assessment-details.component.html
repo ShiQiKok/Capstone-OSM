@@ -294,6 +294,9 @@
                 </ol>
             </div>
         </div>
+        <div *ngIf="uploadErrorMsg.length > 0" class="alert alert-danger my-2" role="alert">
+            {{ uploadErrorMsg }}
+        </div>
         <div
             style="height: 250px; border: 2px dashed #4277ff"
             class="d-flex flex-column align-items-center justify-content-center my-4"

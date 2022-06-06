@@ -51,6 +51,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     markerIndex!: number;
     collaborators!: UserCollabInfo[];
     totalMarks: number = 0;
+    uploadErrorMsg: string = '';
 
     // icons
     faUpload = faUpload;
@@ -300,7 +301,9 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                     .catch((err) => {
                         console.log(err);
                     });
-            });
+            }).catch((err) => {
+                this.uploadErrorMsg = err.error.error
+            })
     }
 
     private updateMatchedMarkerIndex() {

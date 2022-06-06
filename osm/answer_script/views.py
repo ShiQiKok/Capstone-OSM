@@ -225,50 +225,67 @@ def bulk_create(request):
     if content_type == 'application/pdf':
         assessment = Assessment.objects.get(id=assessment_id)
         criteria_num = len(assessment.rubrics['criterion'])
-        data = process_data(file_name, assessment_id, file, criteria_num)
-
-        create_request = request._request
-        create_request.POST = data
-        return create_answer(create_request)
+        try:
+            data = process_data(file_name, assessment_id, file, criteria_num)
+            create_request = request._request
+            create_request.POST = data
+            return create_answer(create_request)
+        except:
+            return Response({'error': "Please make sure that the uploaded PDF follows the naming convention!"}, status=status.HTTP_400_BAD_REQUEST)
 
     elif content_type == 'text/csv':
-        lines = process_csv_file(file)
-        data = process_csv_content(lines, assessment_id)
+        try:
+            lines = process_csv_file(file)
+            data = process_csv_content(lines, assessment_id)
 
-        for d in data:
-            create_request = request._request
-            create_request.POST = d
-            response = create_answer(create_request)
+            for d in data:
+                create_request = request._request
+                create_request.POST = d
+                response = create_answer(create_request)
+
+                if (response.status_code == 400):
+                    raise Exception()
+        except:
+            return Response({'error': "Please make sure that the uploaded CSV follows the required spreadsheet format!"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response("CSV file uploaded")
 
     # when it's bulk upload file (zip)
     elif content_type == 'application/zip':
-        zip_file = zipfile.ZipFile(file)
+        try:
+            zip_file = zipfile.ZipFile(file)
+            zip_file.extractall()
 
-        zip_file.extractall()
+            # get all files except the self directory
+            for path in zip_file.namelist():
+                folder_name, filename = path.split('/')
+                zip_ext_file = zip_file.open(path)
+                in_memory_file = InMemoryUploadedFile(
+                    zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(path)), None)
+                assessment = Assessment.objects.get(id=assessment_id)
+                criteria_num = len(assessment.rubrics['criterion'])
+                data = process_data(folder_name, assessment_id,
+                                    in_memory_file, criteria_num)
 
-        # get all files except the self directory
-        for path in zip_file.namelist():
-            folder_name, filename = path.split('/')
-            zip_ext_file = zip_file.open(path)
-            in_memory_file = InMemoryUploadedFile(
-                zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(path)), None)
-            assessment = Assessment.objects.get(id=assessment_id)
-            criteria_num = len(assessment.rubrics['criterion'])
-            data = process_data(folder_name, assessment_id,
-                                in_memory_file, criteria_num)
+                create_request = request._request
+                create_request.POST = data
+                response = create_answer(create_request)
 
-            create_request = request._request
-            create_request.POST = data
-            create_answer(create_request)
+                if (response.status_code == 400):
+                    raise Exception()
 
-            # remove the locally extracted files
-            file_path = settings.BASE_DIR / folder_name
+                # remove the locally extracted files
+                file_path = settings.BASE_DIR / folder_name
+                shutil.rmtree(file_path)
+
+            # close the zip_file
+            zip_file.close()
+        except:
+            path = zip_file.namelist()[0]
+            file_path = settings.BASE_DIR / path
             shutil.rmtree(file_path)
+            return Response({'error': "Please make sure that the uploaded ZIP file strictly follows the required structure!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # close the zip_file
-        zip_file.close()
         return Response("Bulk upload successful!")
 
     return Response({"error": "File extension does not match."}, status=status.HTTP_400_BAD_REQUEST)
