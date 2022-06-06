@@ -6,9 +6,9 @@
         <fa-icon [icon]="faPlus" class="mr-1"></fa-icon>
         Create Assessment
     </button>
-    <div *ngIf="!assessments" class="card my-4 shadow">
+    <div *ngIf="!assessments" class="card my-5 shadow">
         <div class="card-body">
-            <h4 class="card-title text-center">Seems like you have no assessments. Create one now!</h4>
+            <h4 class="text-center">No assessments found! Create one now!</h4>
         </div>
     </div>
     <div *ngFor="let obj of assessments | keyvalue" class="my-4">

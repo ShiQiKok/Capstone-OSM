@@ -44,6 +44,7 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         setTimeout(() => {
             this.isLoading = false;
         }, 1000);
+        console.log(this.assessments);
     }
 
     /** To get all APIs for each service */
@@ -63,30 +64,32 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
 
     /** To create a object for front-end presentation, which maps the assessments with their subject ids */
     private mapAssessment(): void {
-        this.assessments = {}
-        this.assessmentList.forEach(async (assessment: any) => {
-            this._answerScriptService.getAll(assessment.id!).then((obj) => {
-                let answers = obj as AnswerScript[];
+        if (this.assessmentList.length > 0){
+            this.assessments = {}
+            this.assessmentList.forEach(async (assessment: any) => {
+                this._answerScriptService.getAll(assessment.id!).then((obj) => {
+                    let answers = obj as AnswerScript[];
 
-                let finish = answers.filter((a: AnswerScript) => {
-                    let j = a.status!.findIndex(
-                        (s: AnswerScriptStatusObj) => {
-                            return s.marker === this.currentUser.id;
-                        }
-                    );
-                    return a.status![j].status == 'Finished';
+                    let finish = answers.filter((a: AnswerScript) => {
+                        let j = a.status!.findIndex(
+                            (s: AnswerScriptStatusObj) => {
+                                return s.marker === this.currentUser.id;
+                            }
+                        );
+                        return a.status![j].status == 'Finished';
+                    });
+                    let total = answers.length;
+                    assessment.progress = Math.floor((finish.length / total) * 100);
                 });
-                let total = answers.length;
-                assessment.progress = Math.floor((finish.length / total) * 100);
+                if (this.assessments[assessment.subject] != undefined) {
+                    this.assessments[assessment.subject].push(assessment);
+                } else {
+                    this.assessments[assessment.subject] = [assessment];
+                    let s = await this._subjectService.get(assessment.subject);
+                    this.subjects[assessment.subject] = s.name;
+                }
             });
-            if (this.assessments[assessment.subject] != undefined) {
-                this.assessments[assessment.subject].push(assessment);
-            } else {
-                this.assessments[assessment.subject] = [assessment];
-                let s = await this._subjectService.get(assessment.subject);
-                this.subjects[assessment.subject] = s.name;
-            }
-        });
+        }
     }
 
     /**  Returns subject name by subject id

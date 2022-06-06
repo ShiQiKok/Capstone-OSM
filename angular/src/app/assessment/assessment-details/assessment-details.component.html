@@ -2,6 +2,13 @@
     <div style="width: 80%" class="px-4">
         <div>
             <div>
+                <span routerLink="/assessment-list/" style="cursor: pointer">
+                    <fa-icon
+                        [icon]="faArrowAltCircleLeft"
+                        style="font-size: 1.75em"
+                        class="text-primary"
+                    ></fa-icon>
+                </span>
                 <h1 class="d-inline">
                     {{ assessment.name }}
                 </h1>
@@ -140,35 +147,8 @@
         </div>
     </div>
     <div id="sideNav" class="bg-white p-3" style="width: 20%">
-        <div
-            id="sideNavBar"
-            class="position-absolute top-0 start-0 end-0 bg-primary shadow rounded py-2 px-3"
-            style="z-index: 10"
-        >
-            <span routerLink="/assessment-list/" style="cursor: pointer">
-                <fa-icon
-                    [icon]="faArrowAltCircleLeft"
-                    style="font-size: 1.75em"
-                    class="text-white"
-                ></fa-icon>
-            </span>
-            <span
-                style="cursor: pointer"
-                (click)="downloadGradebook()"
-                class="float-right"
-                ngbTooltip="download gradebook"
-                [openDelay]="800"
-            >
-                <fa-icon
-                    [icon]="faFileDownload"
-                    style="font-size: 1.7em"
-                    class="text-white"
-                ></fa-icon>
-            </span>
-        </div>
-
         <div id="assessmentInfo" style="overflow: hidden auto; height: 75vh">
-            <div id="assessmentBriefInfo" style="margin-top: 3.5rem">
+            <div id="assessmentBriefInfo">
                 <h4>Your Progress</h4>
                 <p>
                     <ngb-progressbar
@@ -257,12 +237,15 @@
             </div>
         </div>
 
-        <div class="position-absolute" style="bottom: 0; left: 0; right: 0">
+        <div class="position-absolute bg-white" style="bottom: 0; left: 0; right: 0">
+            <div class="text-center mb-1">
+                <a class="btn btn-link" (click)="downloadGradebook()"> Download Gradebook </a>
+            </div>
             <button
                 *ngIf="selection.selected.length > 0"
                 routerLink="/marking/{{ selection.selected[0].id }}"
                 class="btn btn-primary d-block w-100"
-                style="height: 3rem"
+                style="height: 3rem; border-radius: 0;"
             >
                 Start Marking
             </button>
@@ -305,7 +288,8 @@
                 <strong>Note:</strong>
                 <ol>
                     <li>
-                        To upload CSV file, make sure the spreadsheet structure follows the Moodle-exported strcuture.
+                        To upload CSV file, make sure the spreadsheet structure
+                        follows the Moodle-exported strcuture.
                     </li>
                 </ol>
             </div>
