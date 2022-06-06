@@ -59,25 +59,33 @@
                 class="mat-table w-100"
             >
                 <ng-container matColumnDef="studentName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Student Name</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Student Name
+                    </th>
                     <td mat-cell *matCellDef="let answer">
                         {{ answer.student_name }}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="studentId">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Student ID</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Student ID
+                    </th>
                     <td mat-cell *matCellDef="let answer">
                         {{ answer.student_id }}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Update</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Last Update
+                    </th>
                     <td mat-cell *matCellDef="let answer">
                         {{ answer.date_updated | date: "dd/MM/yyyy, hh:mm a" }}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Status
+                    </th>
                     <td mat-cell *matCellDef="let answer">
                         <span
                             class="rounded-pill py-1 px-2 text-white"
@@ -98,7 +106,9 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="marks">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Marks</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Marks
+                    </th>
                     <td mat-cell *matCellDef="let answer">
                         {{
                             answer.marks[markerIndex].totalMark
@@ -122,8 +132,10 @@
 
                 <!-- Row shown when there is no matching data. -->
                 <tr class="mat-row text-center" *matNoDataRow>
-                    <td class="mat-cell" colspan="5">No answer script found! :(</td>
-                  </tr>
+                    <td class="mat-cell" colspan="5">
+                        No answer script found! :(
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
@@ -239,7 +251,7 @@
 
                     <h4>Comment</h4>
                     <p>
-                        {{selection.selected[0].comment[markerIndex].comment}}
+                        {{ selection.selected[0].comment[markerIndex].comment }}
                     </p>
                 </div>
             </div>
@@ -270,7 +282,34 @@
         ></button>
     </div>
     <div class="modal-body">
-        <small>File types accepted: CSV, ZIP, DOC, DOCX, and PDF.</small>
+        <p>
+            File types accepted:
+            {{ assessment.type === "essay_based" ? "PDF and ZIP" : "CSV" }}.
+        </p>
+        <div class="alert alert-info my-2" role="alert">
+            <div *ngIf="assessment.type === 'essay_based'">
+                <strong>Note:</strong>
+                <ol>
+                    <li>
+                        To upload PDF file, make sure the naming of the file
+                        follows "[student name]_[student_id/email]_[filename]".
+                        E.g.: John Doe_10102020_Assignment 1
+                    </li>
+                    <li>
+                        To upload ZIP file, make sure the file structure
+                        strictly follows the Moodle-exported structure.
+                    </li>
+                </ol>
+            </div>
+            <div *ngIf="assessment.type != 'essay_based'">
+                <strong>Note:</strong>
+                <ol>
+                    <li>
+                        To upload CSV file, make sure the spreadsheet structure follows the Moodle-exported strcuture.
+                    </li>
+                </ol>
+            </div>
+        </div>
         <div
             style="height: 250px; border: 2px dashed #4277ff"
             class="d-flex flex-column align-items-center justify-content-center my-4"
@@ -284,7 +323,9 @@
                 type="file"
                 id="fileInput"
                 class="d-none"
-                accept=".pdf, .csv, .doc, .docx, .zip"
+                accept="{{
+                    assessment.type === 'essay_based' ? '.pdf, .zip' : '.csv'
+                }}"
                 (change)="onFileChange($event.target.files)"
             />
             <button

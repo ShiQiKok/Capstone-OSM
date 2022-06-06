@@ -198,7 +198,8 @@ def bulk_create(request):
             comments = []
 
             for marker in markers:
-                marks.append({"markerId": marker.id, "totalMark": 0, "distribution": temp})
+                marks.append(
+                    {"markerId": marker.id, "totalMark": 0, "distribution": temp})
                 status.append({"marker": marker.id, "status": "Not Started"})
                 comments.append({"marker": marker.id, "comment": None})
 
@@ -238,7 +239,6 @@ def bulk_create(request):
             create_request = request._request
             create_request.POST = d
             response = create_answer(create_request)
-            print(response.data)
 
         return Response("CSV file uploaded")
 
@@ -253,7 +253,7 @@ def bulk_create(request):
             folder_name, filename = path.split('/')
             zip_ext_file = zip_file.open(path)
             in_memory_file = InMemoryUploadedFile(
-                zip_ext_file, None, path, 'application/pdf', len(zip_file.read(path)), None)
+                zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(path)), None)
             assessment = Assessment.objects.get(id=assessment_id)
             criteria_num = len(assessment.rubrics['criterion'])
             data = process_data(folder_name, assessment_id,
@@ -261,7 +261,7 @@ def bulk_create(request):
 
             create_request = request._request
             create_request.POST = data
-            print(create_answer(create_request).data)
+            create_answer(create_request)
 
             # remove the locally extracted files
             file_path = settings.BASE_DIR / folder_name
@@ -286,13 +286,14 @@ def process_data(folder_name, assessment_id, file, criteria_num):
     comments = []
 
     for marker in markers:
-        marks.append({"markerId": marker.id, "totalMark": 0, "distribution": temp})
+        marks.append(
+            {"markerId": marker.id, "totalMark": 0, "distribution": temp})
         status.append({"marker": marker.id, "status": "Not Started"})
         comments.append({"marker": marker.id, "comment": None})
 
     return {
-        "student_name": student_name,
-        "student_id": student_id,
+        "student_name": student_name.strip(),
+        "student_id": student_id.strip(),
         "marks": marks,
         "answers": None,
         "status": status,
