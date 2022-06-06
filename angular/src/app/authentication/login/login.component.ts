@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
             this.authenticationService.login(this.username, this.password, checkbox.checked).then(
                 () => {
                     let returnUrl = this.route.snapshot.queryParams.returnUrl;
-                    this.router.navigate([returnUrl || '/user-details']);
+                    this.router.navigate([returnUrl || '/assessment-list']);
                 },
                 (err) => {
                     this.isFormValid = false;
