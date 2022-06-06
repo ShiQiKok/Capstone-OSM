@@ -61,7 +61,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     // controls
     isLoading: boolean = true;
-    isSubmitDisabled: boolean = true;
 
     // table headers
     displayedColumns: string[] = [
@@ -284,11 +283,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         else this.modalService.open(content, { size: 'lg' });
     }
 
-    onFileChange(file: FileList) {
-        this.uploadedFile = file.item(0);
-        this.isSubmitDisabled = false;
-    }
-
     bulkUpload() {
         this._answerScriptService
             .bulkUpload(this.assessment.id!, this.uploadedFile!)
@@ -299,6 +293,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                         this.answerScripts = new MatTableDataSource(
                             obj as AnswerScript[]
                         );
+                        this.uploadedFile = null;
                         this.updateMatchedMarkerIndex();
                         this.modalService.dismissAll();
                     })

@@ -310,7 +310,7 @@
                 accept="{{
                     assessment.type === 'essay_based' ? '.pdf, .zip' : '.csv'
                 }}"
-                (change)="onFileChange($event.target.files)"
+                (change)="uploadedFile = $event.target.files.item(0)"
             />
             <button
                 class="btn btn-outline-primary my-2"
@@ -318,12 +318,12 @@
             >
                 Choose file
             </button>
-            <p *ngIf="!isSubmitDisabled">{{ uploadedFile.name }}</p>
+            <p *ngIf="uploadedFile != null">{{ uploadedFile.name }}</p>
         </div>
     </div>
     <div class="modal-footer">
         <button
-            [disabled]="isSubmitDisabled"
+            [disabled]="uploadedFile == null"
             type="submit"
             class="btn btn-primary"
             (click)="bulkUpload()"
