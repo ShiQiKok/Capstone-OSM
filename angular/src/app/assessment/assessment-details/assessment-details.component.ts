@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Assessment, AssessmentType } from 'src/models/assessment';
+import { Assessment, AssessmentType, GradingMethod } from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -46,6 +46,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
     selection = new SelectionModel<AnswerScript>(false, []);
     assessmentTypes: AssessmentType[] = Object.values(AssessmentType);
+    gradingMethods: GradingMethod[] = Object.values(GradingMethod);
     finished: number = 0;
     newAssessmentName!: string;
     markerIndex!: number;
@@ -242,7 +243,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     }
 
     private calculateTotalMarks() {
-        if (this.assessment.type == AssessmentType.ESSAY_BASED) {
+        if (this.assessment.grading_method == GradingMethod.RUBRICS) {
             this.totalMarks = this.assessment.rubrics.totalMarks;
         } else {
             this.assessment.questions!.forEach((q: any) => {

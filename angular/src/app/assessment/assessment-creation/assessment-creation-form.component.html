@@ -42,6 +42,29 @@
                             [formControl]="assessmentType"
                         ></error-message>
                     </div>
+                    <div class="form-group">
+                        <label for="gradingMethod">Grading Method</label>
+                        <select
+                            class="form-select"
+                            name="gradingMethod"
+                            id="gradingMethod"
+                            formControlName="gradingMethod"
+                        >
+                            <option
+                                *ngFor="let method of gradingMethods"
+                                [value]="method"
+                                [selected]="
+                                    method == 'Rubrics' ? true : false
+                                "
+                            >
+                                {{ method | titlecase }}
+                            </option>
+                        </select>
+                        <error-message
+                            ngDefaultControl
+                            [formControl]="gradingMethod"
+                        ></error-message>
+                    </div>
                     <div class="form-group mb-4">
                         <label for="subject">Subject</label>
                         <select
@@ -106,7 +129,7 @@
                 <div class="my-4">
                     <mat-slide-toggle
                         #questionToggle
-                        [checked]="assessmentType.value == 'question_based'"
+                        [checked]="gradingMethod.value == 'Questions'"
                         [color]="primary"
                         >Enable Questions
                     </mat-slide-toggle>
@@ -134,7 +157,7 @@
                 <div class="my-4">
                     <mat-slide-toggle
                         #rubricsToggle
-                        [checked]="assessmentType.value == 'essay_based'"
+                        [checked]="gradingMethod.value == 'Rubrics'"
                         [color]="primary"
                         >Enable Rubrics
                     </mat-slide-toggle>

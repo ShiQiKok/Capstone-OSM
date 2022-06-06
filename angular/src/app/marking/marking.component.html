@@ -68,7 +68,7 @@
             style="overflow: auto; height: 87%; margin-top: 3.5rem"
         >
             <div id="marksPanel" style="margin-bottom: 4rem">
-                <div *ngIf="isEssayBased">
+                <div *ngIf="isRubricsUsed">
                     <div *ngIf="!isRubricsDetailsShowed">
                         <mat-selection-list
                             #generalCriteriaList
@@ -187,7 +187,7 @@
                         </mat-selection-list>
                     </div>
                 </div>
-                <div *ngIf="!isEssayBased">
+                <div *ngIf="!isRubricsUsed">
                     <mat-list role="list" id="questionMarksPanel">
                         <mat-list-item
                             *ngFor="

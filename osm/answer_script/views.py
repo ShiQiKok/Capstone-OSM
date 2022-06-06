@@ -224,7 +224,11 @@ def bulk_create(request):
     # when the uploaded file is PDF
     if content_type == 'application/pdf':
         assessment = Assessment.objects.get(id=assessment_id)
-        criteria_num = len(assessment.rubrics['criterion'])
+        if assessment.grading_method == 'Rubrics':
+            criteria_num = len(assessment.rubrics['criterion'])
+        else:
+            criteria_num = len(assessment.questions)
+
         try:
             data = process_data(file_name, assessment_id, file, criteria_num)
             create_request = request._request
@@ -263,7 +267,10 @@ def bulk_create(request):
                 in_memory_file = InMemoryUploadedFile(
                     zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(path)), None)
                 assessment = Assessment.objects.get(id=assessment_id)
-                criteria_num = len(assessment.rubrics['criterion'])
+                if assessment.grading_method == 'Rubrics':
+                    criteria_num = len(assessment.rubrics['criterion'])
+                else:
+                    criteria_num = len(assessment.questions)
                 data = process_data(folder_name, assessment_id,
                                     in_memory_file, criteria_num)
 

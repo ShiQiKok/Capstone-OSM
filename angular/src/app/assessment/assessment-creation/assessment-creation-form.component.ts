@@ -5,6 +5,7 @@ import { AppComponent } from 'src/app/app.component';
 import {
     Assessment,
     AssessmentType,
+    GradingMethod,
     MarkingSettings,
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
@@ -88,6 +89,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
     rubrics!: RubricsInput | undefined;
     assessmentTypes = Object.values(AssessmentType);
     markingSettings = Object.values(MarkingSettings);
+    gradingMethods = Object.values(GradingMethod);
     subjects: any = [];
     collabUsers: UserCollabInfo[] = [];
     selectedCollabUser: UserCollabInfo[] = [];
@@ -124,6 +126,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
         this.assessmentDetailFormGroup = this._formBuilder.group({
             assessmentName: ['Quiz 1', Validators.required],
             assessmentType: [AssessmentType.ESSAY_BASED, Validators.required],
+            gradingMethod: [GradingMethod.RUBRICS, Validators.required],
             subject: [null, Validators.required],
             defaultSetting: [
                 MarkingSettings.MARK_BY_SCRIPT,
@@ -196,6 +199,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
             subject: this.assessmentDetailFormGroup.get('subject')!.value,
             marking_setting:
                 this.assessmentDetailFormGroup.get('defaultSetting')!.value,
+            grading_method: this.assessmentDetailFormGroup.get('gradingMethod')!.value,
             questions: this.questions ? this.questions : null,
             rubrics: this.rubrics ? this.rubrics : null,
             markers: collaborators,
@@ -256,6 +260,10 @@ export class AssessmentCreationFormComponent extends AppComponent {
 
     get assessmentType() {
         return this.assessmentDetailFormGroup.get('assessmentType');
+    }
+
+    get gradingMethod() {
+        return this.assessmentDetailFormGroup.get('gradingMethod');
     }
 
     get subject() {

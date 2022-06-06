@@ -26,7 +26,7 @@ import {
     Comment,
     HighlightText,
 } from 'src/models/answerScript';
-import { Assessment, AssessmentType } from 'src/models/assessment';
+import { Assessment, AssessmentType, GradingMethod } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
 import { AuthenticationService } from 'src/services/authentication.service';
@@ -91,6 +91,7 @@ export class MarkingComponent
 
     // controls
     isEssayBased?: boolean = true;
+    isRubricsUsed? : boolean = true;
     isRubricsDetailsShowed: boolean = false;
     isFloatingBarShowed: boolean = false;
     isSubmitted: boolean = false;
@@ -141,6 +142,10 @@ export class MarkingComponent
         if (this.assessment.type === AssessmentType.ESSAY_BASED)
             this.isEssayBased = true;
         else this.isEssayBased = false;
+
+        if (this.assessment.grading_method === GradingMethod.RUBRICS)
+            this.isRubricsUsed = true;
+        else this.isRubricsUsed = false;
     }
 
     onGeneralCriteriaChanged() {
@@ -258,7 +263,7 @@ export class MarkingComponent
 
         this.marks.totalMark = 0;
         for (let i = 0; i < this.marks.distribution.length; i++) {
-            if (this.isEssayBased) {
+            if (this.isRubricsUsed) {
                 this.marks.totalMark +=
                     (this.marks.distribution[i].marksAwarded! *
                         this.assessment.rubrics.criterion[i].totalMarks) /
@@ -521,7 +526,7 @@ export class MarkingComponent
 
     onGoBackClicked() {
         if (
-            this.assessment.type === AssessmentType.ESSAY_BASED &&
+            this.assessment.grading_method === GradingMethod.RUBRICS &&
             this.isRubricsDetailsShowed
         ) {
             this.isRubricsDetailsShowed = false;
