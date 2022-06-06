@@ -5,19 +5,27 @@
                 <span routerLink="/assessment-list/" style="cursor: pointer">
                     <fa-icon
                         [icon]="faArrowAltCircleLeft"
-                        style="font-size: 1.75em"
+                        style="font-size: 1.75em; vertical-align: super"
                         class="text-primary"
                     ></fa-icon>
                 </span>
                 <h1 class="d-inline">
                     {{ assessment.name }}
                 </h1>
+
                 <fa-icon
                     (click)="loadCollaborators(); openModal(assessmentSetting)"
                     style="font-size: 1.75em; cursor: pointer"
-                    class="text-secondary"
+                    class="text-secondary mr-2"
                     [icon]="faCog"
                 ></fa-icon>
+                <span
+                    class="px-3 py-1 bg-success rounded-pill text-white"
+                    style="vertical-align: super"
+                    >{{
+                        assessment.type.replaceAll("_", " ") | titlecase
+                    }}</span
+                >
 
                 <button
                     (click)="openModal(content)"
@@ -237,15 +245,20 @@
             </div>
         </div>
 
-        <div class="position-absolute bg-white" style="bottom: 0; left: 0; right: 0">
+        <div
+            class="position-absolute bg-white"
+            style="bottom: 0; left: 0; right: 0"
+        >
             <div class="text-center mb-1">
-                <a class="btn btn-link" (click)="downloadGradebook()"> Download Gradebook </a>
+                <a class="btn btn-link" (click)="downloadGradebook()">
+                    Download Gradebook
+                </a>
             </div>
             <button
                 *ngIf="selection.selected.length > 0"
                 routerLink="/marking/{{ selection.selected[0].id }}"
                 class="btn btn-primary d-block w-100"
-                style="height: 3rem; border-radius: 0;"
+                style="height: 3rem; border-radius: 0"
             >
                 Start Marking
             </button>
@@ -294,7 +307,11 @@
                 </ol>
             </div>
         </div>
-        <div *ngIf="uploadErrorMsg.length > 0" class="alert alert-danger my-2" role="alert">
+        <div
+            *ngIf="uploadErrorMsg.length > 0"
+            class="alert alert-danger my-2"
+            role="alert"
+        >
             {{ uploadErrorMsg }}
         </div>
         <div
