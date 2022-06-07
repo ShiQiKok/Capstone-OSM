@@ -39,6 +39,7 @@ import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
 import { CreationRubricsQuestionsComponent } from './information/creation-rubrics-questions/creation-rubrics-questions.component';
 import { SubjectComponent } from './subject/subject.component';
 import { SubjectCreationModalComponent } from './subject/subject-creation-modal/subject-creation-modal.component';
+import { HomePageComponent } from './information/home-page/home-page.component';
 
 @NgModule({
     declarations: [
@@ -59,6 +60,7 @@ import { SubjectCreationModalComponent } from './subject/subject-creation-modal/
         CreationRubricsQuestionsComponent,
         SubjectComponent,
         SubjectCreationModalComponent,
+        HomePageComponent,
     ],
     imports: [
         BrowserModule,
