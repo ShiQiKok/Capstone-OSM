@@ -138,6 +138,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
     emitQuestionInputEvent() {
         if (this.questionToggle.checked) {
             // using reference component to trigger the event emit
+            this.questionsInput.setAllUneditable();
             this.questionsInput.questionsChange.emit(
                 this.questionsInput.questions
             );

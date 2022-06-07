@@ -42,28 +42,8 @@ export class QuestionInputComponent implements OnInit {
     template: QuestionInput[] = [
         {
             no: '1',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '2',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '3',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '4',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '5',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
+            value: { question: '', marks: 10 },
+            isEdit: true,
         },
     ];
 
@@ -123,6 +103,10 @@ export class QuestionInputComponent implements OnInit {
                 this.totalMarks = this.getTotalMark();
                 this._modalService.dismissAll()
             });
+    }
+
+    setAllUneditable(){
+        this.questions.forEach(q => q.isEdit = false);
     }
 
     private getTotalMark() {

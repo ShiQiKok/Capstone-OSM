@@ -374,7 +374,7 @@
                 type="text"
                 class="form-control"
                 id="assessmentName"
-                [(ngModel)]="newAssessmentName"
+                [(ngModel)]="editAssessment.name"
             />
         </div>
         <div class="form-group">
@@ -383,7 +383,7 @@
                 class="form-select"
                 name="assessmentTypes"
                 id="assessmentTypes"
-                [(ngModel)]="assessment.type"
+                [(ngModel)]="editAssessment.type"
             >
                 <option *ngFor="let type of assessmentTypes" [value]="type">
                     {{ type.replaceAll("_", " ") | titlecase }}
@@ -396,7 +396,7 @@
                 class="form-select"
                 name="gradingMethod"
                 id="gradingMethod"
-                [(ngModel)]="assessment.grading_method"
+                [(ngModel)]="editAssessment.grading_method"
             >
                 <option *ngFor="let method of gradingMethods" [value]="method">
                     {{ method | titlecase }}

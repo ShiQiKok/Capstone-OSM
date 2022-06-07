@@ -12,7 +12,7 @@
                 + Add Subject
             </button>
         </div>
-        <div class="my-4 card" *ngFor="let subject of subjects">
+        <div class="my-4 card shadow-sm" *ngFor="let subject of subjects">
             <div class="card-body d-flex">
                 <div class="flex-grow-1">
                     <h5 *ngIf="!subject.isEditing">{{ subject.name | titlecase}}</h5>

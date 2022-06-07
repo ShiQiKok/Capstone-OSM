@@ -41,6 +41,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     // objects
     assessment!: Assessment;
+    editAssessment!: Assessment;
     answerScripts!: MatTableDataSource<AnswerScript>;
     uploadedFile!: File | null;
     markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
@@ -48,7 +49,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     assessmentTypes: AssessmentType[] = Object.values(AssessmentType);
     gradingMethods: GradingMethod[] = Object.values(GradingMethod);
     finished: number = 0;
-    newAssessmentName!: string;
     markerIndex!: number;
     collaborators!: UserCollabInfo[];
     totalMarks: number = 0;
@@ -226,7 +226,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
-        this.newAssessmentName = this.assessment.name!;
+        this.editAssessment = Object.assign({}, this.assessment);
         this.loadCollaborators();
     }
 
@@ -351,7 +351,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     }
 
     onSave() {
-        this.assessment.name = this.newAssessmentName;
+        this.assessment = Object.assign({}, this.editAssessment);
         this.assessment.markers = this.collaborators.map((c: any) => {
             return c.id;
         });
