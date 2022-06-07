@@ -24,7 +24,8 @@
                     style="vertical-align: super"
                     >{{
                         assessment.type.replaceAll("_", " ") | titlecase
-                    }}</span
+                    }} | {{assessment.grading_method}}
+                    </span
                 >
 
                 <button
@@ -72,6 +73,8 @@
                 matSort
                 [dataSource]="answerScripts"
                 class="mat-table w-100"
+                matSortActive="status"
+                matSortDirection="desc"
             >
                 <ng-container matColumnDef="studentName">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
