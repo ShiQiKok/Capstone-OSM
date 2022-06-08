@@ -14,6 +14,7 @@ import {
 import {
     faAngleLeft,
     faCheck,
+    faInfo,
     faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -26,7 +27,11 @@ import {
     Comment,
     HighlightText,
 } from 'src/models/answerScript';
-import { Assessment, AssessmentType, GradingMethod } from 'src/models/assessment';
+import {
+    Assessment,
+    AssessmentType,
+    GradingMethod,
+} from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
 import { AuthenticationService } from 'src/services/authentication.service';
@@ -91,7 +96,7 @@ export class MarkingComponent
 
     // controls
     isEssayBased?: boolean = true;
-    isRubricsUsed? : boolean = true;
+    isRubricsUsed?: boolean = true;
     isRubricsDetailsShowed: boolean = false;
     isFloatingBarShowed: boolean = false;
     isSubmitted: boolean = false;
@@ -102,17 +107,18 @@ export class MarkingComponent
     faAngleLeft = faAngleLeft;
     faArrowAltCircleLeft = faArrowAltCircleLeft;
     faCommentAlt = faCommentAlt;
+    faInfo = faInfo;
 
     @HostListener('window:beforeunload')
     canDeactivate(): Observable<boolean> | boolean {
-        if (!this.isSubmitted) {
-            return (
-                (JSON.stringify(this.marks.distribution) ===
-                JSON.stringify(this.initialMarksDistribution)) &&
-                (JSON.stringify(this.answerScript.comment)
-                    === JSON.stringify(this.initialComment))
-            );
-        }
+        // if (!this.isSubmitted) {
+        //     return (
+        //         (JSON.stringify(this.marks.distribution) ===
+        //         JSON.stringify(this.initialMarksDistribution)) &&
+        //         (JSON.stringify(this.answerScript.comment)
+        //             === JSON.stringify(this.initialComment))
+        //     );
+        // }
         return true;
     }
 
@@ -187,8 +193,10 @@ export class MarkingComponent
     }
 
     onDetailedCriteriaChanged() {
-        this.selectedDetailedCriterion =
-            this.detailCriteriaList.selectedOptions.selected[0].value;
+        this.selectedDetailedCriterion = this.detailCriteriaList.selectedOptions.selected[0].value;
+        if (this.marks.distribution[this.selectedCriterionIndex].marksAwarded != null){
+            this.marks.distribution[this.selectedCriterionIndex].marksAwarded = undefined
+        }
     }
 
     getDetail() {
@@ -203,7 +211,9 @@ export class MarkingComponent
                 }
             );
 
-            this.commentFormControl.setValue(this.answerScript.comment[j].comment);
+            this.commentFormControl.setValue(
+                this.answerScript.comment[j].comment
+            );
 
             if (
                 this.answerScript.status![j].status ==
@@ -543,7 +553,7 @@ export class MarkingComponent
         if (this.commentFormControl.valid) {
             let comment = this.answerScript.comment.find((c) => {
                 return c.marker == this.currentUser.id;
-            })
+            });
             comment!.comment = this.commentFormControl.value;
             this._modalService.dismissAll();
         }

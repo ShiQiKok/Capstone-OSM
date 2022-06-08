@@ -18,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import {
     faArrowAltCircleLeft,
+    faEdit,
     faTimesCircle,
 } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from 'src/services/user.service';
@@ -60,6 +61,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     faArrowAltCircleLeft = faArrowAltCircleLeft;
     faFileDownload = faFileDownload;
     faTimesCircle = faTimesCircle;
+    faEdit = faEdit;
 
     // controls
     isLoading: boolean = true;
@@ -71,6 +73,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         'lastUpdate',
         'status',
         'marks',
+        'action'
     ];
 
     constructor(

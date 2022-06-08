@@ -45,12 +45,12 @@
     <div id="sideNav" class="bg-white px-3" style="width: 20%">
         <div
             id="sideNavBar"
-            class="position-absolute top-0 start-0 end-0 bg-primary shadow py-2 px-3 d-flex justify-content-between"
+            class="position-absolute top-0 start-0 end-0 bg-primary shadow-sm py-2 px-3 d-flex justify-content-between"
         >
             <span style="cursor: pointer" (click)="onGoBackClicked()">
                 <fa-icon
                     [icon]="faArrowAltCircleLeft"
-                    style="font-size: 1.75em"
+                    style="font-size: 1.5em"
                     class="text-white"
                 ></fa-icon>
             </span>
@@ -58,18 +58,22 @@
                 <fa-icon
                     [icon]="faCommentAlt"
                     (click)="openModal(commentModal)"
-                    style="font-size: 1.75em"
+                    style="font-size: 1.45em"
                     class="text-white"
                 ></fa-icon>
             </span>
         </div>
         <div
             *ngIf="assessment"
-            style="overflow: auto; height: 87%; margin-top: 4.5rem"
+            style="overflow: auto; height: 87%; margin-top: 4rem"
         >
             <div id="marksPanel" style="margin-bottom: 4rem">
                 <div *ngIf="isRubricsUsed">
                     <div *ngIf="!isRubricsDetailsShowed">
+                        <small class="text-secondary">
+                            <fa-icon [icon]="faInfo"></fa-icon>
+                            Click the options below to start grading
+                        </small>
                         <mat-selection-list
                             #generalCriteriaList
                             id="generalCriteriaList"
@@ -94,6 +98,7 @@
                                     [id]="'input-' + i"
                                     disabled
                                     class="form-control text-center my-2"
+                                    style="cursor: pointer"
                                     [ngModel]="
                                         marks.distribution[i].marksAwarded !=
                                         null
@@ -180,7 +185,12 @@
                                                 selectedCriterionIndex
                                             ].marksAwarded
                                         "
-                                        (change)="onMarkAwardedChanged($event, selectedCriterionIndex)"
+                                        (change)="
+                                            onMarkAwardedChanged(
+                                                $event,
+                                                selectedCriterionIndex
+                                            )
+                                        "
                                     />
                                 </div>
                             </mat-list-option>
@@ -233,7 +243,7 @@
     </div>
 </div>
 
-<ng-template let-modal #commentModal style="height: 10rem;">
+<ng-template let-modal #commentModal style="height: 10rem">
     <div class="modal-header">
         <h4 class="modal-title">Comment</h4>
         <button
@@ -249,21 +259,14 @@
             [formControl]="comment"
             placeholder="enter your comment to the answer script"
         ></textarea>
-        <error-message
-            ngDefaultControl
-            [formControl]="comment"
-        ></error-message>
+        <error-message ngDefaultControl [formControl]="comment"></error-message>
     </div>
     <div class="modal-footer">
         <button class="btn btn-secondary text-white" (click)="modal.close()">
             Cancel
         </button>
-        <button
-            class="btn btn-primary"
-            (click)="updateComment()"
-        >
+        <button class="btn btn-primary" (click)="updateComment()">
             Confirm
         </button>
     </div>
 </ng-template>
-

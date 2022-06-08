@@ -135,6 +135,15 @@
                         }}
                     </td>
                 </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let answer">
+                        <button class="btn btn-sm btn-outline-primary" routerLink="/marking/{{answer.id}}">
+                            <fa-icon [icon]="faEdit"></fa-icon>
+                            Mark
+                            </button>
+                    </td>
+                </ng-container>
 
                 <tr
                     mat-header-row
@@ -248,7 +257,7 @@
             </div>
         </div>
 
-        <div
+        <!-- <div
             class="position-absolute bg-white"
             style="bottom: 0; left: 0; right: 0"
         >
@@ -265,7 +274,7 @@
             >
                 Start Marking
             </button>
-        </div>
+        </div> -->
     </div>
 </div>
 
@@ -472,6 +481,11 @@
         </div>
     </div>
     <div class="modal-footer">
+        <div class="text-center mb-1">
+            <a class="btn btn-link" (click)="downloadGradebook()">
+                Download Gradebook
+            </a>
+        </div>
         <button
             class="btn btn-danger"
             (click)="openModal(deleteConfirmation, {})"
