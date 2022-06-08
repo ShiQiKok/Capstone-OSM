@@ -86,21 +86,26 @@ def update_assessment(request, id):
                                for a in to_add]
                 marks_temp = [{"markerId": a, "totalMark": 0,
                                "distribution": temp} for a in to_add]
+                comment_temp = [{"marker": a, "comment": None} for a in to_add]
 
                 for answer in answers:
                     if (len(to_remove) > 0):
                         m = []
                         s = []
+                        c = []
                         for i in range(len(answer.status)):
                             if answer.status[i]['marker'] not in to_remove:
                                 m.append(answer.marks[i])
                                 s.append(answer.status[i])
+                                c.append(answer.comment[i])
                         answer.marks = m
                         answer.status = s
+                        answer.comment = c
 
                     if (len(to_add) > 0):
                         answer.status.extend(status_temp)
                         answer.marks.extend(marks_temp)
+                        answer.comment.extend(comment_temp)
 
                     answer.save()
 
