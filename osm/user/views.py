@@ -16,6 +16,8 @@ def apiOverview(request):
     api_urls = {
         'getAll': 'users/',
         'get': 'user-detail/',
+        'getBy': 'user-get-by/',
+        'getList': 'user-get-list/',
         'create': 'user-create/',
         'update': 'user-update/',
         'delete': 'user-delete/',
@@ -35,6 +37,7 @@ def users(request):
 
     return Response(serializer.data)
 
+
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -43,6 +46,45 @@ def usersCollab(request):
     serializer = UserCollabSerializer(users, many=True)
 
     return Response(serializer.data)
+
+
+@api_view(['GET', 'POST'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def usersGetBy(request):
+    if ('data' in request.data.keys()):
+        data = request.data['data']
+
+        try:
+            user = User.objects.get(username=data)
+            serializer = UserCollabSerializer(user, many=False)
+            return Response(serializer.data)
+        except:
+            try:
+                user = User.objects.get(email=data)
+                serializer = UserCollabSerializer(user, many=False)
+                return Response(serializer.data)
+            except:
+                return Response('Please post valid data', status=status.HTTP_400_BAD_REQUEST)
+
+    return Response('No data found', status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def usersGetList(request):
+    if ('list' in request.data.keys()):
+        data = request.data['list']
+
+        if (type(data) != list):
+            return Response('Please post a list', status=status.HTTP_400_BAD_REQUEST)
+
+        users = [User.objects.get(id=d) for d in data]
+        serializer = UserCollabSerializer(users, many=True)
+        return Response(serializer.data)
+
+    return Response('No data found', status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -66,23 +108,21 @@ def createUser(request):
         user_serializer = UserSerializer(user, many=False)
         return Response(user_serializer.data)
     else:
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def updateUser(request, id):
     user = User.objects.get(id=id)
-    print(request.data)
     serializer = UserSerializer(instance=user, data=request.data)
 
     if serializer.is_valid():
         serializer.save()
-        print(serializer.data)
         return Response(serializer.data)
 
-    return Response(serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE'])
@@ -100,14 +140,22 @@ def deleteUser(request, id):
 @permission_classes([IsAuthenticated])
 def updatePassword(request, id):
     user = User.objects.get(id=id)
-    serializer = UserSerializer(instance=user)
 
     if (check_password(request.data['currentPassword'], user.password)):
-        updated_user = serializer.update_password(
-            id, request.data['newPassword'])
-        serializer = UserSerializer(instance=updated_user)
+        update_request = request._request
+        user.set_password(request.data['newPassword'])
 
-        return Response(serializer.data)
+        update_request.POST = {
+            "username": user.username,
+            "email": user.email,
+            "password": user.password,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+
+        return updateUser(update_request, id)
 
     else:
-        return Response({'details': 'The password provided is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'password': ['The password provided is incorrect.']
+        }, status=status.HTTP_400_BAD_REQUEST)

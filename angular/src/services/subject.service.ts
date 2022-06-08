@@ -3,12 +3,11 @@ import { Injectable } from '@angular/core';
 import { BaseService } from 'src/base.service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class SubjectService extends BaseService {
-
-  constructor(http: HttpClient) {
-    super(http);
-    this.ROOT = this.ROOT +  'subjects/';
-  }
+    constructor(http: HttpClient) {
+        super(http);
+        this.ROOT = this.ROOT + 'subjects/';
+    }
 }

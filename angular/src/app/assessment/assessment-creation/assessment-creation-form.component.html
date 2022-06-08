@@ -1,42 +1,3 @@
-<ng-template #subjectCreationModal let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Create a new subject</h4>
-        <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            (click)="modal.dismiss('Cross click')"
-        ></button>
-    </div>
-    <div class="modal-body">
-        <form [formGroup]="subjectFormGroup" id="subjectFormGroup">
-            <div class="form-group">
-                <label for="newSubject">Subject Name</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    formControlName="newSubject"
-                    id="newSubject"
-                    placeholder="Enter subject name"
-                />
-                <error-message
-                    ngDefaultControl
-                    [formControl]="newSubject"
-                ></error-message>
-            </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button
-            type="button"
-            class="btn btn-primary"
-            (click)="onSubmitNewSubject(modal)"
-        >
-            save
-        </button>
-    </div>
-</ng-template>
-<!-- (click)="setUneditable($event)" -->
 <div>
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
@@ -73,7 +34,7 @@
                                     type == 'essay_based' ? true : false
                                 "
                             >
-                                {{ type }}
+                                {{ type.replaceAll("_", " ") | titlecase }}
                             </option>
                         </select>
                         <error-message
@@ -82,6 +43,29 @@
                         ></error-message>
                     </div>
                     <div class="form-group">
+                        <label for="gradingMethod">Grading Method</label>
+                        <select
+                            class="form-select"
+                            name="gradingMethod"
+                            id="gradingMethod"
+                            formControlName="gradingMethod"
+                        >
+                            <option
+                                *ngFor="let method of gradingMethods"
+                                [value]="method"
+                                [selected]="
+                                    method == 'Rubrics' ? true : false
+                                "
+                            >
+                                {{ method | titlecase }}
+                            </option>
+                        </select>
+                        <error-message
+                            ngDefaultControl
+                            [formControl]="gradingMethod"
+                        ></error-message>
+                    </div>
+                    <div class="form-group mb-4">
                         <label for="subject">Subject</label>
                         <select
                             class="form-select"
@@ -89,6 +73,7 @@
                             id="subject"
                             formControlName="subject"
                         >
+                            <option disabled>Please select a subject</option>
                             <option
                                 *ngFor="let subject of subjects"
                                 [value]="subject.id"
@@ -97,8 +82,8 @@
                             </option>
                         </select>
                         <button
-                            (click)="openModal(subjectCreationModal)"
-                            class="btn btn-link"
+                            (click)="subjectCreationModal.openModal()"
+                            class="btn btn-link float-right"
                         >
                             + create a new subject
                         </button>
@@ -119,7 +104,7 @@
                                 *ngFor="let setting of markingSettings"
                                 [value]="setting"
                             >
-                                {{ setting }}
+                                {{ setting.replaceAll("_", " ") | titlecase }}
                             </option>
                         </select>
                         <error-message
@@ -141,7 +126,16 @@
 
             <!-- Step 2: Question -->
             <mat-step [stepControl]="questionFormGroup" label="Questions">
+                <div class="my-4">
+                    <mat-slide-toggle
+                        #questionToggle
+                        [checked]="gradingMethod.value == 'Questions'"
+                        [color]="primary"
+                        >Enable Questions
+                    </mat-slide-toggle>
+                </div>
                 <app-question-input
+                    *ngIf="questionToggle.checked"
                     #questionsInput
                     [(questions)]="questions"
                     [isEditingMode]="true"
@@ -160,8 +154,24 @@
 
             <!-- Step 3: Rubrics -->
             <mat-step label="Rubrics">
+                <div class="my-4">
+                    <mat-slide-toggle
+                        #rubricsToggle
+                        [checked]="gradingMethod.value == 'Rubrics'"
+                        [color]="primary"
+                        >Enable Rubrics
+                    </mat-slide-toggle>
+                    <small
+                        *ngIf="
+                            !rubricsToggle.checked && !questionToggle.checked
+                        "
+                        class="text-danger d-block"
+                        >You must enable either question or rubrics!</small
+                    >
+                </div>
                 <app-rubrics-input
                     #rubricsInput
+                    *ngIf="rubricsToggle.checked"
                     [(rubrics)]="rubrics"
                     [isEditingMode]="true"
                 ></app-rubrics-input>
@@ -169,6 +179,9 @@
                     Back
                 </button>
                 <button
+                    [disabled]="
+                        !rubricsToggle.checked && !questionToggle.checked
+                    "
                     matStepperNext
                     (click)="emitRubricsInputEvent()"
                     class="btn btn-primary"
@@ -180,9 +193,12 @@
             <!-- Step 4: Marking Collaboration -->
             <mat-step label="Collaboration">
                 <div class="form-group" class="my-4">
-                    <label for="collaborators">Collaborators <small class="text-secondary">(optional)</small> </label>
+                    <label for="collaborators"
+                        >Collaborators
+                        <small class="text-secondary">(optional)</small>
+                    </label>
                     <input
-                        (keydown.enter)="onEnterPressed($event)"
+                        (keydown.enter)="onEnterPressed()"
                         id="collaborators"
                         type="text"
                         class="form-control"
@@ -213,6 +229,9 @@
 
             <!-- Step 4: Review -->
             <mat-step label="Review">
+                <div *ngIf="submitErrorMessage.length > 0" class="alert alert-danger" role="alert">
+                    {{ submitErrorMessage }}
+                </div>
                 <table class="table">
                     <tbody>
                         <tr>
@@ -228,8 +247,10 @@
                             <th>Assessment Type</th>
                             <td>
                                 {{
-                                    assessmentDetailFormGroup.value
-                                        .assessmentType
+                                    assessmentDetailFormGroup.value.assessmentType.replaceAll(
+                                        "_",
+                                        " "
+                                    ) | titlecase
                                 }}
                             </td>
                         </tr>
@@ -243,8 +264,10 @@
                             <th>Default Marking Setting</th>
                             <td>
                                 {{
-                                    assessmentDetailFormGroup.value
-                                        .defaultSetting
+                                    assessmentDetailFormGroup.value.defaultSetting.replaceAll(
+                                        "_",
+                                        " "
+                                    ) | titlecase
                                 }}
                             </td>
                         </tr>
@@ -252,6 +275,7 @@
                             <td colspan="2">
                                 <strong> Questions </strong>
                                 <app-question-input
+                                    *ngIf="questionToggle.checked"
                                     [(questions)]="questions"
                                     [isEditingMode]="false"
                                 ></app-question-input>
@@ -261,9 +285,37 @@
                             <td colspan="2">
                                 <strong>Rubrics</strong>
                                 <app-rubrics-input
+                                    *ngIf="rubricsToggle.checked"
                                     [isEditingMode]="false"
                                     [(rubrics)]="rubrics"
                                 ></app-rubrics-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                [colspan]="
+                                    selectedCollabUser.length > 0 ? 2 : 1
+                                "
+                            >
+                                <strong>Collaborators</strong>
+                                <div
+                                    *ngIf="selectedCollabUser.length > 0"
+                                    class="my-4"
+                                >
+                                    <mat-chip-list [selectable]="false">
+                                        <mat-chip
+                                            *ngFor="
+                                                let user of selectedCollabUser
+                                            "
+                                        >
+                                            {{ user.username }}:
+                                            {{ user.email }}
+                                        </mat-chip>
+                                    </mat-chip-list>
+                                </div>
+                            </td>
+                            <td *ngIf="selectedCollabUser.length == 0">
+                                <p>None</p>
                             </td>
                         </tr>
                     </tbody>
@@ -283,3 +335,9 @@
         </mat-stepper>
     </div>
 </div>
+
+<app-subject-creation-modal
+    #subjectCreationModal
+    [subjectService]="getSubjectService()"
+    [userId]="getUserId()"
+></app-subject-creation-modal>

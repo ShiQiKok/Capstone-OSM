@@ -5,18 +5,22 @@ import zipfile
 from itertools import islice
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from rest_framework.authentication import (BasicAuthentication, SessionAuthentication)
-from rest_framework.decorators import (api_view, authentication_classes, permission_classes)
+from rest_framework import status
+from rest_framework.authentication import (
+    BasicAuthentication, SessionAuthentication)
+from rest_framework.decorators import (
+    api_view, authentication_classes, permission_classes)
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import AnswerScript
+from .models import AnswerScript, ScriptStatus
 from assessment.models import Assessment
 from .serializers import AnswerScriptSerializer
 
 # ViewSets define the view behavior.
 # To easily create a answer script in back end
+
 
 class AnswerScriptViewSet(ViewSet):
     serializer_class = AnswerScriptSerializer
@@ -81,7 +85,7 @@ def create_answer(request):
         serializer.save()
         return Response(serializer.data)
     else:
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -129,15 +133,17 @@ def bulk_create(request):
         unformatted_content = file.read().decode("utf-8")
         col_num = len(unformatted_content.split("\n")[0].split(","))
         cell = unformatted_content.split(',')
-        num = col_num - ( len(cell) % col_num ) + 1 ## include header
+        num = col_num - (len(cell) % col_num) + 1  # include header
         content = []
         index = 0
 
         while index < num:
             if index == 0:
-                content.extend(cell[index * col_num : (index + 1) * (col_num - 1)])
+                content.extend(
+                    cell[index * col_num: (index + 1) * (col_num - 1)])
             else:
-                content.extend(cell[index * (col_num - 1) + 1: (index + 1) * (col_num - 1)])
+                content.extend(
+                    cell[index * (col_num - 1) + 1: (index + 1) * (col_num - 1)])
 
             if index != num - 1:
                 temp = cell[(index + 1) * (col_num - 1)]
@@ -146,7 +152,7 @@ def bulk_create(request):
                     last_occurrence = temp.rfind('\n')
                     d1, d2 = temp[:last_occurrence], temp[last_occurrence + 1:]
                 else:
-                    d1, d2 = cell[(index + 1) * (col_num - 1) ].split('\n')
+                    d1, d2 = cell[(index + 1) * (col_num - 1)].split('\n')
 
                 content.extend([d1, d2])
 
@@ -155,7 +161,8 @@ def bulk_create(request):
 
             index += 1
 
-        split_list = lambda data, num: [data[i : i + num] for i in range(0, len(data), num)]
+        def split_list(data, num): return [
+            data[i: i + num] for i in range(0, len(data), num)]
         content = split_list(content, col_num)
 
         return content
@@ -185,25 +192,26 @@ def bulk_create(request):
                     "answer": row[k]
                 })
 
-            temp = [ {"marksAwarded": None} for i in range(len(question_keys))]
-
+            temp = [{"marksAwarded": None} for i in range(len(question_keys))]
             marks = []
+            status = []
+            comments = []
+
             for marker in markers:
                 marks.append(
-                    {
-                        "markerId": marker.id,
-                        "totalMark": 0,
-                        "distribution": temp
-                    }
-                )
+                    {"markerId": marker.id, "totalMark": 0, "distribution": temp})
+                status.append({"marker": marker.id, "status": "Not Started"})
+                comments.append({"marker": marker.id, "comment": None})
 
             answers.append({
-                    "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
-                    "student_id": row['Email address'],
-                    "marks": marks,
-                    "answers": answer_list,
-                    "assessment": assessment_id,
-                    "script": None
+                "student_name": row['\ufeffSurname'] + ' ' + row['First name'],
+                "student_id": row['Email address'],
+                "status": status,
+                "marks": marks,
+                "answers": answer_list,
+                "assessment": assessment_id,
+                "script": None,
+                "comment": comments
             })
 
         return answers
@@ -216,73 +224,104 @@ def bulk_create(request):
     # when the uploaded file is PDF
     if content_type == 'application/pdf':
         assessment = Assessment.objects.get(id=assessment_id)
-        criteria_num = len(assessment.rubrics['criterion'])
-        data = process_data(file_name, assessment_id, file, criteria_num)
+        if assessment.grading_method == 'Rubrics':
+            criteria_num = len(assessment.rubrics['criterion'])
+        else:
+            criteria_num = len(assessment.questions)
 
-        create_request = request._request
-        create_request.POST = data
-        return create_answer(create_request)
+        try:
+            data = process_data(file_name, assessment_id, file, criteria_num)
+            create_request = request._request
+            create_request.POST = data
+            return create_answer(create_request)
+        except:
+            return Response({'error': "Please make sure that the uploaded PDF follows the naming convention!"}, status=status.HTTP_400_BAD_REQUEST)
 
     elif content_type == 'text/csv':
-        lines = process_csv_file(file)
-        data = process_csv_content(lines, assessment_id)
+        try:
+            lines = process_csv_file(file)
+            data = process_csv_content(lines, assessment_id)
 
-        for d in data:
-            create_request = request._request
-            create_request.POST = d
-            response = create_answer(create_request)
-            print(response.data)
+            for d in data:
+                create_request = request._request
+                create_request.POST = d
+                response = create_answer(create_request)
+
+                if (response.status_code == 400):
+                    raise Exception()
+        except:
+            return Response({'error': "Please make sure that the uploaded CSV follows the required spreadsheet format!"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response("CSV file uploaded")
 
     # when it's bulk upload file (zip)
     elif content_type == 'application/zip':
-        zip_file = zipfile.ZipFile(file)
+        try:
+            zip_file = zipfile.ZipFile(file)
+            zip_file.extractall()
 
-        zip_file.extractall()
+            # get all files except the self directory
+            for path in zip_file.namelist():
+                folder_name, filename = path.split('/')
+                zip_ext_file = zip_file.open(path)
+                in_memory_file = InMemoryUploadedFile(
+                    zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(path)), None)
+                assessment = Assessment.objects.get(id=assessment_id)
+                if assessment.grading_method == 'Rubrics':
+                    criteria_num = len(assessment.rubrics['criterion'])
+                else:
+                    criteria_num = len(assessment.questions)
+                data = process_data(folder_name, assessment_id,
+                                    in_memory_file, criteria_num)
 
-        # get all files except the self directory
-        for filename in zip_file.namelist()[1:]:
-            zip_ext_file = zip_file.open(filename)
-            in_memory_file = InMemoryUploadedFile(
-                zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(filename)), None)
-            filename = filename.split('/')[-1]
-            assessment = Assessment.objects.get(id=assessment_id)
-            criteria_num = len(assessment.rubrics['criterion'])
-            data = process_data(filename, assessment_id, in_memory_file, criteria_num)
+                create_request = request._request
+                create_request.POST = data
+                response = create_answer(create_request)
 
-            create_request = request._request
-            create_request.POST = data
-            create_answer(create_request)
+                if (response.status_code == 400):
+                    raise Exception()
 
-        # close the zip_file
-        zip_file.close()
-        # remove the locally extracted files
-        file_path = settings.BASE_DIR / zip_file.namelist()[0]
-        shutil.rmtree(file_path)
+                # remove the locally extracted files
+                file_path = settings.BASE_DIR / folder_name
+                shutil.rmtree(file_path)
 
-        return Response("Bulk upload successfully")
-    return Response("Upload?")
+            # close the zip_file
+            zip_file.close()
+        except:
+            path = zip_file.namelist()[0]
+            file_path = settings.BASE_DIR / path
+            shutil.rmtree(file_path)
+            return Response({'error': "Please make sure that the uploaded ZIP file strictly follows the required structure!"}, status=status.HTTP_400_BAD_REQUEST)
 
+        return Response("Bulk upload successful!")
+
+    return Response({"error": "File extension does not match."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # TODO: change student ID
 # process PDF file's data
-def process_data(filename, assessment_id, file, criteria_num):
-    student_fname, student_lname, student_id, _ = filename.split('_')
-    student_id = str(uuid.uuid4())
+def process_data(folder_name, assessment_id, file, criteria_num):
+    [student_name, student_id] = folder_name.split('_')[0:2]
     assessment = Assessment.objects.get(id=assessment_id)
     markers = assessment.markers.all()
+    temp = [{"marksAwarded": None} for i in range(criteria_num)]
+    marks = []
+    status = []
+    comments = []
 
-    temp = [ {"marksAwarded": None} for i in range(criteria_num)]
-
-    marks = [{"markerId": marker.id, "totalMark": 0, "distribution": temp} for marker in markers]
+    for marker in markers:
+        marks.append(
+            {"markerId": marker.id, "totalMark": 0, "distribution": temp})
+        status.append({"marker": marker.id, "status": "Not Started"})
+        comments.append({"marker": marker.id, "comment": None})
 
     return {
-        "student_name": student_fname + ' ' + student_lname,
-        "student_id": student_id,
+        "student_name": student_name.strip(),
+        "student_id": student_id.strip(),
         "marks": marks,
         "answers": None,
+        "status": status,
         "assessment": assessment_id,
-        "script": file
+        "script": file,
+        "comment": comments
     }

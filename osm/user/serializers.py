@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework.serializers import ValidationError
 from .models import User
+import re
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,12 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
     def create_superuser(self, validated_data):
         email, password, validated_data = self.extract_data(validated_data)
         user = User.objects.create_superuser(email, password, **validated_data)
-        return user
-
-    def update_password(self, id, new_password):
-        user = User.objects.get(id=id)
-        user.set_password(new_password)
-        user.save()
         return user
 
 class UserCollabSerializer(serializers.ModelSerializer):

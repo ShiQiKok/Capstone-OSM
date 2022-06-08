@@ -1,102 +1,156 @@
-<div class="container" >
-    <div class="w-50 mx-auto card" id="content-body">
-        <div class="card-body">
+<div class="container my-4">
+    <div class="mx-auto mt-5 w-75 rounded shadow card" id="content-body">
+        <div
+            class="card-body pt-5 text-primary"
+            style="
+                background: rgba(85, 110, 230, 0.25)
+                    url('../../../assets/images/auth-deco.png') right no-repeat;
+                background-size: contain;
+            "
+        >
             <h2>Welcome to OSM!</h2>
-            <p>Please enter your information below to register.</p>
+            <p>Register yourself to access OSM</p>
         </div>
-        <hr />
         <div class="card-body">
-            <form [formGroup]="signupFormGroup" id="signupFormGroup">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        formControlName="username"
-                        id="username"
-                        placeholder="Enter username"
-                    />
-                    <error-message
-                        ngDefaultControl
-                        [formControl]="username"
-                    ></error-message>
+            <div
+                *ngIf="errorMessage.length > 0"
+                class="alert alert-danger"
+                role="alert"
+            >
+                {{ errorMessage }}
+            </div>
+            <form
+                [formGroup]="signupFormGroup"
+                id="signupFormGroup"
+                class="text-primary"
+            >
+                <div class="row">
+                    <div class="form-group col">
+                        <label for="username">Username</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            [class]="{
+                                'border-danger':
+                                    isFormSubmitted && username.invalid
+                            }"
+                            formControlName="username"
+                            id="username"
+                            placeholder="Enter username"
+                        />
+                        <error-message
+                            ngDefaultControl
+                            [formControl]="username"
+                        ></error-message>
+                    </div>
+                    <div class="form-group col">
+                        <label for="email">Email</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            formControlName="email"
+                            [class]="{
+                                'border-danger':
+                                    isFormSubmitted && email.invalid
+                            }"
+                            id="email"
+                            placeholder="Enter email"
+                        />
+                        <error-message
+                            ngDefaultControl
+                            [formControl]="email"
+                        ></error-message>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="firstName">First Name</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        formControlName="firstName"
-                        id="firstName"
-                        placeholder="Enter first name"
-                    />
-                    <error-message
-                        ngDefaultControl
-                        [formControl]="firstName"
-                    ></error-message>
+                <div class="row">
+                    <div class="form-group col">
+                        <label for="firstName">First Name</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            formControlName="firstName"
+                            [class]="{
+                                'border-danger':
+                                    isFormSubmitted && firstName.invalid
+                            }"
+                            id="firstName"
+                            placeholder="Enter first name"
+                        />
+                        <error-message
+                            ngDefaultControl
+                            [formControl]="firstName"
+                        ></error-message>
+                    </div>
+                    <div class="form-group col">
+                        <label for="lastName">Last Name</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            [class]="{
+                                'border-danger':
+                                    isFormSubmitted && lastName.invalid
+                            }"
+                            formControlName="lastName"
+                            id="lastName"
+                            placeholder="Enter last name"
+                        />
+                        <error-message
+                            ngDefaultControl
+                            [formControl]="lastName"
+                        ></error-message>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="lastName">Last Name</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        formControlName="lastName"
-                        id="lastName"
-                        placeholder="Enter last name"
-                    />
-                    <error-message
-                        ngDefaultControl
-                        [formControl]="lastName"
-                    ></error-message>
+                <div class="row">
+                    <div class="form-group col">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            class="form-control"
+                            [class]="{
+                                'border-danger':
+                                    isFormSubmitted && password.invalid
+                            }"
+                            formControlName="password"
+                            id="password"
+                            placeholder="Enter password"
+                        />
+                        <error-message
+                            ngDefaultControl
+                            [formControl]="password"
+                        ></error-message>
+                    </div>
+                    <div class="form-group col">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input
+                            type="password"
+                            class="form-control"
+                            [class]="{
+                                'border-danger':
+                                    isFormSubmitted && confirmPassword.invalid
+                            }"
+                            formControlName="confirmPassword"
+                            id="firstName"
+                            placeholder="Enter your password again"
+                        />
+                        <error-message
+                            ngDefaultControl
+                            [formControl]="confirmPassword"
+                        ></error-message>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        formControlName="email"
-                        id="email"
-                        placeholder="Enter email"
-                    />
-                    <error-message
-                        ngDefaultControl
-                        [formControl]="email"
-                    ></error-message>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        class="form-control"
-                        formControlName="password"
-                        id="password"
-                        placeholder="Enter password"
-                    />
-                    <error-message
-                        ngDefaultControl
-                        [formControl]="password"
-                    ></error-message>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input
-                        type="password"
-                        class="form-control"
-                        formControlName="confirmPassword"
-                        id="firstName"
-                        placeholder="Enter your password again"
-                    />
-                    <error-message
-                        ngDefaultControl
-                        [formControl]="confirmPassword"
-                    ></error-message>
-                </div>
-
-                <button
-                (click)="onSubmit()" class="btn btn-primary d-block w-100">
-                    Submit
-                </button>
             </form>
+            <div class="my-4">
+                <button
+                    (click)="onSubmit()"
+                    class="btn btn-primary d-block w-100"
+                >
+                    Register
+                </button>
+                <small class="text-center d-block mt-2 text-secondary"
+                    >Your information will be kept confidential</small
+                >
+            </div>
         </div>
     </div>
+    <p class="mt-4 text-center">Already have an account? <a routerLink="/login">Login</a> now!</p>
 </div>

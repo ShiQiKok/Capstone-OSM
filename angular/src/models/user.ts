@@ -17,3 +17,9 @@ export class User {
     user_permissions?: any[] | undefined;
     token?: any | undefined;
 }
+
+export class UserCollabInfo {
+    id!: number;
+    username!: string;
+    email!: string;
+}

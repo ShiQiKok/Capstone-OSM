@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from 'src/app/app.component';
 import { Assessment } from 'src/models/assessment';
-import { Subject } from 'src/models/subject';
 import { AssessmentService } from 'src/services/assessment.service';
 import { AuthenticationService } from 'src/services/authentication.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubjectService } from 'src/services/subject.service';
 import { AnswerScriptService } from 'src/services/answer-script.service';
-import { AnswerScript } from 'src/models/answerScript';
+import { AnswerScript, AnswerScriptStatusObj } from 'src/models/answerScript';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-assessment-list',
@@ -17,20 +15,23 @@ import { AnswerScript } from 'src/models/answerScript';
     styleUrls: ['./assessment-list.component.scss'],
 })
 export class AssessmentListComponent extends AppComponent implements OnInit {
+    // controls
     isLoading: boolean = true;
-    isCreatingAssessment: boolean = false;
-    subjects: Subject[] = [];
-    assessmentList: Assessment[] = [];
 
-    assessments: any = {};
+    // object
+    subjects: any = {};
+    assessmentList: Assessment[] = [];
+    assessments?: any;
+
+    // icon
+    faPlus = faPlus;
 
     constructor(
         router: Router,
         authenticationService: AuthenticationService,
         private _assessmentService: AssessmentService,
         private _answerScriptService: AnswerScriptService,
-        private _subjectService: SubjectService,
-        private modalService: NgbModal
+        private _subjectService: SubjectService
     ) {
         super(router, authenticationService);
     }
@@ -38,68 +39,64 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
     async ngOnInit() {
         this.isLoading = true;
         await this.getApi();
-        await this.getAll();
+        await this.getAssessments();
         this.mapAssessment();
-        this.isLoading = false;
+        setTimeout(() => {
+            this.isLoading = false;
+        }, 1000);
+        console.log(this.assessments);
     }
 
+    /** To get all APIs for each service */
     private async getApi() {
         await this._subjectService.getApi();
         await this._assessmentService.getApi();
         await this._answerScriptService.getApi();
     }
 
-    private async getAll() {
-        this.subjects = (await this._subjectService.getAll(
-            this.currentUser.id!
-        )) as Subject[];
+    /** To load the assessments that is under the current user */
+    private async getAssessments() {
         this.assessmentList = (await this._assessmentService.getAll(
             this.currentUser.id!
         )) as Assessment[];
+        console.log(this.assessmentList)
     }
 
-    async calculateProgress(assessmentId: any) {
-        //     let total = answerScripts.length;
-        //     let finished = answerScripts.filter(
-        //         (x: any) => x.status === 'Finished'
-        //     ).length;
-        //     return Math.floor(finished / total * 100);
-        // });
-        // console.log(list);
-        return 75;
-    }
+    /** To create a object for front-end presentation, which maps the assessments with their subject ids */
+    private mapAssessment(): void {
+        if (this.assessmentList.length > 0){
+            this.assessments = {}
+            this.assessmentList.forEach(async (assessment: any) => {
+                this._answerScriptService.getAll(assessment.id!).then((obj) => {
+                    let answers = obj as AnswerScript[];
 
-    private async mapAssessment() {
-        this.subjects.forEach((subject) => {
-            let list: any = this.assessmentList.filter(
-                (assessment) => assessment.subject == subject.id
-            );
-            list.forEach(async (a: any) => {
-                let answers: any = await this._answerScriptService.getAll(a.id);
-                let finish = answers.filter(
-                    (a: AnswerScript) => a.status === 'Finished'
-                );
-                let total = answers.length;
-                a.progress = Math.floor((finish.length / total) * 100);
+                    let finish = answers.filter((a: AnswerScript) => {
+                        let j = a.status!.findIndex(
+                            (s: AnswerScriptStatusObj) => {
+                                return s.marker === this.currentUser.id;
+                            }
+                        );
+                        return a.status![j].status == 'Finished';
+                    });
+                    let total = answers.length;
+                    assessment.progress = Math.floor((finish.length / total) * 100);
+                });
+                if (this.assessments[assessment.subject] != undefined) {
+                    this.assessments[assessment.subject].push(assessment);
+                } else {
+                    this.assessments[assessment.subject] = [assessment];
+                    let s = await this._subjectService.get(assessment.subject);
+                    this.subjects[assessment.subject] = s.name;
+                }
             });
-
-            this.assessments[subject.id] = list;
-        });
+        }
     }
 
-    getSubjectName(id: number) {
-        return this.subjects.find((subject) => subject.id == id)?.name;
-    }
-
-    createAssessment() {
-        this.isCreatingAssessment = true;
-    }
-
-    open(content: any) {
-        this.modalService.open(content, {
-            backdrop: 'static',
-            size: 'lg',
-            scrollable: true,
-        });
-    }
+    /**  Returns subject name by subject id
+     * @param {number} subjectId the subject id
+     */
+    // getSubjectName(id: number): string {
+    //     console.log(this.subjects)
+    //     return this.subjects.find((subject) => subject.id == id)?.name!;
+    // }
 }

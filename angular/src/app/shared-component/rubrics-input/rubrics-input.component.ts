@@ -7,12 +7,16 @@ import {
     ViewChild,
 } from '@angular/core';
 import { MatTable } from '@angular/material/table';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { faUpload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { AssessmentService } from 'src/services/assessment.service';
+import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 
 class RubricsInput {
-    marksRange?: RubricMarkRangeInput[] | undefined;
-    isEdit?: boolean | undefined; // control to edit marks range
-    criterion?: RubricCriterionInput[] | undefined;
+    marksRange?: RubricMarkRangeInput[];
+    totalMarks?: number;
+    isEdit?: boolean; // control to edit marks range
+    criterion?: RubricCriterionInput[];
 }
 
 class RubricCriterionInput {
@@ -44,8 +48,15 @@ export class RubricsInputComponent implements OnInit {
 
     @ViewChild(MatTable) table!: MatTable<any>;
 
+    // icons
     faTrashAlt = faTrashAlt;
+    faUpload = faUpload;
+    faQuestionCircle = faQuestionCircle;
 
+    // objects
+    uploadedFile: File | null = null;
+    isSubmitDisabled: boolean = true;
+    addIconIndex!: number;
     template: RubricsInput = {
         marksRange: [
             { min: 0, max: 39 },
@@ -55,6 +66,7 @@ export class RubricsInputComponent implements OnInit {
             { min: 70, max: 100 },
         ],
         isEdit: false,
+        totalMarks: 100,
         criterion: [
             {
                 title: 'criteria 1',
@@ -151,7 +163,12 @@ export class RubricsInputComponent implements OnInit {
         ],
     };
 
-    constructor() {}
+    constructor(
+        private _modalService: NgbModal,
+        private _assessmentService: AssessmentService
+    ) {
+        this._assessmentService.getApi();
+    }
 
     ngOnInit(): void {
         if (!this.rubrics) {
@@ -165,13 +182,9 @@ export class RubricsInputComponent implements OnInit {
         return `${width}%`;
     }
 
-    addIconIndex!: number;
     showAddIconIndex(criterion: RubricCriterionInput, index: any) {
         if (index != 0) {
             this.addIconIndex = index;
-            // index = index - 1;
-            // console.log(criterion)
-            // console.log(index);
         }
     }
 
@@ -201,7 +214,7 @@ export class RubricsInputComponent implements OnInit {
 
     addRubricsRow(event: any): void {
         event.stopPropagation();
-        // this.setUneditable();
+        this.setUneditable();
         let len = this.rubrics.marksRange!.length;
         let row: RubricCriterionInput = {
             title: 'criteria ' + (this.rubrics.criterion!.length + 1),
@@ -227,6 +240,7 @@ export class RubricsInputComponent implements OnInit {
         }
 
         this.table.renderRows();
+        this.setUneditable();
     }
 
     addRubricsColumn(event: any): void {
@@ -249,11 +263,9 @@ export class RubricsInputComponent implements OnInit {
 
     removeRubricsColumn(event: any) {
         event.stopPropagation();
-        console.log('?');
         this.setUneditable();
 
         this.rubrics.marksRange?.splice(this.addIconIndex - 1, 1);
-
         this.rubrics.criterion!.forEach((criterion: any) => {
             criterion.columns!.splice(this.addIconIndex - 1, 1);
         });
@@ -279,5 +291,34 @@ export class RubricsInputComponent implements OnInit {
         this.rubrics.criterion!.forEach((criteria: any) => {
             criteria.isEdit = false;
         });
+        this.calculateTotal();
+    }
+
+    private calculateTotal() {
+        this.rubrics.totalMarks = 0;
+        this.rubrics.criterion!.forEach((c) => {
+            this.rubrics.totalMarks! += c.totalMarks!;
+        });
+    }
+
+    openModal(modal: any) {
+        this._modalService.open(modal);
+    }
+
+    onFileChange(file: FileList) {
+        this.uploadedFile = file.item(0);
+        this.isSubmitDisabled = false;
+    }
+
+    uploadRubrics() {
+        this._assessmentService
+            .uploadRubrics(this.uploadedFile!)
+            .then((obj) => {
+                this.rubrics = obj;
+                this.rubrics.isEdit = false;
+                this.calculateTotal();
+                this.table.renderRows();
+                this._modalService.dismissAll()
+            });
     }
 }

@@ -27,14 +27,19 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SpinnerComponent } from './shared-component/spinner/spinner.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MarkingComponent } from './marking/marking.component';
+import { MatSortModule } from '@angular/material/sort';
 import { MatListModule } from '@angular/material/list';
-
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HighlightTextComponent } from './marking/highlight-text/highlight-text.component';
 import { RubricsInputComponent } from './shared-component/rubrics-input/rubrics-input.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { QuestionInputComponent } from './shared-component/question-input/question-input.component';
 import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
+import { CreationRubricsQuestionsComponent } from './information/creation-rubrics-questions/creation-rubrics-questions.component';
+import { SubjectComponent } from './subject/subject.component';
+import { SubjectCreationModalComponent } from './subject/subject-creation-modal/subject-creation-modal.component';
+import { HomePageComponent } from './information/home-page/home-page.component';
 
 @NgModule({
     declarations: [
@@ -52,6 +57,10 @@ import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
         HighlightTextComponent,
         RubricsInputComponent,
         QuestionInputComponent,
+        CreationRubricsQuestionsComponent,
+        SubjectComponent,
+        SubjectCreationModalComponent,
+        HomePageComponent,
     ],
     imports: [
         BrowserModule,
@@ -73,6 +82,8 @@ import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
         DragDropModule,
         MatSnackBarModule,
         MatChipsModule,
+        MatSlideToggleModule,
+        MatSortModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

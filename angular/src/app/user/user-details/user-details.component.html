@@ -20,82 +20,111 @@
             </div>
             <hr class="dropdown-divider" />
             <div class="card-body">
-                <table class="table">
-                    <h5 class="mb-4 text-primary">Information</h5>
-                    <tbody>
-                        <tr>
-                            <td>Username</td>
-                            <td *ngIf="!isEditing">
-                                {{ currentUser.username }}
-                            </td>
+                <div *ngIf="errorMessageOnSave.length > 0" class="alert alert-danger" role="alert">
+                    {{ errorMessageOnSave }}
+                </div>
+                <form [formGroup]="userInfoForm">
+                    <table class="table">
+                        <h5 class="mb-4 text-primary">Information</h5>
+                        <tbody class="border-top">
+                            <tr>
+                                <td>Username</td>
+                                <td *ngIf="!isEditing">
+                                    {{ currentUser.username }}
+                                </td>
 
-                            <td *ngIf="isEditing">
-                                <span
-                                    ngbTooltip="Sorry! Username is not editable :("
-                                    triggers="mouseenter:mouseleave"
-                                    placement="right"
-                                    >{{ currentUser.username }}</span
-                                >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>First Name</td>
-                            <td *ngIf="!isEditing">
-                                {{ currentUser.first_name }}
-                            </td>
-                            <td *ngIf="isEditing">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    [(ngModel)]="dummyUser.first_name"
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Last Name</td>
-                            <td *ngIf="!isEditing">
-                                {{ currentUser.last_name }}
-                            </td>
-                            <td *ngIf="isEditing">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    [(ngModel)]="dummyUser.last_name"
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td *ngIf="!isEditing">{{ currentUser.email }}</td>
-                            <td *ngIf="isEditing">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    [(ngModel)]="dummyUser.email"
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Date Joined</td>
-                            <td *ngIf="!isEditing">
-                                {{ currentUser.date_joined | date: "dd/MM/y" }}
-                            </td>
-                            <td *ngIf="isEditing">
-                                <span
-                                    ngbTooltip="Sorry! Your joining date is not editable :("
-                                    triggers="mouseenter:mouseleave"
-                                    placement="right"
-                                >
+                                <td *ngIf="isEditing">
+                                    <span
+                                        ngbTooltip="Sorry! Username is not editable :("
+                                        triggers="mouseenter:mouseleave"
+                                        placement="right"
+                                        >{{ currentUser.username }}</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>First Name</td>
+                                <td *ngIf="!isEditing">
+                                    {{ currentUser.first_name }}
+                                </td>
+                                <td *ngIf="isEditing">
+                                    <div>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            formControlName="firstName"
+                                        />
+                                        <error-message
+                                            ngDefaultControl
+                                            [formControl]="firstName"
+                                        ></error-message>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Last Name</td>
+                                <td *ngIf="!isEditing">
+                                    {{ currentUser.last_name }}
+                                </td>
+                                <td *ngIf="isEditing">
+                                    <div>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            formControlName="lastName"
+                                        />
+                                        <error-message
+                                            ngDefaultControl
+                                            [formControl]="lastName"
+                                        ></error-message>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td *ngIf="!isEditing">
+                                    {{ currentUser.email }}
+                                </td>
+                                <td *ngIf="isEditing">
+                                    <div>
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            formControlName="email"
+                                        />
+                                        <error-message
+                                            ngDefaultControl
+                                            [formControl]="email"
+                                        ></error-message>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Date Joined</td>
+                                <td *ngIf="!isEditing">
                                     {{
                                         currentUser.date_joined
                                             | date: "dd/MM/y"
                                     }}
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </td>
+                                <td *ngIf="isEditing">
+                                    <span
+                                        ngbTooltip="Sorry! Your joining date is not editable :("
+                                        triggers="mouseenter:mouseleave"
+                                        placement="right"
+                                    >
+                                        {{
+                                            currentUser.date_joined
+                                                | date: "dd/MM/y"
+                                        }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
                 <button
+                    *ngIf="!isEditing"
                     (click)="openModal(passwordModal)"
                     class="btn btn-outline-primary"
                 >
@@ -111,10 +140,19 @@
                 <button
                     *ngIf="isEditing"
                     (click)="onSave()"
-                    class="btn btn-success float-right"
+                    class="btn btn-success text-white float-right"
+                    autofocus
                 >
                     Save
                 </button>
+                <button
+                    *ngIf="isEditing"
+                    (click)="cancelEdit()"
+                    class="btn btn-outline-secondary float-right mr-2"
+                >
+                    Cancel
+                </button>
+
             </div>
         </div>
     </div>
@@ -127,11 +165,11 @@
             type="button"
             class="btn-close"
             aria-label="Close"
-            (click)="modal.dismiss('Cross click')"
+            (click)="modal.dismiss()"
         ></button>
     </div>
     <div class="modal-body">
-        <div *ngIf="showErrorMessage" class="alert alert-warning" role="alert">
+        <div *ngIf="errorMessage.length > 0" class="alert alert-danger" role="alert">
             {{ errorMessage }}
         </div>
         <form [formGroup]="passwordForm">
@@ -139,38 +177,73 @@
                 <label for="currentPassword">Current Password</label>
                 <input
                     type="password"
-                    class="form-control"
+                    class="form-control d-inline-block mr-2"
+                    style="width: 93%"
                     id="currentPassword"
                     formControlName="currentPassword"
                     placeholder="Enter your current password"
                     name="currentPassword"
                 />
+                <fa-icon
+                    #icon1
+                    class="text-secondary"
+                    (click)="togglePasswordVisibility('currentPassword', icon1)"
+                    [icon]="faEyeSlash"
+                ></fa-icon>
+                <error-message
+                ngDefaultControl
+                [formControl]="currentPassword"
+            ></error-message>
             </div>
             <div class="form-group">
                 <label for="newPassword">New Password</label>
                 <input
                     type="password"
-                    class="form-control"
+                    class="form-control d-inline-block mr-2"
+                    style="width: 93%;"
                     id="newPassword"
                     formControlName="newPassword"
                     placeholder="Enter your new password"
                     name="newPassword"
                 />
+                <fa-icon
+                    #icon2
+                    class="text-secondary"
+                    (click)="togglePasswordVisibility('newPassword', icon2)"
+                    [icon]="faEyeSlash"
+                ></fa-icon>
+                <error-message
+                    ngDefaultControl
+                    [formControl]="newPassword"
+                ></error-message>
             </div>
             <div class="form-group">
-                <label for="confirmPassword">Current Password</label>
+                <label for="confirmPassword">Confirm Password</label>
                 <input
                     type="password"
-                    class="form-control"
+                    class="form-control d-inline-block mr-2"
+                    style="width: 93%"
                     id="confirmPassword"
                     formControlName="confirmPassword"
                     placeholder="Enter your new password again"
                     name="confirmPassword"
                 />
+                <fa-icon
+                    #icon3
+                    class="text-secondary"
+                    (click)="togglePasswordVisibility('confirmPassword', icon3)"
+                    [icon]="faEyeSlash"
+                ></fa-icon>
+                <error-message
+                    ngDefaultControl
+                    [formControl]="confirmPassword"
+                ></error-message>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <button (click)="onNewPasswordSubmit()" class="btn btn-primary">Save</button>
+        <button (click)="onNewPasswordSubmit()" class="btn btn-primary" ngbAutofocus>
+            Save
+        </button>
     </div>
 </ng-template>

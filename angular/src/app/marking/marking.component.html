@@ -1,10 +1,4 @@
 <div style="width: 80%" class="pl-4 pr-5">
-    <div *ngIf="assessment && answerScript">
-        <!-- {{ answerScript | json }} -->
-        <!-- <br />
-        {{ assessment | json }} -->
-    </div>
-    <!-- <div *ngIf="isFloatingBarShowed">SHOW BAR</div> -->
     <ng-template #floatToolbar>
         <button
             class="btn btn-sm btn-outline-primary d-inline-block"
@@ -45,144 +39,234 @@
                     (mousedown)="p.close()"
                 >
                 </app-highlight-text>
-                <!-- <div
-                    [ngbPopover]="floatToolbar"
-                    #p="ngbPopover"
-                    (mousedown)="p.open({ autoClose: false })"
-                    (mousedown)="p.close()"
-                    class="border p-4 bg-white answer-box"
-                >
-                    {{ answerScript.answers[i].answer }}
-                </div> -->
             </div>
         </div>
     </div>
-    <div id="sideNav" class="bg-white p-3" style="width: 20%">
-        <div *ngIf="assessment">
-            <div *ngIf="isEssayBased">
-                <div *ngIf="!isRubricsDetailsShowed">
-                    <mat-selection-list
-                        #generalCriteriaList
-                        id="generalCriteriaList"
-                        [multiple]="false"
-                        (selectionChange)="onGeneralCriteriaChanged()"
-                    >
-                        <mat-list-option
-                            *ngFor="
-                                let c of assessment.rubrics.criterion;
-                                let i = index
-                            "
-                            [value]="c"
-                            class="border"
+    <div id="sideNav" class="bg-white px-3" style="width: 20%">
+        <div
+            id="sideNavBar"
+            class="position-absolute top-0 start-0 end-0 bg-primary shadow-sm py-2 px-3 d-flex justify-content-between"
+        >
+            <span style="cursor: pointer" (click)="onGoBackClicked()">
+                <fa-icon
+                    [icon]="faArrowAltCircleLeft"
+                    style="font-size: 1.5em"
+                    class="text-white"
+                ></fa-icon>
+            </span>
+            <span>
+                <fa-icon
+                    [icon]="faCommentAlt"
+                    (click)="openModal(commentModal)"
+                    style="font-size: 1.45em"
+                    class="text-white"
+                ></fa-icon>
+            </span>
+        </div>
+        <div
+            *ngIf="assessment"
+            style="overflow: auto; height: 87%; margin-top: 4rem"
+        >
+            <div id="marksPanel" style="margin-bottom: 4rem">
+                <div *ngIf="isRubricsUsed">
+                    <div *ngIf="!isRubricsDetailsShowed">
+                        <small class="text-secondary">
+                            <fa-icon [icon]="faInfo"></fa-icon>
+                            Click the options below to start grading
+                        </small>
+                        <mat-selection-list
+                            #generalCriteriaList
+                            id="generalCriteriaList"
+                            [multiple]="false"
+                            (selectionChange)="onGeneralCriteriaChanged()"
                         >
-                            {{ c.title }}
-                            <input
-                                [id]="'input-' + i"
-                                disabled
-                                class="form-control w-25 text-center"
-                                [ngModel]="
-                                    marks.distribution[i].marksAwarded != null
-                                        ? (marks.distribution[i].marksAwarded *
-                                              c.totalMarks) /
-                                          100
-                                        : 0
+                            <mat-list-option
+                                *ngFor="
+                                    let c of assessment.rubrics.criterion;
+                                    let i = index
                                 "
-                            />
-                        </mat-list-option>
-                    </mat-selection-list>
+                                [value]="c"
+                                class="border"
+                            >
+                                <p>
+                                    {{ c.title }}
+                                </p>
+                                <p class="ml-auto text-secondary">
+                                    <small>total: {{ c.totalMarks }}</small>
+                                </p>
+                                <input
+                                    [id]="'input-' + i"
+                                    disabled
+                                    class="form-control text-center my-2"
+                                    style="cursor: pointer"
+                                    [ngModel]="
+                                        marks.distribution[i].marksAwarded !=
+                                        null
+                                            ? (marks.distribution[i]
+                                                  .marksAwarded *
+                                                  c.totalMarks) /
+                                              100
+                                            : 0
+                                    "
+                                />
+                            </mat-list-option>
+                        </mat-selection-list>
+                    </div>
+                    <div *ngIf="isRubricsDetailsShowed">
+                        <div>
+                            <h3 class="">
+                                {{ selectedCriterion.title }}
+                            </h3>
+
+                            <p>{{ selectedCriterion.description }}</p>
+                        </div>
+                        <mat-selection-list
+                            #detailCriteriaList
+                            [multiple]="false"
+                            (selectionChange)="onDetailedCriteriaChanged()"
+                        >
+                            <mat-list-option
+                                *ngFor="
+                                    let detail of selectedCriterion.columns.reverse();
+                                    let i = index
+                                "
+                                [value]="detail"
+                                class="border"
+                                [ngClass]="{
+                                    expandedList:
+                                        detail == selectedDetailedCriterion
+                                }"
+                            >
+                                {{ detail.description }}
+                                <h6 class="ml-auto mt-2">
+                                    {{
+                                        assessment.rubrics.marksRange[
+                                            assessment.rubrics.marksRange
+                                                .length -
+                                                1 -
+                                                i
+                                        ].min
+                                    }}
+                                    -
+                                    {{
+                                        assessment.rubrics.marksRange[
+                                            assessment.rubrics.marksRange
+                                                .length -
+                                                1 -
+                                                i
+                                        ].max
+                                    }}
+                                </h6>
+                                <div
+                                    *ngIf="detail == selectedDetailedCriterion"
+                                    class="mt-2"
+                                >
+                                    <input
+                                        class="form-control d-inline"
+                                        type="number"
+                                        min="{{
+                                            assessment.rubrics.marksRange[
+                                                assessment.rubrics.marksRange
+                                                    .length -
+                                                    1 -
+                                                    i
+                                            ].min
+                                        }}"
+                                        max="{{
+                                            assessment.rubrics.marksRange[
+                                                assessment.rubrics.marksRange
+                                                    .length -
+                                                    1 -
+                                                    i
+                                            ].max
+                                        }}"
+                                        [(ngModel)]="
+                                            marks.distribution[
+                                                selectedCriterionIndex
+                                            ].marksAwarded
+                                        "
+                                        (change)="
+                                            onMarkAwardedChanged(
+                                                $event,
+                                                selectedCriterionIndex
+                                            )
+                                        "
+                                    />
+                                </div>
+                            </mat-list-option>
+                        </mat-selection-list>
+                    </div>
                 </div>
-                <div *ngIf="isRubricsDetailsShowed">
-                    <a
-                        (click)="
-                            isRubricsDetailsShowed = !isRubricsDetailsShowed
-                        "
-                        class="btn btn-primary"
-                    >
-                        back
-                    </a>
-                    <mat-selection-list
-                        #detailCriteriaList
-                        [multiple]="false"
-                        (selectionChange)="onDetailedCriteriaChanged()"
-                    >
-                        <h3>{{ selectedCriterion.title }}</h3>
-                        <mat-list-option
+                <div *ngIf="!isRubricsUsed">
+                    <mat-list role="list" id="questionMarksPanel">
+                        <mat-list-item
                             *ngFor="
-                                let detail of selectedCriterion.columns;
+                                let question of assessment.questions;
                                 let i = index
                             "
-                            [value]="detail"
                             class="border"
-                            [ngClass]="{
-                                expandedList:
-                                    detail == selectedDetailedCriterion
-                            }"
+                            role="listitem"
                         >
-                            {{ detail.description }}
-                            <div>
-                                {{ assessment.rubrics.marksRange[i].min }}
-                                -
-                                {{ assessment.rubrics.marksRange[i].max }}
-                            </div>
-                            <div *ngIf="detail == selectedDetailedCriterion">
-                                <input
-                                    class="form-control w-50 d-inline"
-                                    type="number"
-                                    min="{{
-                                        assessment.rubrics.marksRange[i].min
-                                    }}"
-                                    max="{{
-                                        assessment.rubrics.marksRange[i].max
-                                    }}"
-                                    [(ngModel)]="
-                                        marks.distribution[
-                                            selectedCriterionIndex
-                                        ].marksAwarded
-                                    "
-                                    (change)="onMarkAwardedChanged($event)"
-                                />
-                            </div>
-                        </mat-list-option>
-                    </mat-selection-list>
+                            Question {{ question.no }}
+                            <p class="ml-auto text-secondary">
+                                <small>total: {{ question.value.marks }}</small>
+                            </p>
+                            <input
+                                type="number"
+                                class="form-control text-center w-100"
+                                style="width: 30%"
+                                min="0"
+                                max="{{ question.value.marks }}"
+                                [(ngModel)]="marks.distribution[i].marksAwarded"
+                                (change)="onMarkAwardedChanged($event, i)"
+                            />
+                        </mat-list-item>
+                    </mat-list>
                 </div>
             </div>
-            <div *ngIf="!isEssayBased">
-                <mat-list role="list" id="questionMarksPanel">
-                    <mat-list-item
-                        *ngFor="
-                            let question of assessment.questions;
-                            let i = index
-                        "
-                        class="border"
-                        role="listitem"
-                    >
-                        Question {{ question.no }}
-                        <input
-                            type="number"
-                            class="form-control text-center ml-auto"
-                            style="width: 30%"
-                            min="0"
-                            max="{{ question.value.marks }}"
-                            [(ngModel)]="marks.distribution[i].marksAwarded"
-                            (change)="onMarkAwardedChanged($event)"
-                        />
-                        /
-                        {{ question.value.marks }}
-                    </mat-list-item>
-                </mat-list>
-            </div>
-            <div class="position-absolute bottom-0 end-0 w-100 bg-white">
-                <div class="pl-4">
-                    Marks: {{ marks.totalMark ? marks.totalMark : 0 }}
-                </div>
-                <button
-                    class="btn btn-primary w-100"
-                    style="height: 3rem"
-                    (click)="onSubmit()"
-                >
-                    Submit
-                </button>
-            </div>
+        </div>
+        <div
+            *ngIf="assessment"
+            class="position-absolute bottom-0 end-0 w-100 bg-white pt-2"
+        >
+            <h5 class="pl-4">
+                Marks: {{ marks.totalMark ? marks.totalMark : 0 }}
+            </h5>
+            <button
+                class="btn btn-primary w-100"
+                style="height: 3rem"
+                (click)="onSubmit()"
+            >
+                Submit
+            </button>
         </div>
     </div>
 </div>
+
+<ng-template let-modal #commentModal style="height: 10rem">
+    <div class="modal-header">
+        <h4 class="modal-title">Comment</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <textarea
+            class="form-control"
+            [formControl]="comment"
+            placeholder="enter your comment to the answer script"
+        ></textarea>
+        <error-message ngDefaultControl [formControl]="comment"></error-message>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-secondary text-white" (click)="modal.close()">
+            Cancel
+        </button>
+        <button class="btn btn-primary" (click)="updateComment()">
+            Confirm
+        </button>
+    </div>
+</ng-template>

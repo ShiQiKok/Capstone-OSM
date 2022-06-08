@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from subject.models import Subject
 
 
@@ -8,19 +9,22 @@ class Assessment(models.Model):
         QUESTION_BASED = 'question_based', 'Question Based'
         ESSAY_BASED = 'essay_based', 'Essay Based'
 
+    class GradingMethod(models.TextChoices):
+        RUBRICS = 'Rubrics', 'Rubrics'
+        QUESTION = 'Questions', 'Questions'
+
     class MarkingSetting(models.TextChoices):
         MARK_BY_SCRIPT = 'mark_by_script', 'Mark By Script'
         MARK_BY_QUESTION = 'mark_by_question', 'Mark By Question'
 
     name = models.CharField(max_length=255)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    type = models.CharField(
-        max_length=20, choices=AssessmentType.choices, default=AssessmentType.QUESTION_BASED)
-    marking_setting = models.CharField(
-        max_length=20, choices=MarkingSetting.choices, default=MarkingSetting.MARK_BY_SCRIPT)
+    type = models.CharField(max_length=20, choices=AssessmentType.choices, default=AssessmentType.QUESTION_BASED)
+    grading_method = models.CharField(max_length=20, choices=GradingMethod.choices, blank=False)
+    marking_setting = models.CharField(max_length=20, choices=MarkingSetting.choices, default=MarkingSetting.MARK_BY_SCRIPT)
     data_created = models.DateTimeField(auto_now_add=True)
-    rubrics = models.JSONField(max_length=255, blank=True)
-    questions = models.JSONField(max_length=255, blank=True)
+    rubrics = models.JSONField(max_length=255, blank=True, null=True)
+    questions = models.JSONField(max_length=255, blank=True, null=True)
     markers = models.ManyToManyField('user.User', related_name='assessments')
 
     def __str__(self):

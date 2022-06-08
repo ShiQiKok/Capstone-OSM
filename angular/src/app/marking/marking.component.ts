@@ -1,14 +1,37 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import {
+    Component,
+    HostListener,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation,
+} from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowAltCircleLeft,
+    faCommentAlt,
+} from '@fortawesome/free-regular-svg-icons';
+import {
+    faAngleLeft,
+    faCheck,
+    faInfo,
+    faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { ComponentCanDeactivate } from 'src/helper/pending-changes.guard';
 import {
     AnswerScript,
     AnswerScriptStatus,
+    AnswerScriptStatusObj,
+    Comment,
     HighlightText,
 } from 'src/models/answerScript';
-import { Assessment, AssessmentType } from 'src/models/assessment';
+import {
+    Assessment,
+    AssessmentType,
+    GradingMethod,
+} from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { AssessmentService } from 'src/services/assessment.service';
 import { AuthenticationService } from 'src/services/authentication.service';
@@ -45,6 +68,7 @@ class Marks {
 }
 
 @Component({
+    encapsulation: ViewEncapsulation.None,
     selector: 'app-marking',
     templateUrl: './marking.component.html',
     styleUrls: ['./marking.component.scss'],
@@ -53,6 +77,7 @@ export class MarkingComponent
     extends AppComponent
     implements OnInit, ComponentCanDeactivate
 {
+    // view references
     @ViewChild('generalCriteriaList') generalCriteriaList!: any;
     @ViewChild('detailCriteriaList') detailCriteriaList!: any;
     @ViewChild('floatingBar') floatToolbar!: any;
@@ -63,14 +88,16 @@ export class MarkingComponent
     selectedCriterion!: any;
     selectedCriterionIndex!: number;
     selectedDetailedCriterion!: any;
-
     marks!: Marks;
     initialMarksDistribution!: MarkDistribution[];
-
+    initialComment!: Comment[];
     totalMarks: number = 0;
+    commentFormControl = new FormControl('', [Validators.maxLength(300)]);
+    previousSelected: any[] = [];
 
     // controls
     isEssayBased?: boolean = true;
+    isRubricsUsed?: boolean = true;
     isRubricsDetailsShowed: boolean = false;
     isFloatingBarShowed: boolean = false;
     isSubmitted: boolean = false;
@@ -78,6 +105,23 @@ export class MarkingComponent
     //icon
     faCheck = faCheck;
     faTimes = faTimes;
+    faAngleLeft = faAngleLeft;
+    faArrowAltCircleLeft = faArrowAltCircleLeft;
+    faCommentAlt = faCommentAlt;
+    faInfo = faInfo;
+
+    @HostListener('window:beforeunload')
+    canDeactivate(): Observable<boolean> | boolean {
+        // if (!this.isSubmitted) {
+        //     return (
+        //         (JSON.stringify(this.marks.distribution) ===
+        //         JSON.stringify(this.initialMarksDistribution)) &&
+        //         (JSON.stringify(this.answerScript.comment)
+        //             === JSON.stringify(this.initialComment))
+        //     );
+        // }
+        return true;
+    }
 
     constructor(
         router: Router,
@@ -85,7 +129,8 @@ export class MarkingComponent
         private route: ActivatedRoute,
         private _answerScriptService: AnswerScriptService,
         private _assessmentService: AssessmentService,
-        private viewSDKClient: ViewSDKClient
+        private viewSDKClient: ViewSDKClient,
+        private _modalService: NgbModal
     ) {
         super(router, _authenticationService);
     }
@@ -93,14 +138,6 @@ export class MarkingComponent
     async ngOnInit() {
         await this.loadApi();
         this.getDetail();
-    }
-
-    @HostListener('window:beforeunload')
-    canDeactivate(): Observable<boolean> | boolean {
-        if (!this.isSubmitted) {
-            return JSON.stringify(this.marks.distribution) === JSON.stringify(this.initialMarksDistribution);
-        }
-        return true;
     }
 
     async loadApi() {
@@ -112,6 +149,10 @@ export class MarkingComponent
         if (this.assessment.type === AssessmentType.ESSAY_BASED)
             this.isEssayBased = true;
         else this.isEssayBased = false;
+
+        if (this.assessment.grading_method === GradingMethod.RUBRICS)
+            this.isRubricsUsed = true;
+        else this.isRubricsUsed = false;
     }
 
     onGeneralCriteriaChanged() {
@@ -146,6 +187,7 @@ export class MarkingComponent
                 ) {
                     this.selectedDetailedCriterion =
                         this.selectedCriterion.columns[i];
+                    break;
                 }
             }
         }
@@ -154,28 +196,67 @@ export class MarkingComponent
     onDetailedCriteriaChanged() {
         this.selectedDetailedCriterion =
             this.detailCriteriaList.selectedOptions.selected[0].value;
+
+        if (
+            this.marks.distribution[this.selectedCriterionIndex].marksAwarded &&
+            this.previousSelected[this.selectedCriterionIndex] !=
+                this.selectedDetailedCriterion
+        ) {
+            this.marks.distribution[this.selectedCriterionIndex].marksAwarded =
+                undefined;
+            this.calculateTotalMark();
+        }
+        this.previousSelected[this.selectedCriterionIndex] =
+            this.selectedDetailedCriterion;
     }
 
     getDetail() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
-            if (this.answerScript.status === AnswerScriptStatus.NOT_STARTED) {
-                this.answerScript.status = AnswerScriptStatus.IN_PROGRESS;
+            this.initialComment = Object.assign({}, this.answerScript.comment);
+
+            let j = this.answerScript.status!.findIndex(
+                (s: AnswerScriptStatusObj) => {
+                    return s.marker === this.currentUser.id;
+                }
+            );
+
+            this.commentFormControl.setValue(
+                this.answerScript.comment[j].comment
+            );
+
+            if (
+                this.answerScript.status![j].status ==
+                AnswerScriptStatus.NOT_STARTED
+            ) {
+                this.answerScript.status![j].status =
+                    AnswerScriptStatus.IN_PROGRESS;
             }
 
             this.marks = data.marks.filter((obj: Marks) => {
                 return obj.markerId == this.currentUser.id;
             })[0];
-            this.initialMarksDistribution = JSON.parse(JSON.stringify(this.marks.distribution));
+            this.initialMarksDistribution = JSON.parse(
+                JSON.stringify(this.marks.distribution)
+            );
 
             this._assessmentService
                 .get(this.answerScript.assessment!)
                 .then((obj) => {
                     this.assessment = obj;
+                    console.log(this.assessment);
+                    for (
+                        let i = 0;
+                        i < this.assessment.rubrics.criterion.length;
+                        i++
+                    ) {
+                        this.previousSelected.push(null);
+                    }
 
                     this.checkControls();
                 });
+
             if (this.answerScript.script) this.loadScript();
         });
     }
@@ -186,7 +267,6 @@ export class MarkingComponent
             this.viewSDKClient.previewFile(
                 'pdf-div',
                 this.answerScript.script,
-                // {enableAnnotationAPIs: true, includePDFAnnotations: false}
                 // * set the Adobe Acrobat configuration
                 // * check the API at https://developer.adobe.com/document-services/docs/overview/pdf-embed-api/howtos_ui/
                 {},
@@ -196,7 +276,7 @@ export class MarkingComponent
     }
 
     // TODO: refine
-    onMarkAwardedChanged(event: any) {
+    onMarkAwardedChanged(event: any, index: number) {
         let inputElement = event.target;
         let min: number = +inputElement.min;
         let max: number = +inputElement.max;
@@ -204,19 +284,27 @@ export class MarkingComponent
 
         if (value < min) {
             inputElement.value = min;
+            this.marks.distribution[index].marksAwarded = min;
         } else if (value > max) {
             inputElement.value = max;
+            this.marks.distribution[index].marksAwarded = max;
         }
 
+        this.calculateTotalMark();
+    }
+
+    private calculateTotalMark() {
         this.marks.totalMark = 0;
         for (let i = 0; i < this.marks.distribution.length; i++) {
-            if (this.isEssayBased) {
-                this.marks.totalMark +=
-                    (this.marks.distribution[i].marksAwarded! *
-                        this.assessment.rubrics.criterion[i].totalMarks) /
-                    100;
+            if (this.isRubricsUsed) {
+                if (this.marks.distribution[i].marksAwarded) {
+                    this.marks.totalMark +=
+                        (this.marks.distribution[i].marksAwarded! *
+                            this.assessment.rubrics.criterion[i].totalMarks) /
+                        100;
+                }
             } else {
-                if (this.marks.distribution[i].marksAwarded !== null) {
+                if (this.marks.distribution[i].marksAwarded) {
                     this.marks.totalMark +=
                         this.marks.distribution[i].marksAwarded!;
                 }
@@ -226,10 +314,6 @@ export class MarkingComponent
 
     private selection(): Selection {
         return window.getSelection()!;
-    }
-
-    private selectedText(): string {
-        return window.getSelection()!.toString();
     }
 
     private checkSelection(selection: Selection) {
@@ -447,8 +531,14 @@ export class MarkingComponent
     }
 
     onSubmit() {
+        let j = this.answerScript.status!.findIndex(
+            (s: AnswerScriptStatusObj) => {
+                return s.marker === this.currentUser.id;
+            }
+        );
         this.checkIsMarkingFinished()
-            ? (this.answerScript.status = AnswerScriptStatus.FINISHED)
+            ? (this.answerScript.status![j].status =
+                  AnswerScriptStatus.FINISHED)
             : null;
 
         let i = this.answerScript.marks.findIndex((obj: Marks) => {
@@ -467,5 +557,34 @@ export class MarkingComponent
                     `/assessment-details/${this.assessment.id}`,
                 ]);
             });
+    }
+
+    onGoBackClicked() {
+        if (
+            this.assessment.grading_method === GradingMethod.RUBRICS &&
+            this.isRubricsDetailsShowed
+        ) {
+            this.isRubricsDetailsShowed = false;
+        } else {
+            this.router.navigate([`/assessment-details/${this.assessment.id}`]);
+        }
+    }
+
+    get comment() {
+        return this.commentFormControl;
+    }
+
+    updateComment() {
+        if (this.commentFormControl.valid) {
+            let comment = this.answerScript.comment.find((c) => {
+                return c.marker == this.currentUser.id;
+            });
+            comment!.comment = this.commentFormControl.value;
+            this._modalService.dismissAll();
+        }
+    }
+
+    openModal(modal: any) {
+        this._modalService.open(modal);
     }
 }

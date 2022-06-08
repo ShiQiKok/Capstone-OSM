@@ -17,3 +17,15 @@ div#sideNav {
     bottom: 0;
     right: 1rem;
 }
+
+::ng-deep .mat-sort-header-arrow {
+    color: #fff !important;
+}
+
+.mark-btn {
+    background-color: #fff;
+}
+
+.mark-btn:hover {
+    background-color: #4277FF;
+}

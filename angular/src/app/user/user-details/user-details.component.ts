@@ -1,18 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from 'src/app/app.component';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { UserService } from 'src/services/user.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
-
-class UserEditInput {
-    username!: string;
-    first_name!: string;
-    last_name!: string;
-    email!: string;
-}
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { User } from 'src/models/user';
 
 @Component({
     selector: 'app-user-details',
@@ -20,14 +15,18 @@ class UserEditInput {
     styleUrls: ['./user-details.component.scss'],
 })
 export class UserDetailsComponent extends AppComponent implements OnInit {
+
     isEditing: boolean = false;
     isEditingPassword: boolean = false;
-    showErrorMessage: boolean = false;
     errorMessage: string = '';
+    errorMessageOnSave: string = '';
 
     passwordForm: FormGroup;
+    userInfoForm: FormGroup;
 
-    dummyUser: UserEditInput;
+    // icons
+    faEyeSlash = faEyeSlash;
+    faEye = faEye;
 
     constructor(
         router: Router,
@@ -38,21 +37,28 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
         private _snackBar: MatSnackBar
     ) {
         super(router, _authenticationService);
-        this.dummyUser = {
-            username: this.currentUser.username!,
-            first_name: this.currentUser.first_name!,
-            last_name: this.currentUser.last_name!,
-            email: this.currentUser.email!,
-        };
+        this.userInfoForm = this._formBuilder.group({
+            firstName: [this.currentUser.first_name!, Validators.required],
+            lastName: [this.currentUser.last_name!, Validators.required],
+            email: [
+                this.currentUser.email!,
+                [
+                    Validators.required,
+                    Validators.pattern(
+                        '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'
+                    ),
+                ],
+            ],
+        });
 
         this.passwordForm = this._formBuilder.group({
             currentPassword: ['', Validators.required],
             newPassword: ['', Validators.required],
-            confirmPassword: ['', Validators.required]
-        })
+            confirmPassword: ['', Validators.required],
+        });
     }
 
-    ngOnInit(){
+    ngOnInit() {
         this._userService.getApi();
     }
 
@@ -61,32 +67,120 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
     }
 
     onSave() {
-        this.currentUser.username = this.dummyUser.username;
-        this.currentUser.first_name = this.dummyUser.first_name;
-        this.currentUser.last_name = this.dummyUser.last_name;
-        this.currentUser.email = this.dummyUser.email;
-        this._userService.update(this.currentUser.id!, this.currentUser).then(user => {
-            this._authenticationService.setUser(this.currentUser);
-        })
-        this.isEditing = false;
+        if (this.userInfoForm.valid) {
+            let tempUser: User = Object.assign({}, this.currentUser);
+            // if the form is valid, replace the old value
+            tempUser.first_name = this.firstName!.value;
+            tempUser.last_name = this.lastName!.value;
+            tempUser.email = this.email!.value;
+
+            this._userService
+                .update(tempUser.id!, tempUser)
+                .then(() => {
+                    this._authenticationService.setUser(this.currentUser);
+                    this._snackBar.open('Your information is updated!', '', {
+                        duration: 3000,
+                    });
+                }).catch((err) => {
+                    this.resetFormWithInitialValue();
+                    for (let key in err.error){
+                        if (key == 'first_name'){
+                            this.errorMessageOnSave = `First Name: ${err.error[key]}`;
+                            break;
+                        }
+                        if (key == 'last_name'){
+                            this.errorMessageOnSave = `Last Name: ${err.error[key]}`;
+                            break;
+                        }
+                        if (key == 'email'){
+                            this.errorMessageOnSave = `Email: ${err.error[key]}`;
+                            break;
+                        }
+                    }
+                });
+            this.isEditing = false;
+        }
     }
 
-    openModal(modal: any){
+    openModal(modal: any) {
         this.modalService.open(modal);
     }
 
-    onNewPasswordSubmit(){
-        if(this.passwordForm.value.newPassword === this.passwordForm.value.confirmPassword){
-            this._userService.checkPassword(this.currentUser.id!, this.passwordForm.value.currentPassword, this.passwordForm.value.newPassword).then(data => {
-                this.modalService.dismissAll();
-                this._snackBar.open('Password changed successfully!', '', {
-                    duration: 3000
+    onNewPasswordSubmit() {
+        if (
+            this.newPassword.value ===
+            this.confirmPassword.value && this.newPassword.value != ''
+        ) {
+            this._userService
+                .checkPassword(
+                    this.currentUser.id!,
+                    this.passwordForm.value.currentPassword,
+                    this.passwordForm.value.newPassword
+                )
+                .then((data) => {
+                    console.log(data)
+                    this.errorMessage= '';
+                    this.modalService.dismissAll();
+                    this._snackBar.open('Password changed successfully!', '', {
+                        duration: 3000,
+                    });
+                })
+                .catch((err) => {
+                    for (let key in err.error){
+                        if (key == 'password'){
+                            this.errorMessage = `Password: ${err.error[key]}`;
+                            break;
+                        }
+                    }
                 });
-            }).catch(err => {
-                this.showErrorMessage = true;
-                this.errorMessage = err.error.details;
-            })
-        };
+        }else {
+            this.errorMessage = "Please make sure your new password and confirm password match!";
+        }
+        this.clearForm(this.passwordForm);
     }
 
+    cancelEdit(){
+        this.isEditing = false;
+        this.resetFormWithInitialValue();
+    }
+
+    private resetFormWithInitialValue(){
+        this.userInfoForm.controls['firstName'].setValue(this.currentUser.first_name);
+        this.userInfoForm.controls['lastName'].setValue(this.currentUser.last_name);
+        this.userInfoForm.controls['email'].setValue(this.currentUser.email);
+    }
+
+    togglePasswordVisibility(id: string, icon: any){
+        let element = document.getElementById(id) as HTMLInputElement;
+        element.type === 'password' ? element.type = 'text' : element.type = 'password';
+        icon.icon.iconName === 'eye-slash' ? icon.icon = faEye : icon.icon = faEyeSlash
+        icon.render();
+    }
+
+    // GETTERS
+    get firstName() {
+        return this.userInfoForm.get('firstName')!;
+    }
+    get lastName() {
+        return this.userInfoForm.get('lastName')!;
+    }
+    get email() {
+        return this.userInfoForm.get('email')!;
+    }
+
+    get currentPassword() {
+        return this.passwordForm.get('currentPassword')!;
+    }
+
+    get newPassword() {
+        return this.passwordForm.get('newPassword')!;
+    }
+
+    get confirmPassword() {
+        return this.passwordForm.get('confirmPassword')!;
+    }
+
+    private clearForm(form: FormGroup){
+        form.reset();
+    }
 }

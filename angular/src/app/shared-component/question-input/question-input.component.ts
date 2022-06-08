@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faQuestionCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { faEllipsisV, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AssessmentService } from 'src/services/assessment.service';
 
 class QuestionInput {
     no?: string | undefined;
@@ -40,37 +42,28 @@ export class QuestionInputComponent implements OnInit {
     template: QuestionInput[] = [
         {
             no: '1',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '2',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '3',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '4',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
-        },
-        {
-            no: '5',
-            value: { question: 'descriptions...', marks: 10 },
-            isEdit: false,
+            value: { question: '', marks: 10 },
+            isEdit: true,
         },
     ];
 
     totalMarks: number = 0;
 
+    // icons
     faTrashAlt = faTrashAlt;
     faEllipsisV = faEllipsisV;
+    faUpload = faUpload;
+    faQuestionCircle = faQuestionCircle;
 
-    constructor() {}
+    uploadedFile!: File | null;
+    isSubmitDisabled: boolean = true;
+
+    constructor(
+        private _assessmentService: AssessmentService,
+        private _modalService: NgbModal
+    ) {
+        this._assessmentService.getApi();
+    }
 
     ngOnInit(): void {
         if (!this.questions) {
@@ -86,12 +79,34 @@ export class QuestionInputComponent implements OnInit {
 
     updateQuestion(element: QuestionInput) {
         element.isEdit = !element.isEdit;
-
         this.totalMarks = this.getTotalMark();
     }
 
     deleteQuestion(element: QuestionInput) {
         this.questions = this.questions.filter((e) => e !== element);
+    }
+
+    openModal(modal: any) {
+        this._modalService.open(modal);
+    }
+
+    onFileChange(file: FileList) {
+        this.uploadedFile = file.item(0);
+        this.isSubmitDisabled = false;
+    }
+
+    uploadQuestions() {
+        this._assessmentService
+            .uploadQuestions(this.uploadedFile!)
+            .then((obj ) => {
+                this.questions = obj as QuestionInput[];
+                this.totalMarks = this.getTotalMark();
+                this._modalService.dismissAll()
+            });
+    }
+
+    setAllUneditable(){
+        this.questions.forEach(q => q.isEdit = false);
     }
 
     private getTotalMark() {

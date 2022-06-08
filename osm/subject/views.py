@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import SubjectSerializer
 from .models import Subject
@@ -33,8 +34,11 @@ def subjects(request, user_id):
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def subject_details(request, id):
-    subject = Subject.objects.get(id=id)
-    serializer = SubjectSerializer(subject, many=False)
+    try:
+        subject = Subject.objects.get(id=id)
+        serializer = SubjectSerializer(subject, many=False)
+    except:
+        return Response({"error": "Subject not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(serializer.data)
 
@@ -48,7 +52,7 @@ def create_subject(request):
         serializer.save()
         return Response(serializer.data)
     else:
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
@@ -59,8 +63,8 @@ def update_subject(request, id):
 
     if serializer.is_valid():
         serializer.save()
-
-    return Response(serializer.data)
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 @authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])

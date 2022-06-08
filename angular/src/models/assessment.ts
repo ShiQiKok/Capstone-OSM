@@ -11,12 +11,18 @@ export enum MarkingSettings {
     MARK_BY_QUESTION = 'mark_by_question',
 }
 
+export enum GradingMethod {
+    RUBRICS = 'Rubrics',
+    QUESTION = 'Questions',
+}
+
 export class Assessment {
     id?: number | undefined;
     name?: string | undefined;
     subject?: number | undefined;
     type?: AssessmentType | undefined;
-    marking_settings?: MarkingSettings | undefined;
+    grading_method?: GradingMethod;
+    marking_setting?: MarkingSettings | undefined;
     rubrics?: any | undefined;
     questions?: any | undefined;
     markers?: number[] | undefined;

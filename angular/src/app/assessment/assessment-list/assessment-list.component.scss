@@ -1,0 +1,10 @@
+@import "../../../styles.scss";
+
+.hoverable-card {
+    transition: 300ms;
+}
+
+.hoverable-card:hover {
+    border-color: $primary;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
