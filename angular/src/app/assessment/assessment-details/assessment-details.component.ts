@@ -5,7 +5,7 @@ import { Assessment, AssessmentType, GradingMethod } from 'src/models/assessment
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { faFileDownload, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faFileDownload, faInfo, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript, AnswerScriptStatusObj } from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
@@ -62,6 +62,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     faFileDownload = faFileDownload;
     faTimesCircle = faTimesCircle;
     faEdit = faEdit;
+    faInfo = faInfo;
 
     // controls
     isLoading: boolean = true;
@@ -127,12 +128,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                     } else if (key === 'marks') {
                         temp = temp[this.markerIndex].totalMark;
                     }
-                    // Use an obscure Unicode character to delimit the words in the concatenated string.
-                    // This avoids matches where the values of two columns combined will match the user's query
-                    // (e.g. `Flute` and `Stop` will match `Test`). The character is intended to be something
-                    // that has a very low chance of being typed in by somebody in a text field. This one in
-                    // particular is "White up-pointing triangle with dot" from
-                    // https://en.wikipedia.org/wiki/List_of_Unicode_characters
                     return currentTerm + temp + '◬';
                 }, '')
                 .toLowerCase();
@@ -146,6 +141,8 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
      * To update the custom sorting properties of the table
      */
     private setSortingProperties() {
+        const STATUS_SORTING = ['In Progress', 'Not Started', 'Finished'];
+
         this.answerScripts.sort = this.sort;
 
         // set the sorting function to custom filter function
@@ -175,8 +172,10 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                 let tempDataB: any = Object.assign({}, b);
 
                 if (processedActive == 'status' && a.status && b.status) {
-                    tempDataA.status = a.status[this.markerIndex].status;
-                    tempDataB.status = b.status[this.markerIndex].status;
+                    let statusA = a.status[this.markerIndex].status;
+                    let statusB = b.status[this.markerIndex].status;
+                    tempDataA.status = STATUS_SORTING.indexOf(statusA);
+                    tempDataB.status = STATUS_SORTING.indexOf(statusB);
                 } else if (processedActive == 'marks' && a.marks && b.marks) {
                     tempDataA.marks = a.marks[this.markerIndex].totalMark;
                     tempDataB.marks = b.marks[this.markerIndex].totalMark;

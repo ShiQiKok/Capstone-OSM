@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
     constructor(
         private authenticationService: AuthenticationService,
         private router: Router,
-        private route: ActivatedRoute,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -29,7 +29,9 @@ export class LoginComponent implements OnInit {
     }
 
     onSubmit() {
-        let checkbox = document.getElementById('rememberMeCheck') as HTMLInputElement;
+        let checkbox = document.getElementById(
+            'rememberMeCheck'
+        ) as HTMLInputElement;
 
         this.isUsernameValid = true;
         this.isPasswordValid = true;
@@ -39,18 +41,19 @@ export class LoginComponent implements OnInit {
         } else if (this.password === '') {
             this.isPasswordValid = false;
         } else {
-            this.authenticationService.login(this.username, this.password, checkbox.checked).then(
-                () => {
+            this.authenticationService
+                .login(this.username, this.password, checkbox.checked)
+                .then(() => {
                     let returnUrl = this.route.snapshot.queryParams.returnUrl;
                     this.router.navigate([returnUrl || '/assessment-list']);
-                },
-                (err) => {
+                })
+                .catch((err) => {
                     this.isFormValid = false;
-                    this.errorMessage = err.error.detail;
+                    this.errorMessage =
+                        'Your username or password is incorrect.';
                     this.username = '';
                     this.password = '';
-                }
-            );
+                });
         }
     }
 }

@@ -24,7 +24,6 @@ export class AuthenticationService {
                 ? JSON.parse(sessionStorage.getItem('currentUser') as string)
                 : null
         );
-
         this.currentUser = this.currentUserSubject.asObservable();
     }
 
@@ -87,6 +86,7 @@ export class AuthenticationService {
         return new Promise((resolve, reject) => {
             // remove user from local storage and set current user to null
             localStorage.removeItem('currentUser');
+            sessionStorage.removeItem('currentUser');
             this.currentUserSubject.next(null);
             resolve('Successfully logged out!');
         });
