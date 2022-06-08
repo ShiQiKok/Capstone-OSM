@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from 'src/services/authentication.service';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
     username: string = '';
@@ -15,6 +16,10 @@ export class LoginComponent implements OnInit {
     isUsernameValid: boolean = true;
     isPasswordValid: boolean = true;
     errorMessage: string = '';
+
+    // icons
+    faEyeSlash = faEyeSlash;
+    faEye = faEye;
 
     constructor(
         private authenticationService: AuthenticationService,
@@ -55,5 +60,16 @@ export class LoginComponent implements OnInit {
                     this.password = '';
                 });
         }
+    }
+
+    togglePasswordVisibility(id: string, icon: any) {
+        let element = document.getElementById(id) as HTMLInputElement;
+        element.type === 'password'
+            ? (element.type = 'text')
+            : (element.type = 'password');
+        icon.icon.iconName === 'eye-slash'
+            ? (icon.icon = faEye)
+            : (icon.icon = faEyeSlash);
+        icon.render();
     }
 }
