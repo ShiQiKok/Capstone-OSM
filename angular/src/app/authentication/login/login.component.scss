@@ -8,3 +8,26 @@
     outline-width: 0px;
     box-shadow: 0 0 0 0.2rem rgb(66 119 255 / 25%);
 }
+
+@media (min-width: 576px) {
+    input#password {
+        width: 89%;
+    }
+}
+@media (min-width: 768px) {
+    input#password {
+        width: 92%;
+    }
+}
+
+@media (min-width: 992px) {
+    input#password {
+        width: 94%;
+    }
+}
+
+@media (min-width: 1200px) {
+    input#password {
+        width: 95%;
+    }
+}
