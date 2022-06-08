@@ -66,7 +66,8 @@
                 matSortDirection="asc"
             >
                 <ng-container matColumnDef="studentName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                    style="width: 22%">
                         Student Name
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -74,7 +75,8 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="studentId">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                    style="width: 12%">
                         Student ID
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -82,7 +84,8 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                    style="width: 23%">
                         Last Update
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -90,7 +93,7 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%">
                         Status
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -113,7 +116,7 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="marks">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 14%">
                         Marks
                     </th>
                     <td mat-cell *matCellDef="let answer">
