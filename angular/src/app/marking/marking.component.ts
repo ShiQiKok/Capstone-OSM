@@ -93,6 +93,7 @@ export class MarkingComponent
     initialComment!: Comment[];
     totalMarks: number = 0;
     commentFormControl = new FormControl('', [Validators.maxLength(300)]);
+    previousSelected: any[] = [];
 
     // controls
     isEssayBased?: boolean = true;
@@ -193,10 +194,20 @@ export class MarkingComponent
     }
 
     onDetailedCriteriaChanged() {
-        this.selectedDetailedCriterion = this.detailCriteriaList.selectedOptions.selected[0].value;
-        if (this.marks.distribution[this.selectedCriterionIndex].marksAwarded != null){
-            this.marks.distribution[this.selectedCriterionIndex].marksAwarded = undefined
+        this.selectedDetailedCriterion =
+            this.detailCriteriaList.selectedOptions.selected[0].value;
+
+        if (
+            this.marks.distribution[this.selectedCriterionIndex].marksAwarded &&
+            this.previousSelected[this.selectedCriterionIndex] !=
+                this.selectedDetailedCriterion
+        ) {
+            this.marks.distribution[this.selectedCriterionIndex].marksAwarded =
+                undefined;
+            this.calculateTotalMark();
         }
+        this.previousSelected[this.selectedCriterionIndex] =
+            this.selectedDetailedCriterion;
     }
 
     getDetail() {
@@ -234,6 +245,14 @@ export class MarkingComponent
                 .get(this.answerScript.assessment!)
                 .then((obj) => {
                     this.assessment = obj;
+                    console.log(this.assessment);
+                    for (
+                        let i = 0;
+                        i < this.assessment.rubrics.criterion.length;
+                        i++
+                    ) {
+                        this.previousSelected.push(null);
+                    }
 
                     this.checkControls();
                 });
@@ -271,15 +290,21 @@ export class MarkingComponent
             this.marks.distribution[index].marksAwarded = max;
         }
 
+        this.calculateTotalMark();
+    }
+
+    private calculateTotalMark() {
         this.marks.totalMark = 0;
         for (let i = 0; i < this.marks.distribution.length; i++) {
             if (this.isRubricsUsed) {
-                this.marks.totalMark +=
-                    (this.marks.distribution[i].marksAwarded! *
-                        this.assessment.rubrics.criterion[i].totalMarks) /
-                    100;
+                if (this.marks.distribution[i].marksAwarded) {
+                    this.marks.totalMark +=
+                        (this.marks.distribution[i].marksAwarded! *
+                            this.assessment.rubrics.criterion[i].totalMarks) /
+                        100;
+                }
             } else {
-                if (this.marks.distribution[i].marksAwarded !== null) {
+                if (this.marks.distribution[i].marksAwarded) {
                     this.marks.totalMark +=
                         this.marks.distribution[i].marksAwarded!;
                 }
