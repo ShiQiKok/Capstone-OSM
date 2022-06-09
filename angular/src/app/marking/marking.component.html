@@ -233,6 +233,7 @@
                 Marks: {{ marks.totalMark ? marks.totalMark : 0 }}
             </h5>
             <button
+                *ngIf="!isRubricsDetailsShowed"
                 class="btn btn-primary w-100"
                 style="height: 3rem"
                 (click)="onSubmit()"
