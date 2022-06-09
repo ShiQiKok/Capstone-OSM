@@ -245,7 +245,6 @@ export class MarkingComponent
                 .get(this.answerScript.assessment!)
                 .then((obj) => {
                     this.assessment = obj;
-                    console.log(this.assessment);
                     for (
                         let i = 0;
                         i < this.assessment.rubrics.criterion.length;

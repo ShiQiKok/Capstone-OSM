@@ -3,8 +3,10 @@ import { FormControl, ValidationErrors } from '@angular/forms';
 
 @Component({
     selector: 'error-message',
-    template: `
-    <div *ngIf="formControl.invalid && (formControl.dirty || formControl.touched)"
+    template: ` <div
+        *ngIf="
+            formControl.invalid && (formControl.dirty || formControl.touched)
+        "
         class="text-danger"
     >
         <small>{{ errorMessage }}</small>
@@ -27,7 +29,6 @@ export class ErrorMessageComponent implements OnInit {
     getFormValidationErrors() {
         let keys = this.formControl.errors;
         if (keys) {
-            console.log(keys);
             Object.keys(keys).forEach((key) => {
                 switch (key) {
                     case 'required': {
@@ -38,8 +39,10 @@ export class ErrorMessageComponent implements OnInit {
                         this.errorMessage = 'Please enter a valid email.';
                         break;
                     }
-                    case 'maxlength':{
-                        this.errorMessage = `Do not exceed ${keys![key].requiredLength} words.`;
+                    case 'maxlength': {
+                        this.errorMessage = `Do not exceed ${
+                            keys![key].requiredLength
+                        } words.`;
                         break;
                     }
                 }
@@ -47,5 +50,3 @@ export class ErrorMessageComponent implements OnInit {
         }
     }
 }
-
-

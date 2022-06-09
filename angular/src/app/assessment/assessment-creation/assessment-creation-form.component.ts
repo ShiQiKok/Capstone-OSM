@@ -152,7 +152,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
             this.rubricsInput.setUneditable();
             // using reference component to trigger the event emit
             this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
-            console.log(this.rubrics);
         } else {
             this.rubrics = undefined;
         }

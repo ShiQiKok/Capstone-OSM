@@ -118,7 +118,6 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
                     this.passwordForm.value.newPassword
                 )
                 .then((data) => {
-                    console.log(data)
                     this.errorMessage= '';
                     this.modalService.dismissAll();
                     this._snackBar.open('Password changed successfully!', '', {
