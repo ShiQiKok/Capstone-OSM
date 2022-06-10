@@ -76,7 +76,12 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
             this._userService
                 .update(tempUser.id!, tempUser)
-                .then(() => {
+                .then((user: any) => {
+
+                    this.currentUser.first_name = user.first_name;
+                    this.currentUser.last_name = user.last_name;
+                    this.currentUser.email = user.email;
+
                     this._authenticationService.setUser(this.currentUser);
                     this._snackBar.open('Your information is updated!', '', {
                         duration: 3000,

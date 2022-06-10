@@ -46,8 +46,9 @@ export class LoginComponent implements OnInit {
         } else if (this.password === '') {
             this.isPasswordValid = false;
         } else {
+            this.authenticationService.setRememberUser(checkbox.checked);
             this.authenticationService
-                .login(this.username, this.password, checkbox.checked)
+                .login(this.username, this.password)
                 .then(() => {
                     let returnUrl = this.route.snapshot.queryParams.returnUrl;
                     this.router.navigate([returnUrl || '/assessment-list']);
