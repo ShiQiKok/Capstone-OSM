@@ -107,6 +107,7 @@ export class QuestionInputComponent implements OnInit {
 
     setAllUneditable(){
         this.questions.forEach(q => q.isEdit = false);
+        console.log(this.questions);
     }
 
     private getTotalMark() {
