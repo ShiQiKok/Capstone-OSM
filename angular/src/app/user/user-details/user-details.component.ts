@@ -130,6 +130,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
                     });
                 })
                 .catch((err) => {
+                    console.log(err)
                     for (let key in err.error){
                         if (key == 'password'){
                             this.errorMessage = `Password: ${err.error[key]}`;

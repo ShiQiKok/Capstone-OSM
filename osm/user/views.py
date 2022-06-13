@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import UserSerializer, UserCollabSerializer
 from .models import User
+from .validators import validate_password
 from django.contrib.auth.hashers import check_password
 
 
@@ -117,6 +118,7 @@ def createUser(request):
 def updateUser(request, id):
     user = User.objects.get(id=id)
     serializer = UserSerializer(instance=user, data=request.data)
+    print(request.data)
 
     if serializer.is_valid():
         serializer.save()
@@ -143,17 +145,20 @@ def updatePassword(request, id):
 
     if (check_password(request.data['currentPassword'], user.password)):
         update_request = request._request
-        user.set_password(request.data['newPassword'])
+        try:
+            validate_password(request.data['newPassword'])
+            user.set_password(request.data['newPassword'])
 
-        update_request.POST = {
-            "username": user.username,
-            "email": user.email,
-            "password": user.password,
-            "first_name": user.first_name,
-            "last_name": user.last_name
-        }
-
-        return updateUser(update_request, id)
+            update_request.POST = {
+                "username": user.username,
+                "email": user.email,
+                "password": user.password,
+                "first_name": user.first_name,
+                "last_name": user.last_name
+            }
+            return updateUser(update_request, id)
+        except Exception as e:
+            return Response({'password': e.message}, status=status.HTTP_400_BAD_REQUEST)
 
     else:
         return Response({
