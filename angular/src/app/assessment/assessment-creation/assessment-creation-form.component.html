@@ -90,26 +90,7 @@
                             [formControl]="subject"
                         ></error-message>
                     </div>
-                    <div class="form-group">
-                        <label for="defaultSetting">Default Setting</label>
-                        <select
-                            class="form-select"
-                            name="defaultSetting"
-                            id="defaultSetting"
-                            formControlName="defaultSetting"
-                        >
-                            <option
-                                *ngFor="let setting of markingSettings"
-                                [value]="setting"
-                            >
-                                {{ setting.replaceAll("_", " ") | titlecase }}
-                            </option>
-                        </select>
-                        <error-message
-                            ngDefaultControl
-                            [formControl]="defaultSetting"
-                        ></error-message>
-                    </div>
+
                     <div>
                         <button
                             class="btn btn-primary"
@@ -252,17 +233,6 @@
                             <th>Subject</th>
                             <td>
                                 {{ selectedSubjectName }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Default Marking Setting</th>
-                            <td>
-                                {{
-                                    assessmentDetailFormGroup.value.defaultSetting.replaceAll(
-                                        "_",
-                                        " "
-                                    ) | titlecase
-                                }}
                             </td>
                         </tr>
                         <tr>

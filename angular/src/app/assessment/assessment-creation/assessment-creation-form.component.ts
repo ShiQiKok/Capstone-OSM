@@ -113,11 +113,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
             assessmentName: ['Quiz 1', Validators.required],
             assessmentType: [AssessmentType.ESSAY_BASED, Validators.required],
             gradingMethod: [GradingMethod.RUBRICS, Validators.required],
-            subject: [null, Validators.required],
-            defaultSetting: [
-                MarkingSettings.MARK_BY_SCRIPT,
-                Validators.required,
-            ],
+            subject: [null, Validators.required]
         });
     }
 
@@ -275,10 +271,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
 
     get subject() {
         return this.assessmentDetailFormGroup.get('subject');
-    }
-
-    get defaultSetting() {
-        return this.assessmentDetailFormGroup.get('defaultSetting');
     }
     // END REGION FormControls Getters
 
