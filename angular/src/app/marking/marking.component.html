@@ -1,4 +1,4 @@
-<div style="width: 80%" class="pl-4 pr-5">
+<div style="width: 80%" class="pl-4 pr-5" *ngIf="!isLoading">
     <ng-template #floatToolbar>
         <button
             class="btn btn-sm btn-outline-primary d-inline-block"
@@ -271,3 +271,10 @@
         </button>
     </div>
 </ng-template>
+
+<mat-spinner
+    *ngIf="isLoading"
+    [strokeWidth]="2"
+    [diameter]="150"
+    class="mx-auto mt-5"
+></mat-spinner>

@@ -101,6 +101,7 @@ export class MarkingComponent
     isRubricsDetailsShowed: boolean = false;
     isFloatingBarShowed: boolean = false;
     isSubmitted: boolean = false;
+    isLoading: boolean = true;
 
     //icon
     faCheck = faCheck;
@@ -136,6 +137,7 @@ export class MarkingComponent
     }
 
     async ngOnInit() {
+        this.isLoading = true;
         await this.loadApi();
         this.getDetail();
     }
@@ -146,13 +148,15 @@ export class MarkingComponent
     }
 
     checkControls() {
-        if (this.assessment.type === AssessmentType.ESSAY_BASED)
+        if (this.assessment.type == AssessmentType.ESSAY_BASED)
             this.isEssayBased = true;
         else this.isEssayBased = false;
 
-        if (this.assessment.grading_method === GradingMethod.RUBRICS)
+        if (this.assessment.grading_method == GradingMethod.RUBRICS)
             this.isRubricsUsed = true;
         else this.isRubricsUsed = false;
+
+        console.log(this.isRubricsUsed);
     }
 
     onGeneralCriteriaChanged() {
@@ -245,15 +249,17 @@ export class MarkingComponent
                 .get(this.answerScript.assessment!)
                 .then((obj) => {
                     this.assessment = obj;
-                    for (
-                        let i = 0;
-                        i < this.assessment.rubrics.criterion.length;
-                        i++
-                    ) {
-                        this.previousSelected.push(null);
-                    }
-
                     this.checkControls();
+                    if (this.isRubricsUsed){
+                        for (
+                            let i = 0;
+                            i < this.assessment.rubrics.criterion.length;
+                            i++
+                        ) {
+                            this.previousSelected.push(null);
+                        }
+                    }
+                    this.isLoading = false;
                 });
 
             if (this.answerScript.script) this.loadScript();
