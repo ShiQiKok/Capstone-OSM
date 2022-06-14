@@ -139,7 +139,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
                     }
                 });
         }else {
-            this.errorMessage = "Please make sure your new password and confirm password match!";
+            this.errorMessage = "Please make sure your new password and confirm password is matched!";
         }
         this.clearForm(this.passwordForm);
     }
