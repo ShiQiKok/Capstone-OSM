@@ -68,6 +68,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
     onSave() {
         if (this.userInfoForm.valid) {
+            this.errorMessageOnSave = '';
             let tempUser: User = Object.assign({}, this.currentUser);
             // if the form is valid, replace the old value
             tempUser.first_name = this.firstName!.value;
