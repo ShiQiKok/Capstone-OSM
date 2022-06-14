@@ -1,11 +1,19 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Assessment, AssessmentType, GradingMethod } from 'src/models/assessment';
+import {
+    Assessment,
+    AssessmentType,
+    GradingMethod,
+} from 'src/models/assessment';
 import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { faFileDownload, faInfo, faUpload } from '@fortawesome/free-solid-svg-icons';
+import {
+    faFileDownload,
+    faInfo,
+    faUpload,
+} from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript, AnswerScriptStatusObj } from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
@@ -74,7 +82,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         'lastUpdate',
         'status',
         'marks',
-        'action'
+        'action',
     ];
 
     constructor(
@@ -304,9 +312,10 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                     .catch((err) => {
                         console.log(err);
                     });
-            }).catch((err) => {
-                this.uploadErrorMsg = err.error.error
             })
+            .catch((err) => {
+                this.uploadErrorMsg = err.error.error;
+            });
     }
 
     private updateMatchedMarkerIndex() {
@@ -345,16 +354,18 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     }
 
     onSave() {
-        this.assessment = Object.assign({}, this.editAssessment);
-        this.assessment.markers = this.collaborators.map((c: any) => {
-            return c.id;
-        });
-        this.assessment.markers.push(this.currentUser.id!);
-        this._assessmentService
-            .update(this.assessment.id!, this.assessment)
-            .then(() => {
-                this.modalService.dismissAll();
+        if (this.editAssessment.name) {
+            this.assessment = Object.assign({}, this.editAssessment);
+            this.assessment.markers = this.collaborators.map((c: any) => {
+                return c.id;
             });
+            this.assessment.markers.push(this.currentUser.id!);
+            this._assessmentService
+                .update(this.assessment.id!, this.assessment)
+                .then(() => {
+                    this.modalService.dismissAll();
+                });
+        }
     }
 
     filterValue(event: Event) {

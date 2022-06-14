@@ -378,11 +378,18 @@
         <div class="form-group">
             <label for="assessmentName">Assessment Name</label>
             <input
+                required
                 type="text"
                 class="form-control"
                 id="assessmentName"
                 [(ngModel)]="editAssessment.name"
+                #name="ngModel"
             />
+            <div *ngIf='name.invalid && (name.dirty || name.touched)' class="text-danger">
+                <small *ngIf="name.errors?.['required']">
+                    This field is required.
+                </small>
+            </div>
         </div>
         <div class="form-group">
             <label for="assessmentType">Assessment Type</label>
