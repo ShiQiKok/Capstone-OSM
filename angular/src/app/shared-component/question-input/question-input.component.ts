@@ -72,8 +72,8 @@ export class QuestionInputComponent implements OnInit {
     ngOnInit(): void {
         if (!this.questions) {
             this.questions = this.template;
-            this.totalMarks = this.getTotalMark();
         }
+        this.totalMarks = this.getTotalMark();
     }
 
     addQuestion() {
