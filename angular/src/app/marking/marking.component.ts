@@ -250,7 +250,7 @@ export class MarkingComponent
                 .then((obj) => {
                     this.assessment = obj;
                     this.checkControls();
-                    if (this.isRubricsUsed){
+                    if (this.isRubricsUsed) {
                         for (
                             let i = 0;
                             i < this.assessment.rubrics.criterion.length;
@@ -261,7 +261,6 @@ export class MarkingComponent
                     }
                     this.isLoading = false;
                 });
-
             if (this.answerScript.script) this.loadScript();
         });
     }
@@ -272,8 +271,6 @@ export class MarkingComponent
             this.viewSDKClient.previewFile(
                 'pdf-div',
                 this.answerScript.script,
-                // * set the Adobe Acrobat configuration
-                // * check the API at https://developer.adobe.com/document-services/docs/overview/pdf-embed-api/howtos_ui/
                 {},
                 this.answerScript.id!
             );
