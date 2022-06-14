@@ -44,6 +44,7 @@ class RubricMarkRangeInput {
 export class RubricsInputComponent implements OnInit {
     @Input() rubrics!: RubricsInput;
     @Input() isEditingMode!: boolean;
+    @Input() dismissAllModel: boolean = true;
     @Output() rubricsChange = new EventEmitter<RubricsInput>();
 
     @ViewChild(MatTable) table!: MatTable<any>;
@@ -310,7 +311,7 @@ export class RubricsInputComponent implements OnInit {
         this.isSubmitDisabled = false;
     }
 
-    uploadRubrics() {
+    uploadRubrics(modal: any) {
         this._assessmentService
             .uploadRubrics(this.uploadedFile!)
             .then((obj) => {
@@ -318,7 +319,8 @@ export class RubricsInputComponent implements OnInit {
                 this.rubrics.isEdit = false;
                 this.calculateTotal();
                 this.table.renderRows();
-                this._modalService.dismissAll()
+                if (this.dismissAllModel) this._modalService.dismissAll();
+                else modal.close();
             });
     }
 }

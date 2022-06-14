@@ -22,7 +22,6 @@ export class Assessment {
     subject?: number | undefined;
     type?: AssessmentType | undefined;
     grading_method?: GradingMethod;
-    marking_setting?: MarkingSettings | undefined;
     rubrics?: any | undefined;
     questions?: any | undefined;
     markers?: number[] | undefined;

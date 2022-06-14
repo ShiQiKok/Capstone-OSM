@@ -333,11 +333,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         modal: NgbActiveModal
     ) {
         rubricsInput.rubricsChange.emit(rubricsInput.rubrics);
-        this._assessmentService
-            .update(this.assessment.id!, this.assessment)
-            .then(() => {
-                modal.close();
-            });
+        modal.close();
     }
 
     saveEditedQuestions(
@@ -345,11 +341,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         modal: NgbActiveModal
     ) {
         questionsInput.questionsChange.emit(questionsInput.questions);
-        this._assessmentService
-            .update(this.assessment.id!, this.assessment)
-            .then(() => {
-                modal.close();
-            });
+        modal.close();
     }
 
     onSave() {

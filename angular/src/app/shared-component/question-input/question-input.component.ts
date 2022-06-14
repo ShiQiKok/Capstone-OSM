@@ -1,5 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faQuestionCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import {
+    faQuestionCircle,
+    faTrashAlt,
+} from '@fortawesome/free-regular-svg-icons';
 import { faEllipsisV, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AssessmentService } from 'src/services/assessment.service';
@@ -27,6 +30,7 @@ class QuestionValueInput {
 export class QuestionInputComponent implements OnInit {
     @Input() questions!: QuestionInput[];
     @Input() isEditingMode: boolean = true;
+    @Input() dismissAllModel: boolean = true;
     @Output() questionsChange = new EventEmitter<QuestionInput[]>();
 
     questionDisplayedColumns: string[] = [
@@ -95,18 +99,19 @@ export class QuestionInputComponent implements OnInit {
         this.isSubmitDisabled = false;
     }
 
-    uploadQuestions() {
+    uploadQuestions(modal: any) {
         this._assessmentService
             .uploadQuestions(this.uploadedFile!)
-            .then((obj ) => {
+            .then((obj) => {
                 this.questions = obj as QuestionInput[];
                 this.totalMarks = this.getTotalMark();
-                this._modalService.dismissAll()
+                if (this.dismissAllModel) this._modalService.dismissAll();
+                else modal.close();
             });
     }
 
-    setAllUneditable(){
-        this.questions.forEach(q => q.isEdit = false);
+    setAllUneditable() {
+        this.questions.forEach((q) => (q.isEdit = false));
         console.log(this.questions);
     }
 

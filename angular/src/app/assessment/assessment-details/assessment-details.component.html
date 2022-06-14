@@ -66,8 +66,12 @@
                 matSortDirection="asc"
             >
                 <ng-container matColumnDef="studentName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                    style="width: 22%">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        style="width: 22%"
+                    >
                         Student Name
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -75,8 +79,12 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="studentId">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                    style="width: 12%">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        style="width: 12%"
+                    >
                         Student ID
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -84,8 +92,12 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                    style="width: 23%">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        style="width: 23%"
+                    >
                         Last Update
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -93,7 +105,12 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        style="width: 20%"
+                    >
                         Status
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -116,7 +133,12 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="marks">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 12%">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        style="width: 12%"
+                    >
                         Marks
                     </th>
                     <td mat-cell *matCellDef="let answer">
@@ -365,6 +387,7 @@
         <div class="form-group">
             <label for="assessmentType">Assessment Type</label>
             <select
+                [disabled]="answerScripts.data.length > 0"
                 class="form-select"
                 name="assessmentTypes"
                 id="assessmentTypes"
@@ -388,41 +411,23 @@
                 </option>
             </select>
         </div>
-        <!-- <div class="form-group">
-            <label for="markingSetting">Default Marking Setting</label>
-            <select
-                class="form-select"
-                name="markingSetting"
-                id="markingSetting"
-                [(ngModel)]="assessment.marking_setting"
+        <div *ngIf="editAssessment.grading_method == 'Rubrics'">
+            <label for="rubrics">Rubrics</label>
+            <button
+                (click)="openModal(editRubrics, { size: 'xl' })"
+                class="btn btn-outline-primary btn-sm d-inline-block ml-4"
             >
-                <option
-                    *ngFor="let setting of markingSettings"
-                    [value]="setting"
-                >
-                    {{ setting.replaceAll("_", " ") | titlecase }}
-                </option>
-            </select>
-        </div> -->
-        <div class="row">
-            <div class="form-group col">
-                <label for="rubrics">Rubrics</label>
-                <button
-                    (click)="openModal(editRubrics, { size: 'xl' })"
-                    class="btn btn-outline-primary btn-sm d-inline-block ml-4"
-                >
-                    Edit Rubrics
-                </button>
-            </div>
-            <div class="form-group col">
-                <label for="rubrics">Questions</label>
-                <button
-                    (click)="openModal(editQuestions, { size: 'xl' })"
-                    class="btn btn-outline-primary btn-sm d-inline-block ml-4"
-                >
-                    Edit Questions
-                </button>
-            </div>
+                Edit Rubrics
+            </button>
+        </div>
+        <div *ngIf="editAssessment.grading_method == 'Questions'">
+            <label for="rubrics">Questions</label>
+            <button
+                (click)="openModal(editQuestions, { size: 'xl' })"
+                class="btn btn-outline-primary btn-sm d-inline-block ml-4"
+            >
+                Edit Questions
+            </button>
         </div>
         <hr class="dropdown-divider" />
         <div class="form-group my-4">
@@ -487,7 +492,8 @@
         <app-rubrics-input
             #rubricsInput
             [isEditingMode]="true"
-            [(rubrics)]="assessment.rubrics"
+            [dismissAllModel]="false"
+            [(rubrics)]="editAssessment.rubrics"
         ></app-rubrics-input>
     </div>
     <div class="modal-footer">
@@ -548,8 +554,9 @@
     <div class="modal-body">
         <app-question-input
             #questionsInput
-            [(questions)]="assessment.questions"
+            [(questions)]="editAssessment.questions"
             [isEditingMode]="true"
+            [dismissAllModel]="false"
         >
         </app-question-input>
     </div>
