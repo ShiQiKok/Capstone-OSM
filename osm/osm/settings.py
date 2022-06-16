@@ -29,7 +29,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-## Storage settings
+# emails
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'osm.cp2@gmail.com'
+EMAIL_HOST_PASSWORD = 'piwjdboyhnwfnnnh'
+
+# Storage settings
 DEFAULT_FILE_STORAGE = 'backend.custom_azure.AzureMediaStorage'
 
 MEDIA_LOCATION = "media"
@@ -136,7 +144,6 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     # 'rest_framework.permissions.AllowAny'
     # ],
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [],
     # ,
     #      'DEFAULT_AUTHENTICATION_CLASSES': (
     #        'rest_framework.authentication.TokenAuthentication',

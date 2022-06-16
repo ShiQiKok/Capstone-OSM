@@ -15,7 +15,7 @@ export class UserService extends BaseService {
     checkPassword(userId: number, password: string, newPassword: string) {
         return new Promise<Object>((resolve, reject) => {
             this.http
-                .post(this.ROOT + this.ALL_API.check + userId, {
+                .post(this.ROOT + this.ALL_API.checkPassword + userId, {
                     currentPassword: password,
                     newPassword: newPassword,
                 })
@@ -26,10 +26,12 @@ export class UserService extends BaseService {
         });
     }
 
-    getCollabUser(){
-        return new Promise<any>((resolve, reject) => {
+    checkEmail(email: string) {
+        return new Promise<Object>((resolve, reject) => {
             this.http
-                .get(this.ROOT + this.ALL_API.collab)
+                .post(this.ROOT + this.ALL_API.checkEmail, {
+                    email: email,
+                })
                 .subscribe(
                     (obj) => resolve(obj),
                     (err) => reject(err)
@@ -37,10 +39,12 @@ export class UserService extends BaseService {
         });
     }
 
-    getBy(obj: any){
-        return new Promise<any>((resolve, reject) => {
+    resetPassword(uid: string, token: string, newPassword: string) {
+        return new Promise<Object>((resolve, reject) => {
             this.http
-                .post(this.ROOT + this.ALL_API.getBy, {data: obj})
+                .post(`${this.ROOT}${this.ALL_API.resetPassword}${uid}/${token}`, {
+                    newPassword: newPassword,
+                })
                 .subscribe(
                     (obj) => resolve(obj),
                     (err) => reject(err)
@@ -48,10 +52,30 @@ export class UserService extends BaseService {
         });
     }
 
-    getList(obj: any){
+    getCollabUser() {
+        return new Promise<any>((resolve, reject) => {
+            this.http.get(this.ROOT + this.ALL_API.collab).subscribe(
+                (obj) => resolve(obj),
+                (err) => reject(err)
+            );
+        });
+    }
+
+    getBy(obj: any) {
         return new Promise<any>((resolve, reject) => {
             this.http
-                .post(this.ROOT + this.ALL_API.getList, {list: obj})
+                .post(this.ROOT + this.ALL_API.getBy, { data: obj })
+                .subscribe(
+                    (obj) => resolve(obj),
+                    (err) => reject(err)
+                );
+        });
+    }
+
+    getList(obj: any) {
+        return new Promise<any>((resolve, reject) => {
+            this.http
+                .post(this.ROOT + this.ALL_API.getList, { list: obj })
                 .subscribe(
                     (obj) => resolve(obj),
                     (err) => reject(err)

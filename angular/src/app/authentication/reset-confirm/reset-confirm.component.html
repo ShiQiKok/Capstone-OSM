@@ -1,0 +1,19 @@
+<div class="container" id="content-body">
+    <div class="card my-4">
+        <div class="card-body">
+
+            <h4 class="card-title">Enter your new password</h4>
+            <div
+                    *ngIf="errorMessage.length > 0"
+                    class="alert alert-danger"
+                    role="alert"
+                >
+                    {{ errorMessage }}
+                </div>
+            <p>Enter your new password and confirm password. </p>
+            <input type="password" class="form-control" [(ngModel)]="newPassword" autofocus>
+            <input type="password" class="form-control" [(ngModel)]="confirmPassword">
+            <button class="btn btn-primary mt-4" (click)="onSubmit()">Send Link</button>
+        </div>
+    </div>
+</div>
