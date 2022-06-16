@@ -8,7 +8,6 @@ from rest_framework import routers
 
 urlpatterns = [
    path('', views.overview, name='answer-overview'),
-   # path('', include(router.urls)),
    path('answers/<int:assessment_id>', views.answers, name='answer-list'),
    path('answer-details/<int:id>/', views.answer_details, name='answer-details'),
    path('answer-create/', views.create_answer, name='answer-create'),

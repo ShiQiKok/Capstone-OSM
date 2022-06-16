@@ -301,7 +301,8 @@ def bulk_create(request):
 # TODO: change student ID
 # process PDF file's data
 def process_data(folder_name, assessment_id, file, criteria_num):
-    [student_name, student_id] = folder_name.split('_')[0:2]
+    # print(folder_name.split('_'))
+    [student_name, student_id, assessment_name] = folder_name.split('_')
     assessment = Assessment.objects.get(id=assessment_id)
     markers = assessment.markers.all()
     temp = [{"marksAwarded": None} for i in range(criteria_num)]
