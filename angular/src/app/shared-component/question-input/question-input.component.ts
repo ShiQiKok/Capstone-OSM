@@ -70,8 +70,10 @@ export class QuestionInputComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (!this.questions) {
+        console.log(this.questions)
+        if (!this.questions ) {
             this.questions = this.template;
+            console.log('sini?')
         }
         this.totalMarks = this.getTotalMark();
     }

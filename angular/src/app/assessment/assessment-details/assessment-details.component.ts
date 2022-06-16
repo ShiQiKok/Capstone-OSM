@@ -27,6 +27,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import {
     faArrowAltCircleLeft,
     faEdit,
+    faQuestionCircle,
     faTimesCircle,
 } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from 'src/services/user.service';
@@ -64,7 +65,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     totalMarks: number = 0;
     uploadErrorMsg: string = '';
     subjects: any = [];
-    
+
     // icons
     faUpload = faUpload;
     faCog = faCog;
@@ -73,6 +74,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     faTimesCircle = faTimesCircle;
     faEdit = faEdit;
     faInfo = faInfo;
+    faQuestionCircle = faQuestionCircle;
 
     // controls
     isLoading: boolean = true;
@@ -253,6 +255,8 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
         this.editAssessment = Object.assign({}, this.assessment);
+        this.editAssessment.rubrics ? this.editAssessment.rubrics = Object.assign({}, this.assessment.rubrics) : null;
+        this.editAssessment.questions ? this.editAssessment.questions = Object.assign({}, this.assessment.questions) : null;
         this.loadCollaborators();
     }
 
@@ -380,6 +384,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                 .update(this.assessment.id!, this.assessment)
                 .then(() => {
                     this.modalService.dismissAll();
+                    this.calculateTotalMarks();
                 });
         }
     }

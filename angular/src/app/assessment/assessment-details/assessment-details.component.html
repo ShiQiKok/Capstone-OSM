@@ -385,7 +385,10 @@
                 [(ngModel)]="editAssessment.name"
                 #name="ngModel"
             />
-            <div *ngIf='name.invalid && (name.dirty || name.touched)' class="text-danger">
+            <div
+                *ngIf="name.invalid && (name.dirty || name.touched)"
+                class="text-danger"
+            >
                 <small *ngIf="name.errors?.['required']">
                     This field is required.
                 </small>
@@ -400,12 +403,20 @@
                 [(ngModel)]="editAssessment.subject"
             >
                 <option *ngFor="let subject of subjects" [value]="subject.id">
-                    {{ subject.name}}
+                    {{ subject.name | titlecase }}
                 </option>
             </select>
         </div>
         <div class="form-group">
-            <label for="assessmentType">Assessment Type</label>
+            <div>
+                <label for="assessmentType">Assessment Type</label>
+                <fa-icon
+                    [icon]="faQuestionCircle"
+                    class="text-secondary ml-2"
+                    ngbTooltip="You are not allowed to change your assessment type after answer scripts were uploaded!"
+                ></fa-icon>
+            </div>
+
             <select
                 [disabled]="answerScripts.data.length > 0"
                 class="form-select"
@@ -419,8 +430,16 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="gradingMethod">Grading Method</label>
+            <div>
+                <label for="gradingMethod">Grading Method</label>
+                <fa-icon
+                    [icon]="faQuestionCircle"
+                    class="text-secondary ml-2"
+                    ngbTooltip="You are not allowed to change your grading method after answer scripts were uploaded!"
+                ></fa-icon>
+            </div>
             <select
+                [disabled]="answerScripts.data.length > 0"
                 class="form-select"
                 name="gradingMethod"
                 id="gradingMethod"
@@ -434,6 +453,7 @@
         <div *ngIf="editAssessment.grading_method == 'Rubrics'">
             <label for="rubrics">Rubrics</label>
             <button
+                [disabled]="answerScripts.data.length > 0"
                 (click)="openModal(editRubrics, { size: 'xl' })"
                 class="btn btn-outline-primary btn-sm d-inline-block ml-4"
             >
@@ -443,6 +463,7 @@
         <div *ngIf="editAssessment.grading_method == 'Questions'">
             <label for="rubrics">Questions</label>
             <button
+                [disabled]="answerScripts.data.length > 0"
                 (click)="openModal(editQuestions, { size: 'xl' })"
                 class="btn btn-outline-primary btn-sm d-inline-block ml-4"
             >
