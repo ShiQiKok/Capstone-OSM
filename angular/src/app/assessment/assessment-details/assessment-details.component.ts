@@ -32,6 +32,7 @@ import {
 import { UserService } from 'src/services/user.service';
 import { UserCollabInfo } from 'src/models/user';
 import { MatSort } from '@angular/material/sort';
+import { SubjectService } from 'src/services/subject.service';
 
 @Component({
     selector: 'app-assessment-details',
@@ -62,7 +63,8 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     collaborators!: UserCollabInfo[];
     totalMarks: number = 0;
     uploadErrorMsg: string = '';
-
+    subjects: any = [];
+    
     // icons
     faUpload = faUpload;
     faCog = faCog;
@@ -92,6 +94,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         private _answerScriptService: AnswerScriptService,
         private _gradebookService: GradebookService,
         private _userService: UserService,
+        private _subjectService: SubjectService,
         private route: ActivatedRoute,
         private modalService: NgbModal,
         private _snackBar: MatSnackBar
@@ -101,11 +104,11 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     async ngOnInit() {
         this.isLoading = true;
-        await this._assessmentService.getApi();
-        await this._answerScriptService.getApi();
-        await this._userService.getApi();
+        await this.getServiceApis();
         await this.getAssessmentDetails();
+        this.getUserSubjects();
         this.calculateTotalMarks();
+
         this.answerScripts = new MatTableDataSource(
             (await this._answerScriptService.getAll(
                 this.assessment.id!
@@ -119,6 +122,19 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         this.setFilteringProperties();
         this.setSortingProperties();
         this.isLoading = false;
+    }
+
+    private async getServiceApis() {
+        await this._assessmentService.getApi();
+        await this._answerScriptService.getApi();
+        await this._userService.getApi();
+        await this._subjectService.getApi();
+    }
+
+    private getUserSubjects() {
+        this._subjectService.getAll(this.currentUser.id!).then((subjects) => {
+            this.subjects = subjects;
+        });
     }
 
     /**
@@ -240,7 +256,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         this.loadCollaborators();
     }
 
-    loadCollaborators() {
+    private loadCollaborators() {
         this._userService
             .getList(this.assessment.markers)
             .then((arr) => {
