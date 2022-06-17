@@ -7,6 +7,8 @@ import {
     AssessmentType,
     GradingMethod,
     MarkingSettings,
+    QuestionInput,
+    RubricsInput,
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
@@ -17,49 +19,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
 import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
 import { UserService } from 'src/services/user.service';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserCollabInfo } from 'src/models/user';
-
-class QuestionInput {
-    no?: string | undefined;
-    value?: QuestionValueInput | undefined;
-    isEdit?: boolean | undefined;
-
-    constructor(no: string, value: QuestionValueInput, isEdit: boolean) {
-        this.no = no;
-        this.value = value;
-        this.isEdit = isEdit;
-    }
-}
-
-class QuestionValueInput {
-    question?: string | undefined;
-    marks?: number | undefined;
-}
-
-class RubricsInput {
-    marksRange?: RubricMarkRangeInput[] | undefined;
-    isEdit?: boolean | undefined; // control to edit marks range
-    criterion?: RubricCriterionInput[] | undefined;
-}
-
-class RubricCriterionInput {
-    title?: string | undefined;
-    description?: string | undefined;
-    totalMarks?: number | undefined;
-    columns?: RubricColumnInput[] | undefined;
-    isEdit?: boolean | undefined;
-}
-
-class RubricColumnInput {
-    description?: string | undefined;
-}
-
-class RubricMarkRangeInput {
-    min?: number | undefined;
-    max?: number | undefined;
-}
 
 @Component({
     selector: 'app-assessment-creation-form',
@@ -170,7 +131,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
         // delete edit controls from rubrics object
         if (this.rubrics) {
             delete this.rubrics.isEdit;
-            this.rubrics.criterion!.forEach((c) => {
+            this.rubrics.criterion!.forEach((c: any) => {
                 delete c.isEdit;
             });
         }

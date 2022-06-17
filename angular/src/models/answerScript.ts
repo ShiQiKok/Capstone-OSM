@@ -46,3 +46,13 @@ export class HighlightText {
         this.highlighterClass = highlighterClass;
     }
 }
+
+export class MarkDistribution {
+    marksAwarded: number | undefined;
+}
+
+export class Marks {
+    markerId!: number;
+    distribution!: MarkDistribution[];
+    totalMark!: number;
+}

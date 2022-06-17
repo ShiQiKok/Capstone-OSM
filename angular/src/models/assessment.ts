@@ -1,5 +1,3 @@
-import { Subject } from './subject';
-
 // crete a class Assessment with the fields in Django AssessmentModel
 export enum AssessmentType {
     QUESTION_BASED = 'question_based',
@@ -59,4 +57,46 @@ export class Question {
     question?: string | null;
     answer?: string | null;
     mark?: number | null;
+}
+
+
+export class QuestionInput {
+    no?: string | undefined;
+    value?: QuestionValueInput | undefined;
+    isEdit?: boolean | undefined;
+
+    constructor(no: string, value: QuestionValueInput, isEdit: boolean) {
+        this.no = no;
+        this.value = value;
+        this.isEdit = isEdit;
+    }
+}
+
+export class QuestionValueInput {
+    question?: string | undefined;
+    marks?: number | undefined;
+}
+
+export class RubricsInput {
+    marksRange?: RubricMarkRangeInput[];
+    totalMarks?: number;
+    isEdit?: boolean; // control to edit marks range
+    criterion?: RubricCriterionInput[];
+}
+
+export class RubricCriterionInput {
+    title?: string | undefined;
+    description?: string | undefined;
+    totalMarks?: number | undefined;
+    columns?: RubricColumnInput[] | undefined;
+    isEdit?: boolean | undefined;
+}
+
+export class RubricColumnInput {
+    description?: string | undefined;
+}
+
+export class RubricMarkRangeInput {
+    min?: number | undefined;
+    max?: number | undefined;
 }

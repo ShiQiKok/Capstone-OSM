@@ -26,6 +26,8 @@ import {
     AnswerScriptStatusObj,
     Comment,
     HighlightText,
+    MarkDistribution,
+    Marks,
 } from 'src/models/answerScript';
 import {
     Assessment,
@@ -57,15 +59,7 @@ class CustomSelection {
     }
 }
 
-class MarkDistribution {
-    marksAwarded: number | undefined;
-}
 
-class Marks {
-    markerId!: number;
-    distribution!: MarkDistribution[];
-    totalMark!: number;
-}
 
 @Component({
     encapsulation: ViewEncapsulation.None,

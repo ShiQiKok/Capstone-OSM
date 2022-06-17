@@ -5,24 +5,9 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import { faEllipsisV, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { QuestionInput } from 'src/models/assessment';
 import { AssessmentService } from 'src/services/assessment.service';
 
-class QuestionInput {
-    no?: string | undefined;
-    value?: QuestionValueInput | undefined;
-    isEdit?: boolean | undefined;
-
-    constructor(no: string, value: QuestionValueInput, isEdit: boolean) {
-        this.no = no;
-        this.value = value;
-        this.isEdit = isEdit;
-    }
-}
-
-class QuestionValueInput {
-    question?: string | undefined;
-    marks?: number | undefined;
-}
 @Component({
     selector: 'app-question-input',
     templateUrl: './question-input.component.html',

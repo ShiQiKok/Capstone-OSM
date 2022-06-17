@@ -11,30 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { faUpload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-
-class RubricsInput {
-    marksRange?: RubricMarkRangeInput[];
-    totalMarks?: number;
-    isEdit?: boolean; // control to edit marks range
-    criterion?: RubricCriterionInput[];
-}
-
-class RubricCriterionInput {
-    title?: string | undefined;
-    description?: string | undefined;
-    totalMarks?: number | undefined;
-    columns?: RubricColumnInput[] | undefined;
-    isEdit?: boolean | undefined;
-}
-
-class RubricColumnInput {
-    description?: string | undefined;
-}
-
-class RubricMarkRangeInput {
-    min?: number | undefined;
-    max?: number | undefined;
-}
+import { RubricCriterionInput, RubricsInput } from 'src/models/assessment';
 
 @Component({
     selector: 'app-rubrics-input',
