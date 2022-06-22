@@ -4,11 +4,6 @@ export enum AssessmentType {
     ESSAY_BASED = 'essay_based',
 }
 
-export enum MarkingSettings {
-    MARK_BY_SCRIPT = 'mark_by_script',
-    MARK_BY_QUESTION = 'mark_by_question',
-}
-
 export enum GradingMethod {
     RUBRICS = 'Rubrics',
     QUESTION = 'Questions',
@@ -20,7 +15,7 @@ export class Assessment {
     subject?: number | undefined;
     type?: AssessmentType | undefined;
     grading_method?: GradingMethod;
-    rubrics?: any | undefined;
+    rubrics?: RubricsInput | undefined;
     questions?: any | undefined;
     markers?: number[] | undefined;
 }

@@ -6,7 +6,6 @@ import {
     Assessment,
     AssessmentType,
     GradingMethod,
-    MarkingSettings,
     QuestionInput,
     RubricsInput,
 } from 'src/models/assessment';
@@ -50,7 +49,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
     questions!: QuestionInput[] | undefined;
     rubrics!: RubricsInput | undefined;
     assessmentTypes = Object.values(AssessmentType);
-    markingSettings = Object.values(MarkingSettings);
     gradingMethods = Object.values(GradingMethod);
     subjects: any = [];
     collabUsers: UserCollabInfo[] = [];
@@ -160,8 +158,8 @@ export class AssessmentCreationFormComponent extends AppComponent {
             subject: this.assessmentDetailFormGroup.get('subject')!.value,
             grading_method:
                 this.assessmentDetailFormGroup.get('gradingMethod')!.value,
-            questions: this.questions ? this.questions : null,
-            rubrics: this.rubrics ? this.rubrics : null,
+            questions: this.questions ? this.questions : undefined,
+            rubrics: this.rubrics ? this.rubrics : undefined,
             markers: collaborators,
         };
 

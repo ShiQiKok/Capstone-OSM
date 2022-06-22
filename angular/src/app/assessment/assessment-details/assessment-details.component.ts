@@ -6,7 +6,6 @@ import {
     AssessmentType,
     GradingMethod,
 } from 'src/models/assessment';
-import { MarkingSettings } from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
@@ -55,7 +54,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     editAssessment!: Assessment;
     answerScripts!: MatTableDataSource<AnswerScript>;
     uploadedFile!: File | null;
-    markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
     selection = new SelectionModel<AnswerScript>(false, []);
     assessmentTypes: AssessmentType[] = Object.values(AssessmentType);
     gradingMethods: GradingMethod[] = Object.values(GradingMethod);
@@ -274,7 +272,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     private calculateTotalMarks() {
         if (this.assessment.grading_method == GradingMethod.RUBRICS) {
-            this.totalMarks = this.assessment.rubrics.totalMarks;
+            this.totalMarks = this.assessment.rubrics!.totalMarks!;
         } else {
             this.assessment.questions!.forEach((q: any) => {
                 this.totalMarks += q.value.marks;
@@ -334,6 +332,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                     });
             })
             .catch((err) => {
+                console.log(err)
                 this.uploadErrorMsg = err.error.error;
             });
     }

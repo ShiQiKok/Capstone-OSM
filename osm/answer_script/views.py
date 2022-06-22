@@ -266,14 +266,15 @@ def bulk_create(request):
                 zip_ext_file = zip_file.open(path)
                 in_memory_file = InMemoryUploadedFile(
                     zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(path)), None)
+                print(1)
                 assessment = Assessment.objects.get(id=assessment_id)
                 if assessment.grading_method == 'Rubrics':
                     criteria_num = len(assessment.rubrics['criterion'])
                 else:
                     criteria_num = len(assessment.questions)
+                print(folder_name)
                 data = process_data(folder_name, assessment_id,
-                                    in_memory_file, criteria_num)
-
+                                    in_memory_file, criteria_num, True)
                 create_request = request._request
                 create_request.POST = data
                 response = create_answer(create_request)
@@ -288,8 +289,8 @@ def bulk_create(request):
             # close the zip_file
             zip_file.close()
         except:
-            path = zip_file.namelist()[0]
-            file_path = settings.BASE_DIR / path
+            folder_name, filename = zip_file.namelist()[0].split('/')
+            file_path = settings.BASE_DIR / folder_name
             shutil.rmtree(file_path)
             return Response({'error': "Please make sure that the uploaded ZIP file strictly follows the required structure!"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -300,9 +301,12 @@ def bulk_create(request):
 
 # TODO: change student ID
 # process PDF file's data
-def process_data(folder_name, assessment_id, file, criteria_num):
-    # print(folder_name.split('_'))
-    [student_name, student_id, assessment_name] = folder_name.split('_')
+def process_data(folder_name, assessment_id, file, criteria_num, isZip=False):
+    if isZip:
+        [student_name, student_id] = folder_name.split('_')[: 2]
+    else:
+        [student_name, student_id, assessment_name] = folder_name.split('_')
+
     assessment = Assessment.objects.get(id=assessment_id)
     markers = assessment.markers.all()
     temp = [{"marksAwarded": None} for i in range(criteria_num)]

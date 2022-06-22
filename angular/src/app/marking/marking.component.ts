@@ -149,8 +149,6 @@ export class MarkingComponent
         if (this.assessment.grading_method == GradingMethod.RUBRICS)
             this.isRubricsUsed = true;
         else this.isRubricsUsed = false;
-
-        console.log(this.isRubricsUsed);
     }
 
     onGeneralCriteriaChanged() {
@@ -176,12 +174,12 @@ export class MarkingComponent
         if (m != null) {
             for (
                 let i = 0;
-                i < this.assessment.rubrics.marksRange.length;
+                i < this.assessment.rubrics!.marksRange!.length;
                 i++
             ) {
                 if (
-                    m >= this.assessment.rubrics.marksRange[i].min &&
-                    m <= this.assessment.rubrics.marksRange[i].max
+                    m >= this.assessment.rubrics!.marksRange![i].min! &&
+                    m <= this.assessment.rubrics!.marksRange![i].max!
                 ) {
                     this.selectedDetailedCriterion =
                         this.selectedCriterion.columns[i];
@@ -247,7 +245,7 @@ export class MarkingComponent
                     if (this.isRubricsUsed) {
                         for (
                             let i = 0;
-                            i < this.assessment.rubrics.criterion.length;
+                            i < this.assessment.rubrics!.criterion!.length;
                             i++
                         ) {
                             this.previousSelected.push(null);
@@ -296,7 +294,7 @@ export class MarkingComponent
                 if (this.marks.distribution[i].marksAwarded) {
                     this.marks.totalMark +=
                         (this.marks.distribution[i].marksAwarded! *
-                            this.assessment.rubrics.criterion[i].totalMarks) /
+                            this.assessment.rubrics?.criterion![i].totalMarks!) /
                         100;
                 }
             } else {
