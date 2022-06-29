@@ -5,7 +5,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import { faEllipsisV, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { QuestionInput } from 'src/models/assessment';
+import { Question } from 'src/models/assessment';
 import { AssessmentService } from 'src/services/assessment.service';
 
 @Component({
@@ -13,10 +13,10 @@ import { AssessmentService } from 'src/services/assessment.service';
     templateUrl: './question-input.component.html',
 })
 export class QuestionInputComponent implements OnInit {
-    @Input() questions!: QuestionInput[];
+    @Input() questions!: Question[];
     @Input() isEditingMode: boolean = true;
     @Input() dismissAllModel: boolean = true;
-    @Output() questionsChange = new EventEmitter<QuestionInput[]>();
+    @Output() questionsChange = new EventEmitter<Question[]>();
 
     questionDisplayedColumns: string[] = [
         'drag',
@@ -28,7 +28,7 @@ export class QuestionInputComponent implements OnInit {
 
     questionReviewColumns: string[] = ['no', 'question', 'marks'];
 
-    template: QuestionInput[] = [
+    template: Question[] = [
         {
             no: '1',
             value: { question: '', marks: 10 },
@@ -64,16 +64,16 @@ export class QuestionInputComponent implements OnInit {
     }
 
     addQuestion() {
-        let ques = new QuestionInput('', { question: '', marks: 0 }, true);
+        let ques = new Question('', { question: '', marks: 0 }, true);
         this.questions = [...this.questions, ques];
     }
 
-    updateQuestion(element: QuestionInput) {
+    updateQuestion(element: Question) {
         element.isEdit = !element.isEdit;
         this.totalMarks = this.getTotalMark();
     }
 
-    deleteQuestion(element: QuestionInput) {
+    deleteQuestion(element: Question) {
         this.questions = this.questions.filter((e) => e !== element);
     }
 
@@ -90,7 +90,7 @@ export class QuestionInputComponent implements OnInit {
         this._assessmentService
             .uploadQuestions(this.uploadedFile!)
             .then((obj) => {
-                this.questions = obj as QuestionInput[];
+                this.questions = obj as Question[];
                 this.totalMarks = this.getTotalMark();
                 if (this.dismissAllModel) this._modalService.dismissAll();
                 else modal.close();

@@ -6,8 +6,8 @@ import {
     Assessment,
     AssessmentType,
     GradingMethod,
-    QuestionInput,
-    RubricsInput,
+    Question,
+    Rubrics,
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
@@ -46,8 +46,8 @@ export class AssessmentCreationFormComponent extends AppComponent {
 
     // objects
     assessment?: Assessment;
-    questions!: QuestionInput[] | undefined;
-    rubrics!: RubricsInput | undefined;
+    questions!: Question[] | undefined;
+    rubrics!: Rubrics | undefined;
     assessmentTypes = Object.values(AssessmentType);
     gradingMethods = Object.values(GradingMethod);
     subjects: any = [];

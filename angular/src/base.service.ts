@@ -19,16 +19,16 @@ export class BaseService {
         });
     }
 
-    getAll(userId: number) {
+    getAll(id: number) {
         return new Promise<Object>((resolve, reject) => {
-            this.http.get(this.ROOT + this.ALL_API.getAll + userId).subscribe(
+            this.http.get(this.ROOT + this.ALL_API.getAll + id).subscribe(
                 (list) => resolve(list),
                 (err) => reject(err)
             );
         });
     }
 
-    get(id: number) {
+    get(id: number | Object) {
         return new Promise<any>((resolve, reject) => {
             this.http.get(this.ROOT + this.ALL_API.get + id).subscribe(
                 (obj) => resolve(obj),

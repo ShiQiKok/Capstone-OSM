@@ -11,7 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { faUpload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-import { RubricCriterionInput, RubricsInput } from 'src/models/assessment';
+import { RubricCriterion, Rubrics } from 'src/models/assessment';
 
 @Component({
     selector: 'app-rubrics-input',
@@ -19,11 +19,10 @@ import { RubricCriterionInput, RubricsInput } from 'src/models/assessment';
     styleUrls: ['./rubrics-input.component.scss'],
 })
 export class RubricsInputComponent implements OnInit {
-    @Input() rubrics!: RubricsInput;
+    @Input() rubrics!: Rubrics;
     @Input() isEditingMode!: boolean;
     @Input() dismissAllModel: boolean = true;
-    @Output() rubricsChange = new EventEmitter<RubricsInput>();
-
+    @Output() rubricsChange = new EventEmitter<Rubrics>();
     @ViewChild(MatTable) table!: MatTable<any>;
 
     // icons
@@ -35,7 +34,7 @@ export class RubricsInputComponent implements OnInit {
     uploadedFile: File | null = null;
     isSubmitDisabled: boolean = true;
     addIconIndex!: number;
-    template: RubricsInput = {
+    template: Rubrics = {
         marksRange: [
             { min: 0, max: 39 },
             { min: 40, max: 49 },
@@ -160,7 +159,7 @@ export class RubricsInputComponent implements OnInit {
         return `${width}%`;
     }
 
-    showAddIconIndex(criterion: RubricCriterionInput, index: any) {
+    showAddIconIndex(criterion: RubricCriterion, index: any) {
         if (index != 0) {
             this.addIconIndex = index;
         }
@@ -194,7 +193,7 @@ export class RubricsInputComponent implements OnInit {
         event.stopPropagation();
         this.setUneditable();
         let len = this.rubrics.marksRange!.length;
-        let row: RubricCriterionInput = {
+        let row: RubricCriterion = {
             title: 'criteria ' + (this.rubrics.criterion!.length + 1),
             description: '',
             totalMarks: 0,

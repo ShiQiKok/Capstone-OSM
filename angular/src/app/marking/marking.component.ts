@@ -14,6 +14,7 @@ import {
 import {
     faAngleLeft,
     faCheck,
+    faHome,
     faInfo,
     faTimes,
 } from '@fortawesome/free-solid-svg-icons';
@@ -27,7 +28,7 @@ import {
     Comment,
     HighlightText,
     MarkDistribution,
-    Marks,
+    Mark,
 } from 'src/models/answerScript';
 import {
     Assessment,
@@ -82,7 +83,7 @@ export class MarkingComponent
     selectedCriterion!: any;
     selectedCriterionIndex!: number;
     selectedDetailedCriterion!: any;
-    marks!: Marks;
+    marks!: Mark;
     initialMarksDistribution!: MarkDistribution[];
     initialComment!: Comment[];
     totalMarks: number = 0;
@@ -96,6 +97,7 @@ export class MarkingComponent
     isFloatingBarShowed: boolean = false;
     isSubmitted: boolean = false;
     isLoading: boolean = true;
+    timeout: any = null;
 
     //icon
     faCheck = faCheck;
@@ -104,6 +106,7 @@ export class MarkingComponent
     faArrowAltCircleLeft = faArrowAltCircleLeft;
     faCommentAlt = faCommentAlt;
     faInfo = faInfo;
+    faHome = faHome;
 
     @HostListener('window:beforeunload')
     canDeactivate(): Observable<boolean> | boolean {
@@ -230,7 +233,7 @@ export class MarkingComponent
                     AnswerScriptStatus.IN_PROGRESS;
             }
 
-            this.marks = data.marks.filter((obj: Marks) => {
+            this.marks = data.marks.filter((obj: Mark) => {
                 return obj.markerId == this.currentUser.id;
             })[0];
             this.initialMarksDistribution = JSON.parse(
@@ -271,20 +274,25 @@ export class MarkingComponent
 
     // TODO: refine
     onMarkAwardedChanged(event: any, index: number) {
-        let inputElement = event.target;
-        let min: number = +inputElement.min;
-        let max: number = +inputElement.max;
-        let value: number = +inputElement.value;
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+            let inputElement = event.target;
+            let min: number = +inputElement.min;
+            let max: number = +inputElement.max;
+            let value: number = +inputElement.value;
+            console.log(value)
 
-        if (value < min) {
-            inputElement.value = min;
-            this.marks.distribution[index].marksAwarded = min;
-        } else if (value > max) {
-            inputElement.value = max;
-            this.marks.distribution[index].marksAwarded = max;
-        }
+            if (value < min) {
+                inputElement.value = min;
+                this.marks.distribution[index].marksAwarded = min;
+            } else if (value > max) {
+                inputElement.value = max;
+                this.marks.distribution[index].marksAwarded = max;
+            }
 
-        this.calculateTotalMark();
+            this.calculateTotalMark();
+        }, 1000);
+
     }
 
     private calculateTotalMark() {
@@ -535,7 +543,7 @@ export class MarkingComponent
                   AnswerScriptStatus.FINISHED)
             : null;
 
-        let i = this.answerScript.marks.findIndex((obj: Marks) => {
+        let i = this.answerScript.marks.findIndex((obj: Mark) => {
             return obj.markerId === this.currentUser.id;
         });
 
@@ -553,16 +561,16 @@ export class MarkingComponent
             });
     }
 
-    onGoBackClicked() {
-        if (
-            this.assessment.grading_method === GradingMethod.RUBRICS &&
-            this.isRubricsDetailsShowed
-        ) {
-            this.isRubricsDetailsShowed = false;
-        } else {
-            this.router.navigate([`/assessment-details/${this.assessment.id}`]);
-        }
-    }
+    // onGoBackClicked() {
+    //     if (
+    //         this.assessment.grading_method === GradingMethod.RUBRICS &&
+    //         this.isRubricsDetailsShowed
+    //     ) {
+    //         this.isRubricsDetailsShowed = false;
+    //     } else {
+    //         this.router.navigate([`/assessment-details/${this.assessment.id}`]);
+    //     }
+    // }
 
     get comment() {
         return this.commentFormControl;

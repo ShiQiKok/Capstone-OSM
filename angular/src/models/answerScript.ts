@@ -13,14 +13,13 @@ export class AnswerScript {
     id?: number;
     studentName?: string;
     studentId?: string;
-    status?: AnswerScriptStatusObj[];
+    script?: string;
+    assessment?: number;
     dateCreated?: Date;
     dateUpdated?: Date;
-    marks?: any;
-    questions?: any;
+    marks!: Mark[];
     answers?: Answer[];
-    script?: any;
-    assessment?: number;
+    status?: AnswerScriptStatusObj[];
     comment!: Comment[];
 }
 
@@ -51,7 +50,7 @@ export class MarkDistribution {
     marksAwarded: number | undefined;
 }
 
-export class Marks {
+export class Mark {
     markerId!: number;
     distribution!: MarkDistribution[];
     totalMark!: number;
