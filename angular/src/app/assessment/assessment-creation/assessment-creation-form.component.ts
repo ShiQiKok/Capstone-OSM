@@ -72,7 +72,7 @@ export class AssessmentCreationFormComponent extends AppComponent {
             assessmentName: ['Quiz 1', Validators.required],
             assessmentType: [AssessmentType.ESSAY_BASED, Validators.required],
             gradingMethod: [GradingMethod.RUBRICS, Validators.required],
-            subject: [null, Validators.required]
+            subject: [null, Validators.required],
         });
     }
 
@@ -252,10 +252,19 @@ export class AssessmentCreationFormComponent extends AppComponent {
             return false;
         });
 
-        if (user && !this.selectedCollabUser.includes(user)) {
-            this.selectedCollabUser.push(user);
-            msgElement.innerHTML = '';
-        } else if (!user) {
+        if (user) {
+            if (
+                user.username == this.currentUser.username ||
+                user.email == this.currentUser.email
+            ) {
+                msgElement.innerHTML = 'You are one of the markers already.';
+            } else if (this.selectedCollabUser.includes(user)) {
+                msgElement.innerHTML = 'This user is added already.';
+            } else if (!this.selectedCollabUser.includes(user)) {
+                this.selectedCollabUser.push(user);
+                msgElement.innerHTML = '';
+            }
+        } else {
             msgElement.innerHTML =
                 'User not found! Please make sure you have entered the correct email or username.';
         }
