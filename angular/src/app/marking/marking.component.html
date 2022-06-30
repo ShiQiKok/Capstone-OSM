@@ -241,7 +241,7 @@
                                 min="0"
                                 max="{{ question.value.marks }}"
                                 [(ngModel)]="marks.distribution[i].marksAwarded"
-                                (change)="onMarkAwardedChanged($event, i)"
+                                (keyup)="onMarkAwardedChanged($event, i)"
                             />
                         </mat-list-item>
                     </mat-list>
@@ -253,7 +253,7 @@
             class="position-absolute bottom-0 end-0 w-100 bg-white pt-2"
         >
             <h5 class="pl-4">
-                Marks: {{ marks.totalMark ? marks.totalMark : 0 }}
+                Total: {{ marks.totalMark ? marks.totalMark : 0 }}
             </h5>
             <button
                 *ngIf="!isRubricsDetailsShowed"
