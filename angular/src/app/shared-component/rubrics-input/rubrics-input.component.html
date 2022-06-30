@@ -52,9 +52,8 @@
                 [style.width.%]="getColumnWidth()"
             >
                 <div>
-                    <span *ngIf="col === 'action'"></span>
                     <span *ngIf="col === 'criteria'">Criteria</span>
-                    <span *ngIf="col !== 'criteria' && col !== 'action'">
+                    <span *ngIf="col !== 'criteria'">
                         <span *ngIf="rubrics.isEdit">
                             <input
                                 type="text"
