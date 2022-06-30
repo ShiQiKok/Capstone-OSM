@@ -60,8 +60,6 @@ class CustomSelection {
     }
 }
 
-
-
 @Component({
     encapsulation: ViewEncapsulation.None,
     selector: 'app-marking',
@@ -106,18 +104,21 @@ export class MarkingComponent
     faArrowAltCircleLeft = faArrowAltCircleLeft;
     faCommentAlt = faCommentAlt;
     faInfo = faInfo;
-    faHome = faHome;
 
     @HostListener('window:beforeunload')
     canDeactivate(): Observable<boolean> | boolean {
-        // if (!this.isSubmitted) {
-        //     return (
-        //         (JSON.stringify(this.marks.distribution) ===
-        //         JSON.stringify(this.initialMarksDistribution)) &&
-        //         (JSON.stringify(this.answerScript.comment)
-        //             === JSON.stringify(this.initialComment))
-        //     );
-        // }
+        if (!this.isSubmitted) {
+            console.log(this.marks.distribution)
+            console.log(this.initialMarksDistribution)
+            console.log(this.answerScript.comment)
+            console.log(this.initialComment);
+            return (
+                (JSON.stringify(this.marks.distribution) ===
+                JSON.stringify(this.initialMarksDistribution)) &&
+                (JSON.stringify(this.answerScript.comment)
+                    === JSON.stringify(this.initialComment))
+            );
+        }
         return true;
     }
 
@@ -213,7 +214,7 @@ export class MarkingComponent
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this._answerScriptService.get(id).then((data) => {
             this.answerScript = data;
-            this.initialComment = Object.assign({}, this.answerScript.comment);
+            this.initialComment = [...this.answerScript.comment];
 
             let j = this.answerScript.status!.findIndex(
                 (s: AnswerScriptStatusObj) => {
@@ -245,6 +246,7 @@ export class MarkingComponent
                 .then((obj) => {
                     this.assessment = obj;
                     this.checkControls();
+                    this.getFullMarks();
                     if (this.isRubricsUsed) {
                         for (
                             let i = 0;
@@ -280,7 +282,7 @@ export class MarkingComponent
             let min: number = +inputElement.min;
             let max: number = +inputElement.max;
             let value: number = +inputElement.value;
-            console.log(value)
+            console.log(value);
 
             if (value < min) {
                 inputElement.value = min;
@@ -292,7 +294,17 @@ export class MarkingComponent
 
             this.calculateTotalMark();
         }, 1000);
+    }
+    fullMarks = 0;
 
+    private getFullMarks() {
+        if (this.assessment.rubrics) {
+            this.fullMarks = this.assessment.rubrics.totalMarks!;
+        } else {
+            this.assessment.questions?.forEach((q) => {
+                this.fullMarks += q.value?.marks!;
+            });
+        }
     }
 
     private calculateTotalMark() {
@@ -302,7 +314,8 @@ export class MarkingComponent
                 if (this.marks.distribution[i].marksAwarded) {
                     this.marks.totalMark +=
                         (this.marks.distribution[i].marksAwarded! *
-                            this.assessment.rubrics?.criterion![i].totalMarks!) /
+                            this.assessment.rubrics?.criterion![i]
+                                .totalMarks!) /
                         100;
                 }
             } else {
