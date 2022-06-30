@@ -504,7 +504,7 @@
     </div>
     <div class="modal-footer">
         <div class="text-center mb-1">
-            <a class="btn btn-link" (click)="downloadGradebook()">
+            <a class="btn btn-link" (click)="checkDownloadGradebook()">
                 Download Gradebook
             </a>
         </div>
@@ -576,6 +576,40 @@
                 class="btn btn-danger"
             >
                 Delete
+            </button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #incompleteDownloadConfirmation>
+    <div class="modal-header">
+        <h4 class="modal-title">Reminder</h4>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+        ></button>
+    </div>
+    <div class="modal-body">
+        <p>
+            You have not finished marking all answer scripts. Do you still want to
+            download the gradebook?
+        </p>
+    </div>
+    <div class="modal-footer">
+        <div>
+            <button
+                (click)="downloadGradebook()"
+                class="btn btn-outline-secondary mr-2"
+            >
+                Download Anyway
+            </button>
+            <button
+                (click)="modal.dismiss('Cross click')"
+                class="btn btn-primary"
+            >
+                Cancel
             </button>
         </div>
     </div>

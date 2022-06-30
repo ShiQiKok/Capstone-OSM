@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -14,7 +14,11 @@ import {
     faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
-import { AnswerScript, AnswerScriptStatusObj } from 'src/models/answerScript';
+import {
+    AnswerScript,
+    AnswerScriptStatus,
+    AnswerScriptStatusObj,
+} from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
@@ -33,6 +37,7 @@ import { UserService } from 'src/services/user.service';
 import { UserCollabInfo } from 'src/models/user';
 import { MatSort } from '@angular/material/sort';
 import { SubjectService } from 'src/services/subject.service';
+import { transpileModule } from 'typescript';
 
 @Component({
     selector: 'app-assessment-details',
@@ -48,6 +53,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             this.answerScripts.sort = this.sort;
         }
     }
+    @ViewChild('incompleteDownloadConfirmation') reminder!: ElementRef;
 
     // objects
     assessment!: Assessment;
@@ -115,7 +121,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             )) as AnswerScript[]
         );
 
-        console.log(this.answerScripts.data)
+        console.log(this.answerScripts.data);
 
         if (this.answerScripts.data.length > 0) {
             this.updateMatchedMarkerIndex();
@@ -254,10 +260,20 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
-        console.log(this.assessment)
+        console.log(this.assessment);
         this.editAssessment = Object.assign({}, this.assessment);
-        this.editAssessment.rubrics ? this.editAssessment.rubrics = Object.assign({}, this.assessment.rubrics) : null;
-        this.editAssessment.questions ? this.editAssessment.questions = Object.assign({}, this.assessment.questions) : null;
+        this.editAssessment.rubrics
+            ? (this.editAssessment.rubrics = Object.assign(
+                  {},
+                  this.assessment.rubrics
+              ))
+            : null;
+        this.editAssessment.questions
+            ? (this.editAssessment.questions = Object.assign(
+                  {},
+                  this.assessment.questions
+              ))
+            : null;
         this.loadCollaborators();
     }
 
@@ -335,7 +351,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                     });
             })
             .catch((err) => {
-                console.log(err)
+                console.log(err);
                 this.uploadErrorMsg = err.error.error;
             });
     }
@@ -352,11 +368,37 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         this.selection.toggle(answerScript);
     }
 
-    downloadGradebook() {
+    checkDownloadGradebook() {
+        if (this.checkIfAllAreMarked()) {
+           this.downloadGradebook();
+        } else {
+            this.modalService.open(this.reminder);
+        }
+    }
+
+    downloadGradebook(){
         this._gradebookService.downloadGradebook(
             this.assessment.id!,
             `Gradebook - ${this.assessment.name}`
         );
+    }
+
+    private checkIfAllAreMarked(): boolean {
+        let status = this.answerScripts.data.map((answer) => {
+            return answer.status?.find(
+                (obj) => obj.marker === this.currentUser.id
+            );
+        });
+
+        for (var s of status) {
+            if (
+                s?.status === AnswerScriptStatus.NOT_STARTED ||
+                s?.status === AnswerScriptStatus.IN_PROGRESS
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     saveEditedRubrics(
