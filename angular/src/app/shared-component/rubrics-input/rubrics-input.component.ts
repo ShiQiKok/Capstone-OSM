@@ -11,30 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { faUpload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-
-class RubricsInput {
-    marksRange?: RubricMarkRangeInput[];
-    totalMarks?: number;
-    isEdit?: boolean; // control to edit marks range
-    criterion?: RubricCriterionInput[];
-}
-
-class RubricCriterionInput {
-    title?: string | undefined;
-    description?: string | undefined;
-    totalMarks?: number | undefined;
-    columns?: RubricColumnInput[] | undefined;
-    isEdit?: boolean | undefined;
-}
-
-class RubricColumnInput {
-    description?: string | undefined;
-}
-
-class RubricMarkRangeInput {
-    min?: number | undefined;
-    max?: number | undefined;
-}
+import { RubricCriterion, Rubrics } from 'src/models/assessment';
 
 @Component({
     selector: 'app-rubrics-input',
@@ -42,10 +19,10 @@ class RubricMarkRangeInput {
     styleUrls: ['./rubrics-input.component.scss'],
 })
 export class RubricsInputComponent implements OnInit {
-    @Input() rubrics!: RubricsInput;
+    @Input() rubrics!: Rubrics;
     @Input() isEditingMode!: boolean;
-    @Output() rubricsChange = new EventEmitter<RubricsInput>();
-
+    @Input() dismissAllModel: boolean = true;
+    @Output() rubricsChange = new EventEmitter<Rubrics>();
     @ViewChild(MatTable) table!: MatTable<any>;
 
     // icons
@@ -57,7 +34,7 @@ export class RubricsInputComponent implements OnInit {
     uploadedFile: File | null = null;
     isSubmitDisabled: boolean = true;
     addIconIndex!: number;
-    template: RubricsInput = {
+    template: Rubrics = {
         marksRange: [
             { min: 0, max: 39 },
             { min: 40, max: 49 },
@@ -182,7 +159,7 @@ export class RubricsInputComponent implements OnInit {
         return `${width}%`;
     }
 
-    showAddIconIndex(criterion: RubricCriterionInput, index: any) {
+    showAddIconIndex(criterion: RubricCriterion, index: any) {
         if (index != 0) {
             this.addIconIndex = index;
         }
@@ -216,7 +193,7 @@ export class RubricsInputComponent implements OnInit {
         event.stopPropagation();
         this.setUneditable();
         let len = this.rubrics.marksRange!.length;
-        let row: RubricCriterionInput = {
+        let row: RubricCriterion = {
             title: 'criteria ' + (this.rubrics.criterion!.length + 1),
             description: '',
             totalMarks: 0,
@@ -310,7 +287,7 @@ export class RubricsInputComponent implements OnInit {
         this.isSubmitDisabled = false;
     }
 
-    uploadRubrics() {
+    uploadRubrics(modal: any) {
         this._assessmentService
             .uploadRubrics(this.uploadedFile!)
             .then((obj) => {
@@ -318,7 +295,8 @@ export class RubricsInputComponent implements OnInit {
                 this.rubrics.isEdit = false;
                 this.calculateTotal();
                 this.table.renderRows();
-                this._modalService.dismissAll()
+                if (this.dismissAllModel) this._modalService.dismissAll();
+                else modal.close();
             });
     }
 }

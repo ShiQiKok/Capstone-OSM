@@ -40,6 +40,8 @@ import { CreationRubricsQuestionsComponent } from './information/creation-rubric
 import { SubjectComponent } from './subject/subject.component';
 import { SubjectCreationModalComponent } from './subject/subject-creation-modal/subject-creation-modal.component';
 import { HomePageComponent } from './information/home-page/home-page.component';
+import { ForgetPasswordComponent } from './authentication/forget-password/forget-password.component';
+import { ResetConfirmComponent } from './authentication/reset-confirm/reset-confirm.component';
 
 @NgModule({
     declarations: [
@@ -61,6 +63,8 @@ import { HomePageComponent } from './information/home-page/home-page.component';
         SubjectComponent,
         SubjectCreationModalComponent,
         HomePageComponent,
+        ForgetPasswordComponent,
+        ResetConfirmComponent,
     ],
     imports: [
         BrowserModule,

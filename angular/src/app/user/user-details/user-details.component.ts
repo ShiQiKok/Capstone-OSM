@@ -68,6 +68,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
     onSave() {
         if (this.userInfoForm.valid) {
+            this.errorMessageOnSave = '';
             let tempUser: User = Object.assign({}, this.currentUser);
             // if the form is valid, replace the old value
             tempUser.first_name = this.firstName!.value;
@@ -76,7 +77,12 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
 
             this._userService
                 .update(tempUser.id!, tempUser)
-                .then(() => {
+                .then((user: any) => {
+
+                    this.currentUser.first_name = user.first_name;
+                    this.currentUser.last_name = user.last_name;
+                    this.currentUser.email = user.email;
+
                     this._authenticationService.setUser(this.currentUser);
                     this._snackBar.open('Your information is updated!', '', {
                         duration: 3000,
@@ -118,7 +124,6 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
                     this.passwordForm.value.newPassword
                 )
                 .then((data) => {
-                    console.log(data)
                     this.errorMessage= '';
                     this.modalService.dismissAll();
                     this._snackBar.open('Password changed successfully!', '', {
@@ -126,6 +131,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
                     });
                 })
                 .catch((err) => {
+                    console.log(err)
                     for (let key in err.error){
                         if (key == 'password'){
                             this.errorMessage = `Password: ${err.error[key]}`;
@@ -134,7 +140,7 @@ export class UserDetailsComponent extends AppComponent implements OnInit {
                     }
                 });
         }else {
-            this.errorMessage = "Please make sure your new password and confirm password match!";
+            this.errorMessage = "Please make sure your new password and confirm password is matched!";
         }
         this.clearForm(this.passwordForm);
     }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/user';
+import { templateJitUrl } from '@angular/compiler';
 
 @Injectable({
     providedIn: 'root',
@@ -11,6 +12,7 @@ export class AuthenticationService {
     public currentUser: Observable<User>;
 
     private httpOptions: any;
+    rememberUser = true;
 
     constructor(private http: HttpClient) {
         this.httpOptions = {
@@ -35,7 +37,11 @@ export class AuthenticationService {
         this.currentUserSubject.next(obj);
     }
 
-    login(username: string, password: string, rememberUser: boolean) {
+    public setRememberUser(rememberUser: boolean) {
+        this.rememberUser = rememberUser;
+    }
+
+    login(username: string, password: string) {
         return new Promise((resolve, reject) => {
             this.http
                 .post<any>(
@@ -59,17 +65,7 @@ export class AuthenticationService {
                         user['token'] = token;
 
                         // set current user in local storage
-                        if (rememberUser) {
-                            localStorage.setItem(
-                                'currentUser',
-                                JSON.stringify(user)
-                            );
-                        } else {
-                            sessionStorage.setItem(
-                                'currentUser',
-                                JSON.stringify(user)
-                            );
-                        }
+                        this.updateStorages(user)
 
                         // assign the real user object to the currentUserSubject
                         this.currentUserSubject.next(user);
@@ -124,9 +120,23 @@ export class AuthenticationService {
         });
     }
 
+    private updateStorages(user: User){
+        if (this.rememberUser) {
+            localStorage.setItem(
+                'currentUser',
+                JSON.stringify(user)
+            );
+        } else {
+            sessionStorage.setItem(
+                'currentUser',
+                JSON.stringify(user)
+            );
+        }
+    }
+
     setUser(user: any) {
         this.currentUserSubject.next(user);
         this.currentUser = this.currentUserSubject.asObservable();
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        this.updateStorages(user);
     }
 }

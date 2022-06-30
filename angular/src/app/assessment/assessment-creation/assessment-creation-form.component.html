@@ -1,4 +1,4 @@
-<div>
+<div *ngIf="!isLoading">
     <div class="container" *ngIf="true">
         <mat-stepper [linear]="true" #stepper class="bg-light">
             <!-- Step 1: Assessment Info -->
@@ -53,9 +53,7 @@
                             <option
                                 *ngFor="let method of gradingMethods"
                                 [value]="method"
-                                [selected]="
-                                    method == 'Rubrics' ? true : false
-                                "
+                                [selected]="method == 'Rubrics' ? true : false"
                             >
                                 {{ method | titlecase }}
                             </option>
@@ -92,26 +90,7 @@
                             [formControl]="subject"
                         ></error-message>
                     </div>
-                    <div class="form-group">
-                        <label for="defaultSetting">Default Setting</label>
-                        <select
-                            class="form-select"
-                            name="defaultSetting"
-                            id="defaultSetting"
-                            formControlName="defaultSetting"
-                        >
-                            <option
-                                *ngFor="let setting of markingSettings"
-                                [value]="setting"
-                            >
-                                {{ setting.replaceAll("_", " ") | titlecase }}
-                            </option>
-                        </select>
-                        <error-message
-                            ngDefaultControl
-                            [formControl]="defaultSetting"
-                        ></error-message>
-                    </div>
+
                     <div>
                         <button
                             class="btn btn-primary"
@@ -125,36 +104,33 @@
             </mat-step>
 
             <!-- Step 2: Question -->
-            <mat-step [stepControl]="questionFormGroup" label="Questions">
-                <div class="my-4">
-                    <mat-slide-toggle
-                        #questionToggle
-                        [checked]="gradingMethod.value == 'Questions'"
-                        [color]="primary"
-                        >Enable Questions
-                    </mat-slide-toggle>
-                </div>
+            <mat-step [stepControl]="questionFormGroup" label="Grading Method">
                 <app-question-input
-                    *ngIf="questionToggle.checked"
+                    *ngIf="gradingMethod.value == 'Questions'"
                     #questionsInput
                     [(questions)]="questions"
                     [isEditingMode]="true"
                 ></app-question-input>
+                <app-rubrics-input
+                    #rubricsInput
+                    *ngIf="gradingMethod.value == 'Rubrics'"
+                    [(rubrics)]="rubrics"
+                    [isEditingMode]="true"
+                ></app-rubrics-input>
                 <button matStepperPrevious class="btn btn-outline-primary mr-2">
                     Back
                 </button>
                 <button
                     matStepperNext
                     class="btn btn-primary"
-                    (click)="emitQuestionInputEvent()"
+                    (click)="emitGradingMethod()"
                 >
                     Next
                 </button>
             </mat-step>
 
             <!-- Step 3: Rubrics -->
-            <mat-step label="Rubrics">
-                <div class="my-4">
+                <!-- <div class="my-4">
                     <mat-slide-toggle
                         #rubricsToggle
                         [checked]="gradingMethod.value == 'Rubrics'"
@@ -168,13 +144,8 @@
                         class="text-danger d-block"
                         >You must enable either question or rubrics!</small
                     >
-                </div>
-                <app-rubrics-input
-                    #rubricsInput
-                    *ngIf="rubricsToggle.checked"
-                    [(rubrics)]="rubrics"
-                    [isEditingMode]="true"
-                ></app-rubrics-input>
+                </div> -->
+<!--
                 <button matStepperPrevious class="btn btn-outline-primary mr-2">
                     Back
                 </button>
@@ -187,8 +158,8 @@
                     class="btn btn-primary"
                 >
                     Next
-                </button>
-            </mat-step>
+                </button> -->
+
 
             <!-- Step 4: Marking Collaboration -->
             <mat-step label="Collaboration">
@@ -229,7 +200,11 @@
 
             <!-- Step 4: Review -->
             <mat-step label="Review">
-                <div *ngIf="submitErrorMessage.length > 0" class="alert alert-danger" role="alert">
+                <div
+                    *ngIf="submitErrorMessage.length > 0"
+                    class="alert alert-danger"
+                    role="alert"
+                >
                     {{ submitErrorMessage }}
                 </div>
                 <table class="table">
@@ -261,31 +236,15 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>Default Marking Setting</th>
-                            <td>
-                                {{
-                                    assessmentDetailFormGroup.value.defaultSetting.replaceAll(
-                                        "_",
-                                        " "
-                                    ) | titlecase
-                                }}
-                            </td>
-                        </tr>
-                        <tr>
                             <td colspan="2">
-                                <strong> Questions </strong>
+                                <strong> Grading Method </strong>
                                 <app-question-input
-                                    *ngIf="questionToggle.checked"
+                                    *ngIf="gradingMethod.value == 'Questions'"
                                     [(questions)]="questions"
                                     [isEditingMode]="false"
                                 ></app-question-input>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <strong>Rubrics</strong>
                                 <app-rubrics-input
-                                    *ngIf="rubricsToggle.checked"
+                                    *ngIf="gradingMethod.value == 'Rubrics'"
                                     [isEditingMode]="false"
                                     [(rubrics)]="rubrics"
                                 ></app-rubrics-input>
@@ -341,3 +300,10 @@
     [subjectService]="getSubjectService()"
     [userId]="getUserId()"
 ></app-subject-creation-modal>
+
+<mat-spinner
+    *ngIf="isLoading"
+    [strokeWidth]="2"
+    [diameter]="150"
+    class="mx-auto mt-5"
+></mat-spinner>

@@ -3,7 +3,6 @@ from rest_framework.serializers import ValidationError
 from .models import User
 import re
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -32,3 +31,7 @@ class UserCollabSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'username']
+
+class ChangePasswordSerializer(serializers.Serializer):
+    model = User
+    new_password = serializers.CharField(required=True)

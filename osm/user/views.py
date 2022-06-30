@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -6,7 +7,14 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import UserSerializer, UserCollabSerializer
 from .models import User
+from .validators import validate_password
 from django.contrib.auth.hashers import check_password
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ValidationError
 
 
 @api_view(['GET'])
@@ -21,7 +29,9 @@ def apiOverview(request):
         'create': 'user-create/',
         'update': 'user-update/',
         'delete': 'user-delete/',
-        'check': 'user-check-password/',
+        'checkPassword': 'user-check-password/',
+        'checkEmail': 'user-check-email/',
+        'resetPassword': 'reset-password/',
         'collab': 'user-collab/',
     }
 
@@ -117,6 +127,7 @@ def createUser(request):
 def updateUser(request, id):
     user = User.objects.get(id=id)
     serializer = UserSerializer(instance=user, data=request.data)
+    print(request.data)
 
     if serializer.is_valid():
         serializer.save()
@@ -143,19 +154,76 @@ def updatePassword(request, id):
 
     if (check_password(request.data['currentPassword'], user.password)):
         update_request = request._request
-        user.set_password(request.data['newPassword'])
+        try:
+            validate_password(request.data['newPassword'])
+            user.set_password(request.data['newPassword'])
 
-        update_request.POST = {
-            "username": user.username,
-            "email": user.email,
-            "password": user.password,
-            "first_name": user.first_name,
-            "last_name": user.last_name
-        }
-
-        return updateUser(update_request, id)
+            update_request.POST = {
+                "username": user.username,
+                "email": user.email,
+                "password": user.password,
+                "first_name": user.first_name,
+                "last_name": user.last_name
+            }
+            return updateUser(update_request, id)
+        except Exception as e:
+            return Response({'password': e.message}, status=status.HTTP_400_BAD_REQUEST)
 
     else:
         return Response({
             'password': ['The password provided is incorrect.']
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
+def checkEmail(request):
+    email = request.data['email']
+    users = User.objects.filter(email=email)
+
+    if users.exists():
+        for user in users:
+            SUBJECT = 'OSM - Reset your password'
+            template = 'reset-password-template.txt'
+            data = {
+                'protocol': 'http',
+                'domain': 'localhost:4200',
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            }
+            message = render_to_string(template, data)
+
+            send_mail(
+                SUBJECT,
+                message,
+                settings.EMAIL_HOST_USER,
+                ['shiqi_kok@hotmail.com'],
+                fail_silently=False,
+            )
+
+        return Response('Email was sent!')
+    return Response({'error': 'No user found with this email!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
+def resetPassword(request, uidb64, token):
+    id = urlsafe_base64_decode(uidb64).decode()
+    new_password = request.data['newPassword']
+
+    try:
+        user = User.objects.get(id=id)
+        if (default_token_generator.check_token(user, token)):
+            validate_password(new_password)
+            user.set_password(new_password)
+            user.save()
+
+            return Response('updated!')
+        else:
+            return Response('Invalid token', status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as e:
+        return Response({'password': e.message}, status=status.HTTP_400_BAD_REQUEST)
+    except:
+        return Response({'error': "Something went wrong. Please try again"}, status=status.HTTP_400_BAD_REQUEST)

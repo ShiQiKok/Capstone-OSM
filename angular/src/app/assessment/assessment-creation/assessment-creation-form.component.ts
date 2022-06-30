@@ -6,7 +6,8 @@ import {
     Assessment,
     AssessmentType,
     GradingMethod,
-    MarkingSettings,
+    Question,
+    Rubrics,
 } from 'src/models/assessment';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { SubjectService } from 'src/services/subject.service';
@@ -17,49 +18,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RubricsInputComponent } from 'src/app/shared-component/rubrics-input/rubrics-input.component';
 import { QuestionInputComponent } from 'src/app/shared-component/question-input/question-input.component';
 import { UserService } from 'src/services/user.service';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserCollabInfo } from 'src/models/user';
-
-class QuestionInput {
-    no?: string | undefined;
-    value?: QuestionValueInput | undefined;
-    isEdit?: boolean | undefined;
-
-    constructor(no: string, value: QuestionValueInput, isEdit: boolean) {
-        this.no = no;
-        this.value = value;
-        this.isEdit = isEdit;
-    }
-}
-
-class QuestionValueInput {
-    question?: string | undefined;
-    marks?: number | undefined;
-}
-
-class RubricsInput {
-    marksRange?: RubricMarkRangeInput[] | undefined;
-    isEdit?: boolean | undefined; // control to edit marks range
-    criterion?: RubricCriterionInput[] | undefined;
-}
-
-class RubricCriterionInput {
-    title?: string | undefined;
-    description?: string | undefined;
-    totalMarks?: number | undefined;
-    columns?: RubricColumnInput[] | undefined;
-    isEdit?: boolean | undefined;
-}
-
-class RubricColumnInput {
-    description?: string | undefined;
-}
-
-class RubricMarkRangeInput {
-    min?: number | undefined;
-    max?: number | undefined;
-}
 
 @Component({
     selector: 'app-assessment-creation-form',
@@ -70,8 +30,8 @@ export class AssessmentCreationFormComponent extends AppComponent {
     @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
     @ViewChild('questionsInput') questionsInput!: QuestionInputComponent;
     @ViewChild('collaborators') collaborators!: ElementRef;
-    @ViewChild('questionToggle') questionToggle!: MatSlideToggle;
-    @ViewChild('rubricsToggle') rubricsToggle!: MatSlideToggle;
+    // @ViewChild('questionToggle') questionToggle!: MatSlideToggle;
+    // @ViewChild('rubricsToggle') rubricsToggle!: MatSlideToggle;
 
     // icons
     faTrashAlt = faTrashAlt;
@@ -79,16 +39,16 @@ export class AssessmentCreationFormComponent extends AppComponent {
 
     // controls
     isLoading: boolean = true;
+    isGradingRubrics: boolean = true;
 
     // form groups
     assessmentDetailFormGroup!: FormGroup;
 
     // objects
     assessment?: Assessment;
-    questions!: QuestionInput[] | undefined;
-    rubrics!: RubricsInput | undefined;
+    questions!: Question[] | undefined;
+    rubrics!: Rubrics | undefined;
     assessmentTypes = Object.values(AssessmentType);
-    markingSettings = Object.values(MarkingSettings);
     gradingMethods = Object.values(GradingMethod);
     subjects: any = [];
     collabUsers: UserCollabInfo[] = [];
@@ -107,13 +67,24 @@ export class AssessmentCreationFormComponent extends AppComponent {
         private _snackBar: MatSnackBar
     ) {
         super(router, authenticationService);
-        this._assessmentService.getApi();
 
+        this.assessmentDetailFormGroup = this._formBuilder.group({
+            assessmentName: ['Quiz 1', Validators.required],
+            assessmentType: [AssessmentType.ESSAY_BASED, Validators.required],
+            gradingMethod: [GradingMethod.RUBRICS, Validators.required],
+            subject: [null, Validators.required]
+        });
+    }
+
+    ngOnInit() {
+        this.isLoading = true;
+        this._assessmentService.getApi();
         this._subjectService.getApi().then(() => {
             this._subjectService
                 .getAll(this.currentUser.id!)
                 .then((subjects) => {
                     this.subjects = subjects;
+                    this.isLoading = false;
                 });
         });
 
@@ -122,62 +93,49 @@ export class AssessmentCreationFormComponent extends AppComponent {
                 this.collabUsers = users;
             });
         });
+    }
 
-        this.assessmentDetailFormGroup = this._formBuilder.group({
-            assessmentName: ['Quiz 1', Validators.required],
-            assessmentType: [AssessmentType.ESSAY_BASED, Validators.required],
-            gradingMethod: [GradingMethod.RUBRICS, Validators.required],
-            subject: [null, Validators.required],
-            defaultSetting: [
-                MarkingSettings.MARK_BY_SCRIPT,
-                Validators.required,
-            ],
-        });
+    emitGradingMethod() {
+        if (this.isGradingRubrics) {
+            this.emitRubricsInputEvent();
+            this.questions = undefined;
+        } else {
+            this.emitQuestionInputEvent();
+            this.rubrics = undefined;
+        }
     }
 
     emitQuestionInputEvent() {
-        if (this.questionToggle.checked) {
-            // using reference component to trigger the event emit
-            this.questionsInput.setAllUneditable();
-            this.questionsInput.questionsChange.emit(
-                this.questionsInput.questions
-            );
-        } else {
-            this.questions = undefined;
-        }
+        this.questionsInput.setAllUneditable();
+        this.questionsInput.questionsChange.emit(this.questionsInput.questions);
     }
 
     emitRubricsInputEvent() {
-        if (this.rubricsToggle.checked) {
-            this.rubricsInput.setUneditable();
-            // using reference component to trigger the event emit
-            this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
-            console.log(this.rubrics);
-        } else {
-            this.rubrics = undefined;
-        }
+        this.rubricsInput.setUneditable();
+        // using reference component to trigger the event emit
+        this.rubricsInput.rubricsChange.emit(this.rubricsInput.rubrics);
     }
 
     onSubmit(): void {
         this.submitErrorMessage = '';
 
         // check if either question or rubrics is enabled
-        if (!this.rubricsToggle.checked && !this.questionToggle.checked) {
-            this.submitErrorMessage =
-                'You must enable either questions or rubrics marking!';
-            return;
-        }
+        // if (!this.rubricsToggle.checked && !this.questionToggle.checked) {
+        //     this.submitErrorMessage =
+        //         'You must enable either questions or rubrics marking!';
+        //     return;
+        // }
 
         // delete edit controls from rubrics object
         if (this.rubrics) {
             delete this.rubrics.isEdit;
-            this.rubrics.criterion!.forEach((c) => {
+            this.rubrics.criterion!.forEach((c: any) => {
                 delete c.isEdit;
             });
         }
 
         // delete edit controls from question object
-        if (this.questions){
+        if (this.questions) {
             this.questions.forEach((q) => {
                 delete q.isEdit;
             });
@@ -198,11 +156,10 @@ export class AssessmentCreationFormComponent extends AppComponent {
             name: this.assessmentDetailFormGroup.get('assessmentName')!.value,
             type: this.assessmentDetailFormGroup.get('assessmentType')!.value,
             subject: this.assessmentDetailFormGroup.get('subject')!.value,
-            marking_setting:
-                this.assessmentDetailFormGroup.get('defaultSetting')!.value,
-            grading_method: this.assessmentDetailFormGroup.get('gradingMethod')!.value,
-            questions: this.questions ? this.questions : null,
-            rubrics: this.rubrics ? this.rubrics : null,
+            grading_method:
+                this.assessmentDetailFormGroup.get('gradingMethod')!.value,
+            questions: this.questions ? this.questions : undefined,
+            rubrics: this.rubrics ? this.rubrics : undefined,
             markers: collaborators,
         };
 
@@ -221,8 +178,8 @@ export class AssessmentCreationFormComponent extends AppComponent {
                 this.router.navigate(['/assessment-list']);
             })
             .catch((error) => {
-                let errorField = Object.keys(error.error)[0]
-                this.submitErrorMessage = `${errorField}: ${error.error[errorField]}`
+                let errorField = Object.keys(error.error)[0];
+                this.submitErrorMessage = `${errorField}: ${error.error[errorField]}`;
             });
     }
 
@@ -242,15 +199,17 @@ export class AssessmentCreationFormComponent extends AppComponent {
                         );
                     }
                 ).name;
+                this.isGradingRubrics =
+                    this.gradingMethod!.value == GradingMethod.RUBRICS;
             }
         }
     }
 
-    getSubjectService(): SubjectService{
+    getSubjectService(): SubjectService {
         return this._subjectService;
     }
 
-    getUserId(): number{
+    getUserId(): number {
         return this.currentUser.id!;
     }
 
@@ -270,16 +229,11 @@ export class AssessmentCreationFormComponent extends AppComponent {
     get subject() {
         return this.assessmentDetailFormGroup.get('subject');
     }
-
-    get defaultSetting() {
-        return this.assessmentDetailFormGroup.get('defaultSetting');
-    }
     // END REGION FormControls Getters
 
     openModal(modal: any) {
         this._modalService.open(modal);
     }
-
 
     setUneditable(event: any): void {
         this.rubricsInput.rubrics.isEdit = false;

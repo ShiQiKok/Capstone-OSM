@@ -1,11 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AssessmentService } from 'src/services/assessment.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Assessment, AssessmentType, GradingMethod } from 'src/models/assessment';
-import { MarkingSettings } from 'src/models/assessment';
+import {
+    Assessment,
+    AssessmentType,
+    GradingMethod,
+} from 'src/models/assessment';
 import { AnswerScriptService } from 'src/services/answer-script.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { faFileDownload, faInfo, faUpload } from '@fortawesome/free-solid-svg-icons';
+import {
+    faFileDownload,
+    faInfo,
+    faUpload,
+} from '@fortawesome/free-solid-svg-icons';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AnswerScript, AnswerScriptStatusObj } from 'src/models/answerScript';
 import { GradebookService } from 'src/services/gradebook.service';
@@ -19,11 +26,13 @@ import { MatTableDataSource } from '@angular/material/table';
 import {
     faArrowAltCircleLeft,
     faEdit,
+    faQuestionCircle,
     faTimesCircle,
 } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from 'src/services/user.service';
 import { UserCollabInfo } from 'src/models/user';
 import { MatSort } from '@angular/material/sort';
+import { SubjectService } from 'src/services/subject.service';
 
 @Component({
     selector: 'app-assessment-details',
@@ -45,7 +54,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     editAssessment!: Assessment;
     answerScripts!: MatTableDataSource<AnswerScript>;
     uploadedFile!: File | null;
-    markingSettings: MarkingSettings[] = Object.values(MarkingSettings);
     selection = new SelectionModel<AnswerScript>(false, []);
     assessmentTypes: AssessmentType[] = Object.values(AssessmentType);
     gradingMethods: GradingMethod[] = Object.values(GradingMethod);
@@ -54,6 +62,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     collaborators!: UserCollabInfo[];
     totalMarks: number = 0;
     uploadErrorMsg: string = '';
+    subjects: any = [];
 
     // icons
     faUpload = faUpload;
@@ -63,6 +72,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     faTimesCircle = faTimesCircle;
     faEdit = faEdit;
     faInfo = faInfo;
+    faQuestionCircle = faQuestionCircle;
 
     // controls
     isLoading: boolean = true;
@@ -74,7 +84,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         'lastUpdate',
         'status',
         'marks',
-        'action'
+        'action',
     ];
 
     constructor(
@@ -84,6 +94,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         private _answerScriptService: AnswerScriptService,
         private _gradebookService: GradebookService,
         private _userService: UserService,
+        private _subjectService: SubjectService,
         private route: ActivatedRoute,
         private modalService: NgbModal,
         private _snackBar: MatSnackBar
@@ -93,16 +104,18 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     async ngOnInit() {
         this.isLoading = true;
-        await this._assessmentService.getApi();
-        await this._answerScriptService.getApi();
-        await this._userService.getApi();
+        await this.getServiceApis();
         await this.getAssessmentDetails();
+        this.getUserSubjects();
         this.calculateTotalMarks();
+
         this.answerScripts = new MatTableDataSource(
             (await this._answerScriptService.getAll(
                 this.assessment.id!
             )) as AnswerScript[]
         );
+
+        console.log(this.answerScripts.data)
 
         if (this.answerScripts.data.length > 0) {
             this.updateMatchedMarkerIndex();
@@ -111,6 +124,19 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         this.setFilteringProperties();
         this.setSortingProperties();
         this.isLoading = false;
+    }
+
+    private async getServiceApis() {
+        await this._assessmentService.getApi();
+        await this._answerScriptService.getApi();
+        await this._userService.getApi();
+        await this._subjectService.getApi();
+    }
+
+    private getUserSubjects() {
+        this._subjectService.getAll(this.currentUser.id!).then((subjects) => {
+            this.subjects = subjects;
+        });
     }
 
     /**
@@ -228,11 +254,14 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
+        console.log(this.assessment)
         this.editAssessment = Object.assign({}, this.assessment);
+        this.editAssessment.rubrics ? this.editAssessment.rubrics = Object.assign({}, this.assessment.rubrics) : null;
+        this.editAssessment.questions ? this.editAssessment.questions = Object.assign({}, this.assessment.questions) : null;
         this.loadCollaborators();
     }
 
-    loadCollaborators() {
+    private loadCollaborators() {
         this._userService
             .getList(this.assessment.markers)
             .then((arr) => {
@@ -246,7 +275,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
 
     private calculateTotalMarks() {
         if (this.assessment.grading_method == GradingMethod.RUBRICS) {
-            this.totalMarks = this.assessment.rubrics.totalMarks;
+            this.totalMarks = this.assessment.rubrics!.totalMarks!;
         } else {
             this.assessment.questions!.forEach((q: any) => {
                 this.totalMarks += q.value.marks;
@@ -304,9 +333,11 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                     .catch((err) => {
                         console.log(err);
                     });
-            }).catch((err) => {
-                this.uploadErrorMsg = err.error.error
             })
+            .catch((err) => {
+                console.log(err)
+                this.uploadErrorMsg = err.error.error;
+            });
     }
 
     private updateMatchedMarkerIndex() {
@@ -333,11 +364,7 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         modal: NgbActiveModal
     ) {
         rubricsInput.rubricsChange.emit(rubricsInput.rubrics);
-        this._assessmentService
-            .update(this.assessment.id!, this.assessment)
-            .then(() => {
-                modal.close();
-            });
+        modal.close();
     }
 
     saveEditedQuestions(
@@ -345,24 +372,23 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
         modal: NgbActiveModal
     ) {
         questionsInput.questionsChange.emit(questionsInput.questions);
-        this._assessmentService
-            .update(this.assessment.id!, this.assessment)
-            .then(() => {
-                modal.close();
-            });
+        modal.close();
     }
 
     onSave() {
-        this.assessment = Object.assign({}, this.editAssessment);
-        this.assessment.markers = this.collaborators.map((c: any) => {
-            return c.id;
-        });
-        this.assessment.markers.push(this.currentUser.id!);
-        this._assessmentService
-            .update(this.assessment.id!, this.assessment)
-            .then(() => {
-                this.modalService.dismissAll();
+        if (this.editAssessment.name) {
+            this.assessment = Object.assign({}, this.editAssessment);
+            this.assessment.markers = this.collaborators.map((c: any) => {
+                return c.id;
             });
+            this.assessment.markers.push(this.currentUser.id!);
+            this._assessmentService
+                .update(this.assessment.id!, this.assessment)
+                .then(() => {
+                    this.modalService.dismissAll();
+                    this.calculateTotalMarks();
+                });
+        }
     }
 
     filterValue(event: Event) {

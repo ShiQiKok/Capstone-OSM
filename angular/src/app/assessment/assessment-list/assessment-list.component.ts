@@ -44,7 +44,6 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         setTimeout(() => {
             this.isLoading = false;
         }, 1000);
-        console.log(this.assessments);
     }
 
     /** To get all APIs for each service */
@@ -59,7 +58,6 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
         this.assessmentList = (await this._assessmentService.getAll(
             this.currentUser.id!
         )) as Assessment[];
-        console.log(this.assessmentList)
     }
 
     /** To create a object for front-end presentation, which maps the assessments with their subject ids */

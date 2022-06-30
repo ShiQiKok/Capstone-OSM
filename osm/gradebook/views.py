@@ -7,6 +7,7 @@ from rest_pandas import PandasView, PandasExcelRenderer
 from assessment.models import Assessment
 from answer_script.models import AnswerScript
 from .serializers import GradebookAnswerScriptSerializer
+from user.models import User
 
 class GradebookView(PandasView):
     queryset = AnswerScript.objects.all()
@@ -39,20 +40,14 @@ class GradebookView(PandasView):
                 else:
                     comments[ comment_json_list[i][j]['marker']].append(comment_json_list[i][j]['comment'])
 
-        # # print(marks_json_list)
-        # for l in marks_json_list:
-        #     for obj in l:
-        #         if obj['markerId'] not in marks.keys():
-        #             marks[obj['markerId']] = [obj['totalMark']]
-        #         else:
-        #             marks[obj['markerId']].append(obj['totalMark'])
-
 
         for marker_id, value in marks.items():
-            df[f"Marker_{marker_id}"] = value
+            user = User.objects.get(id=marker_id)
+            df[f"Marks_{user.username}"] = value
 
         for marker_id, value in comments.items():
-            df[f"Comment_{marker_id}"] = value
+            user = User.objects.get(id=marker_id)
+            df[f"Comment_{user.username}"] = value
 
         return df
 

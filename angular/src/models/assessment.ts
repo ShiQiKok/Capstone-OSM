@@ -1,14 +1,7 @@
-import { Subject } from './subject';
-
 // crete a class Assessment with the fields in Django AssessmentModel
 export enum AssessmentType {
     QUESTION_BASED = 'question_based',
     ESSAY_BASED = 'essay_based',
-}
-
-export enum MarkingSettings {
-    MARK_BY_SCRIPT = 'mark_by_script',
-    MARK_BY_QUESTION = 'mark_by_question',
 }
 
 export enum GradingMethod {
@@ -17,25 +10,41 @@ export enum GradingMethod {
 }
 
 export class Assessment {
-    id?: number | undefined;
-    name?: string | undefined;
-    subject?: number | undefined;
-    type?: AssessmentType | undefined;
+    id?: number;
+    name?: string;
+    subject?: number;
+    type?: AssessmentType;
     grading_method?: GradingMethod;
-    marking_setting?: MarkingSettings | undefined;
-    rubrics?: any | undefined;
-    questions?: any | undefined;
-    markers?: number[] | undefined;
+    rubrics?: Rubrics;
+    questions?: Question[];
+    markers?: number[];
 }
 
+
+// classes for questions and its sub-components
+export class Question {
+    no?: string | undefined;
+    value?: QuestionValue | undefined;
+    isEdit?: boolean | undefined;
+
+    constructor(no: string, value: QuestionValue, isEdit: boolean) {
+        this.no = no;
+        this.value = value;
+        this.isEdit = isEdit;
+    }
+}
+
+export class QuestionValue {
+    question?: string | undefined;
+    marks?: number | undefined;
+}
+
+// classes for rubrics and its sub-components
 export class Rubrics {
-    marksRange!: RubricMarkRange[];
-    criteria!: RubricCriterion[];
-}
-
-export class RubricMarkRange {
-    min?: number | undefined;
-    max?: number | undefined;
+    marksRange?: RubricMarkRange[];
+    totalMarks?: number;
+    isEdit?: boolean; // control to edit marks range
+    criterion?: RubricCriterion[];
 }
 
 export class RubricCriterion {
@@ -43,21 +52,14 @@ export class RubricCriterion {
     description?: string | undefined;
     totalMarks?: number | undefined;
     columns?: RubricColumn[] | undefined;
+    isEdit?: boolean | undefined;
 }
 
 export class RubricColumn {
     description?: string | undefined;
 }
 
-export class RubricCriteriaLevels {
-    name!: string;
-    description!: string;
-    mark_range!: any;
-}
-
-// create a class Question with the fields question, answer, mark
-export class Question {
-    question?: string | null;
-    answer?: string | null;
-    mark?: number | null;
+export class RubricMarkRange {
+    min?: number | undefined;
+    max?: number | undefined;
 }

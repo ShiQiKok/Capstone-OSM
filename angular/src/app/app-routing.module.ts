@@ -5,7 +5,9 @@ import { PendingChangesGuard } from 'src/helper/pending-changes.guard';
 import { AssessmentCreationFormComponent } from './assessment/assessment-creation/assessment-creation-form.component';
 import { AssessmentDetailsComponent } from './assessment/assessment-details/assessment-details.component';
 import { AssessmentListComponent } from './assessment/assessment-list/assessment-list.component';
+import { ForgetPasswordComponent } from './authentication/forget-password/forget-password.component';
 import { LoginComponent } from './authentication/login/login.component';
+import { ResetConfirmComponent } from './authentication/reset-confirm/reset-confirm.component';
 import { SignupComponent } from './authentication/signup/signup.component';
 import { CreationRubricsQuestionsComponent } from './information/creation-rubrics-questions/creation-rubrics-questions.component';
 import { HomePageComponent } from './information/home-page/home-page.component';
@@ -17,6 +19,8 @@ const routes: Routes = [
     {path: '', component: HomePageComponent},
     { path: 'signup', component: SignupComponent },
     { path: 'login', component: LoginComponent },
+    { path: 'forget-password', component: ForgetPasswordComponent },
+    { path: 'reset-confirm/:uid/:token', component: ResetConfirmComponent },
     {
         path: 'creation-rubrics-questions',
         component: CreationRubricsQuestionsComponent,
