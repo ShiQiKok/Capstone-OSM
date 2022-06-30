@@ -30,8 +30,6 @@ export class AssessmentCreationFormComponent extends AppComponent {
     @ViewChild('rubricsInput') rubricsInput!: RubricsInputComponent;
     @ViewChild('questionsInput') questionsInput!: QuestionInputComponent;
     @ViewChild('collaborators') collaborators!: ElementRef;
-    // @ViewChild('questionToggle') questionToggle!: MatSlideToggle;
-    // @ViewChild('rubricsToggle') rubricsToggle!: MatSlideToggle;
 
     // icons
     faTrashAlt = faTrashAlt;

@@ -15,18 +15,30 @@
                     <p>There are two ways to create a rubrics.</p>
                 </div>
                 <div class="d-flex">
-                    <div class="w-50 p-4 rounded bg-light" style="border: 1px solid #4277FF">
+                    <div
+                        class="w-50 p-4 rounded bg-light"
+                        style="border: 1px solid #4277ff"
+                    >
                         <h5>Upload Template</h5>
-                        <p class="d-inline-block px-4 rounded-pill bg-success text-white fw-bold">Suggested!</p>
+                        <p
+                            class="d-inline-block px-4 rounded-pill bg-success text-white fw-bold"
+                        >
+                            Suggested!
+                        </p>
                         <p>
                             The excel template can be downloaded
-                            <a href="../../../assets/template/rubrics-template.xlsx" download>here</a>.
+                            <a
+                                href="../../../assets/template/rubrics-template.xlsx"
+                                download
+                                >here</a
+                            >.
                         </p>
                         <div>
                             <ol>
                                 <li>
                                     Just fill in the excel template with your
-                                    custom rubrics. (Red color represents uneditable)
+                                    custom rubrics. (Red color represents
+                                    uneditable)
                                 </li>
                                 <li>
                                     Upload the rubrics to the system. That's it!
@@ -35,7 +47,7 @@
                         </div>
                     </div>
                     <div class="w-50 p-4">
-                        <h5>Manually</h5>
+                        <h5>Manually Input</h5>
                         <p>
                             You will need to input your rubrics into the rubrics
                             table.
@@ -49,15 +61,28 @@
                                 <li>Modify the details for each criterion.</li>
                                 <li>
                                     You can add/delete a column by clicking the
-                                    [], [] beside the first row (marks ranges).
+                                    <fa-icon
+                                        [icon]="faPlusCircle"
+                                        class="text-primary"
+                                    ></fa-icon>
+                                    or
+                                    <fa-icon
+                                        [icon]="faTrashAlt"
+                                        class="text-danger"
+                                    ></fa-icon>
+                                    beside the first row (mark ranges).
                                 </li>
                                 <li>
                                     You can add a row by clicking the
                                     <i>add row</i> button beneath the table.
                                 </li>
                                 <li>
-                                    You can delete a row by clicking the [] at
-                                    the first column of the row.
+                                    You can delete a row by clicking the
+                                    <fa-icon
+                                        [icon]="faTrashAlt"
+                                        class="text-danger"
+                                    ></fa-icon>
+                                    at the first column of the row.
                                 </li>
                             </ol>
                         </div>
@@ -74,18 +99,30 @@
                     <p>There are three ways to create a question template.</p>
                 </div>
                 <div class="d-flex flex-wrap">
-                    <div class="w-50 p-4 rounded bg-light" style="border: 1px solid #4277FF">
+                    <div
+                        class="w-50 p-4 rounded bg-light"
+                        style="border: 1px solid #4277ff"
+                    >
                         <h5>Upload Template</h5>
-                        <p class="d-inline-block px-4 rounded-pill bg-success text-white fw-bold">Suggested!</p>
+                        <p
+                            class="d-inline-block px-4 rounded-pill bg-success text-white fw-bold"
+                        >
+                            Suggested!
+                        </p>
                         <p>
                             The excel template can be downloaded
-                            <a href="../../../assets/template/question-template.xlsx" download>here</a>.
+                            <a
+                                href="../../../assets/template/question-template.xlsx"
+                                download
+                                >here</a
+                            >.
                         </p>
                         <div>
                             <ol>
                                 <li>
                                     Just fill in the excel template with your
-                                    custom questions. (Red color represents uneditable)
+                                    custom questions. (Red color represents
+                                    uneditable)
                                 </li>
                                 <li>
                                     Upload the rubrics to the system. That's it!
@@ -93,38 +130,49 @@
                             </ol>
                         </div>
                     </div>
-                    <div class="w-50 p-4 rounded bg-light" style="border: 1px solid #4277FF">
+                    <div
+                        class="w-50 p-4 rounded bg-light"
+                        style="border: 1px solid #4277ff"
+                    >
                         <h5>Upload Moodle-Exported Template</h5>
-                        <p class="d-inline-block px-4 rounded-pill bg-success text-white fw-bold">Suggested!</p>
+                        <p
+                            class="d-inline-block px-4 rounded-pill bg-success text-white fw-bold"
+                        >
+                            Suggested!
+                        </p>
                         <div>
                             <ol>
                                 <li>
-                                    Export the question in .csv format from your Moodle Question Bank.
+                                    Export the question in .csv format from your
+                                    Moodle Question Bank.
                                 </li>
                                 <li>
-                                    Upload the exported file in .csv format to the system.
+                                    Upload the exported file in .csv format to
+                                    the system.
                                 </li>
                             </ol>
                         </div>
                     </div>
                     <div class="w-50 p-4">
-                        <h5>Manually</h5>
+                        <h5>Manually Input</h5>
                         <p>
-                            You will need to input your question  into the table.
+                            You will need to input your question into the table.
                         </p>
                         <div>
                             <ol>
                                 <li>
-                                    Click the <i>+ Add Question</i> to add a new question.
+                                    Click the <i>+ Add Question</i> to add a new
+                                    question.
                                 </li>
+                                <li>Input the question details.</li>
+                                <li>Click <i>save</i> to save the question.</li>
                                 <li>
-                                    Input the question details.
-                                </li>
-                                <li>
-                                    Click <i>save</i> to save the question.
-                                </li>
-                                <li>
-                                    To delete the question, click the [] beside the edit button.
+                                    To delete the question, click the
+                                    <fa-icon
+                                        [icon]="faTrashAlt"
+                                        class="text-danger"
+                                    ></fa-icon>
+                                    beside the edit button.
                                 </li>
                             </ol>
                         </div>
