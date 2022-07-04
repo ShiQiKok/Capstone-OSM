@@ -89,12 +89,4 @@ export class AssessmentListComponent extends AppComponent implements OnInit {
             });
         }
     }
-
-    /**  Returns subject name by subject id
-     * @param {number} subjectId the subject id
-     */
-    // getSubjectName(id: number): string {
-    //     console.log(this.subjects)
-    //     return this.subjects.find((subject) => subject.id == id)?.name!;
-    // }
 }

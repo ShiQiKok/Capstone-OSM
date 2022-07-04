@@ -11,8 +11,8 @@ export class AnswerScriptStatusObj {
 
 export class AnswerScript {
     id?: number;
-    studentName?: string;
-    studentId?: string;
+    student_name?: string;
+    student_id?: string;
     script?: string;
     assessment?: number;
     dateCreated?: Date;

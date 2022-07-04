@@ -27,4 +27,8 @@ export class AppComponent {
         this.authenticationService.logout();
         this.router.navigate(['/login']);
     }
+
+    shouldNavBarHidden(){
+        return /^\/marking\/[0-9]+$/.test(this.router.url);
+    }
 }

@@ -4,6 +4,33 @@
     [diameter]="150"
     class="mx-auto mt-5"
 ></mat-spinner>
+<nav
+    *ngIf="!isLoading"
+    id="nav-bar"
+    class="navbar navbar-expand-lg sticky-top bg-light"
+>
+    <div class="container-fluid border py-1">
+        <span
+            style="cursor: pointer"
+            routerLink="/assessment-details/{{ this.assessment.id }}"
+        >
+            <fa-icon
+                [icon]="faArrowAltCircleLeft"
+                style="font-size: 1.25em"
+            ></fa-icon>
+            <span class="ml-1">back</span>
+        </span>
+        <div>
+            <strong
+                >{{ answerScript.student_name }} -
+                {{ answerScript.student_id }}</strong
+            >
+        </div>
+        <div>
+            <strong> Total: {{ marks.totalMark ? marks.totalMark : 0 }} / {{fullMarks}}</strong>
+        </div>
+    </div>
+</nav>
 <div style="width: 80%" class="pl-4 pr-5">
     <ng-template #floatToolbar>
         <button
@@ -59,15 +86,6 @@
             class="position-absolute top-0 start-0 end-0 bg-primary shadow-sm py-2 px-3 d-flex justify-content-between"
         >
             <span style="cursor: pointer">
-                <span>
-                    <fa-icon
-                        *ngIf="!isRubricsDetailsShowed"
-                        [icon]="faHome"
-                        style="font-size: 1.25em"
-                        class="text-white"
-                        routerLink="/assessment-details/{{this.assessment.id}}"
-                    ></fa-icon>
-                </span>
                 <fa-icon
                     *ngIf="isRubricsDetailsShowed"
                     [icon]="faArrowAltCircleLeft"
@@ -89,7 +107,7 @@
             *ngIf="assessment"
             style="overflow: auto; height: 87%; margin-top: 4rem"
         >
-            <div id="marksPanel" style="margin-bottom: 4rem">
+            <div id="marksPanel" style="margin-bottom: 3.5rem">
                 <div *ngIf="isRubricsUsed">
                     <div *ngIf="!isRubricsDetailsShowed">
                         <h4>Rubrics</h4>
@@ -221,6 +239,7 @@
                     </div>
                 </div>
                 <div *ngIf="!isRubricsUsed">
+                    <h4>Questions</h4>
                     <mat-list role="list" id="questionMarksPanel">
                         <mat-list-item
                             *ngFor="
@@ -241,7 +260,7 @@
                                 min="0"
                                 max="{{ question.value.marks }}"
                                 [(ngModel)]="marks.distribution[i].marksAwarded"
-                                (change)="onMarkAwardedChanged($event, i)"
+                                (keyup)="onMarkAwardedChanged($event, i)"
                             />
                         </mat-list-item>
                     </mat-list>
@@ -252,9 +271,6 @@
             *ngIf="assessment"
             class="position-absolute bottom-0 end-0 w-100 bg-white pt-2"
         >
-            <h5 class="pl-4">
-                Marks: {{ marks.totalMark ? marks.totalMark : 0 }}
-            </h5>
             <button
                 *ngIf="!isRubricsDetailsShowed"
                 class="btn btn-primary w-100"

@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { MatTable } from '@angular/material/table';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { faUpload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUpload, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { AssessmentService } from 'src/services/assessment.service';
-import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
+import { faQuestionCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { RubricCriterion, Rubrics } from 'src/models/assessment';
 
 @Component({
@@ -27,6 +27,7 @@ export class RubricsInputComponent implements OnInit {
 
     // icons
     faTrashAlt = faTrashAlt;
+    faPlusCircle = faPlusCircle;
     faUpload = faUpload;
     faQuestionCircle = faQuestionCircle;
 

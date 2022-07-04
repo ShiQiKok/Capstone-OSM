@@ -28,9 +28,18 @@ pip install -r requirements.txt
 ```
 
 ## Run the application
+You need to open two terminal to run the front and back end.
 
-Change the directory into the outer 'osm' folder. Run the following command:
+1. BACKEND - Change the directory into the outer 'osm' folder. Run the following command:
 
 ```
+cd osm
 ./manage.py runserver
+```
+
+2. FRONTEND - Change the directory into the 'angular' folder. Run the following command:
+
+```
+cd angular
+npm start
 ```
