@@ -127,7 +127,6 @@ def createUser(request):
 def updateUser(request, id):
     user = User.objects.get(id=id)
     serializer = UserSerializer(instance=user, data=request.data)
-    print(request.data)
 
     if serializer.is_valid():
         serializer.save()

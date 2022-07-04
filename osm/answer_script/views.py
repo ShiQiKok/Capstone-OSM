@@ -266,13 +266,11 @@ def bulk_create(request):
                 zip_ext_file = zip_file.open(path)
                 in_memory_file = InMemoryUploadedFile(
                     zip_ext_file, None, filename, 'application/pdf', len(zip_file.read(path)), None)
-                print(1)
                 assessment = Assessment.objects.get(id=assessment_id)
                 if assessment.grading_method == 'Rubrics':
                     criteria_num = len(assessment.rubrics['criterion'])
                 else:
                     criteria_num = len(assessment.questions)
-                print(folder_name)
                 data = process_data(folder_name, assessment_id,
                                     in_memory_file, criteria_num, True)
                 create_request = request._request

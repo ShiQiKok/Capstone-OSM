@@ -55,10 +55,8 @@ export class QuestionInputComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log(this.questions)
         if (!this.questions ) {
             this.questions = this.template;
-            console.log('sini?')
         }
         this.totalMarks = this.getTotalMark();
     }
@@ -99,7 +97,6 @@ export class QuestionInputComponent implements OnInit {
 
     setAllUneditable() {
         this.questions.forEach((q) => (q.isEdit = false));
-        console.log(this.questions);
     }
 
     private getTotalMark() {

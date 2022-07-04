@@ -108,10 +108,6 @@ export class MarkingComponent
     @HostListener('window:beforeunload')
     canDeactivate(): Observable<boolean> | boolean {
         if (!this.isSubmitted) {
-            console.log(this.marks.distribution)
-            console.log(this.initialMarksDistribution)
-            console.log(this.answerScript.comment)
-            console.log(this.initialComment);
             return (
                 (JSON.stringify(this.marks.distribution) ===
                 JSON.stringify(this.initialMarksDistribution)) &&
@@ -282,7 +278,6 @@ export class MarkingComponent
             let min: number = +inputElement.min;
             let max: number = +inputElement.max;
             let value: number = +inputElement.value;
-            console.log(value);
 
             if (value < min) {
                 inputElement.value = min;
@@ -391,7 +386,6 @@ export class MarkingComponent
         // if the selection is within the same node
         for (let child of children) {
             if (child === startNode && child === endNode) {
-                // console.log(1);
                 startOffset += selection.anchorOffset;
                 children.length === 1
                     ? (endOffset = selection.focusOffset)

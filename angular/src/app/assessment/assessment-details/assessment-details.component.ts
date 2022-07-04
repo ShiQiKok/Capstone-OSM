@@ -121,7 +121,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
             )) as AnswerScript[]
         );
 
-        console.log(this.answerScripts.data);
 
         if (this.answerScripts.data.length > 0) {
             this.updateMatchedMarkerIndex();
@@ -260,7 +259,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
     async getAssessmentDetails() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.assessment = (await this._assessmentService.get(id)) as Assessment;
-        console.log(this.assessment);
         this.editAssessment = Object.assign({}, this.assessment);
         this.editAssessment.rubrics
             ? (this.editAssessment.rubrics = Object.assign(
@@ -297,10 +295,6 @@ export class AssessmentDetailsComponent extends AppComponent implements OnInit {
                 this.totalMarks += q.value.marks;
             });
         }
-    }
-
-    printObject() {
-        console.log(this.assessment.rubrics);
     }
 
     calculateProgress() {

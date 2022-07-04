@@ -10,5 +10,4 @@ class AssessmentTestCase(TestCase):
 
     def test_assessment_model(self):
         r = requests.get("http://localhost:8000/api/assessments/")
-        print(r.text)
 
