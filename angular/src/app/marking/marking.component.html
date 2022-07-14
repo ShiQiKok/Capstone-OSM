@@ -27,7 +27,6 @@
             >
         </div>
         <div>
-            <strong> Total: {{ marks.totalMark ? marks.totalMark : 0 }} / {{fullMarks}}</strong>
         </div>
     </div>
 </nav>
@@ -93,6 +92,10 @@
                     class="text-white"
                     (click)="this.isRubricsDetailsShowed = false"
                 ></fa-icon>
+            </span>
+            <span class="text-white"
+            style="padding-top: 0.25em;">
+                <strong> Total: {{ marks.totalMark ? marks.totalMark : 0 }} / {{fullMarks}}</strong>
             </span>
             <span>
                 <fa-icon
